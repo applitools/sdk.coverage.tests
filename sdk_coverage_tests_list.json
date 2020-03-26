@@ -387,6 +387,10 @@
     {
       "name": "TestWebAppScrolling3",
       "implementation": "https://github.com/applitools/Eyes.Sdk.DotNet/blob/master/Tests/Test.Eyes.Selenium.DotNet/TestScrolling.cs"
+    },
+    {
+      "name": "TestStateAfterOperation",
+      "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/e7e0d7c21aebf6856c5007e200ffa5774ec81e6c/packages/eyes-webdriverio-5/test/coverage/custom/TestStateAfterOperation.spec.js"
     }
   ]
 }
