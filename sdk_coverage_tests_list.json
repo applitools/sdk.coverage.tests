@@ -391,6 +391,10 @@
     {
       "name": "TestStateAfterOperation",
       "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/e7e0d7c21aebf6856c5007e200ffa5774ec81e6c/packages/eyes-webdriverio-5/test/coverage/custom/TestStateAfterOperation.spec.js"
+    },
+    {
+      "name": "TestWarningForEDGE",
+      "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/master/packages/eyes-selenium/test/coverage/custom/TestVGServerConfigs.spec.js#L104"
     }
   ]
 }
