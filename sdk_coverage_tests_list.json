@@ -395,6 +395,10 @@
     {
       "name": "TestWarningForEDGE",
       "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/master/packages/eyes-selenium/test/coverage/custom/TestVGServerConfigs.spec.js#L104"
+    },
+    {
+      "name": "TestTooBigViewportSize",
+      "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/core-set-viewport-size/packages/eyes-webdriverio-5/test/coverage/custom/TestTooBigViewportSize.spec.js"
     }
   ]
 }
