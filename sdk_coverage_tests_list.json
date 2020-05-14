@@ -349,7 +349,7 @@
       "implementation": "https://github.com/applitools/Eyes.Sdk.DotNet/blob/master/Tests/Test.Eyes.Selenium.DotNet/TestRendersMatch.cs"
     },
     {
-      "name": "TestVGChangeConfigAfterOpen",
+      "name": "TestChangeConfigAfterOpen",
       "implementation": "https://github.com/applitools/Eyes.Sdk.DotNet/blob/master/Tests/Test.Eyes.Selenium.DotNet/VisualGridTests/TestVGServerConfigs.cs"
     },
     {
