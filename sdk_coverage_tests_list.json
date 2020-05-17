@@ -399,6 +399,10 @@
     {
       "name": "TestTooBigViewportSize",
       "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/core-set-viewport-size/packages/eyes-webdriverio-5/test/coverage/custom/TestTooBigViewportSize.spec.js"
+    },
+    {
+      "name": "VGFetch",
+      "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/master/packages/eyes-selenium/test/coverage/custom/VGFetch.spec.js"
     }
   ]
 }
