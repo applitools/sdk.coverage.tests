@@ -403,6 +403,10 @@
     {
       "name": "TestVisualGridRefererHeader",
       "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/master/packages/eyes-selenium/test/coverage/custom/TestVisualGridRefererHeader.spec.js"
+    },
+    {
+      "name": "dom-capture-ie",
+      "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/master/packages/eyes-selenium/test/coverage/custom/dom-capture-ie.spec.js"
     }
   ]
 }
