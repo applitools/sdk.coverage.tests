@@ -1,5 +1,6 @@
 'use strict'
 const {makeEmitTracker} = require('@applitools/sdk-coverage-tests')
+const {checkSettingsParser} = require('./parser')
 
 function makeSpecEmitter(options) {
     const tracker = makeEmitTracker()
@@ -12,7 +13,7 @@ function makeSpecEmitter(options) {
             } else if (typeof value === 'function') {
                 stringified = value.toString()
             } else if (typeof value === 'undefined'){
-                stringified = 'nil'
+                stringified = 'null'
             } else {
                 stringified = JSON.stringify(value)
             }
@@ -23,31 +24,22 @@ function makeSpecEmitter(options) {
 
     tracker.storeHook('deps', `import pytest`)
     tracker.storeHook('deps', `from selenium import webdriver`)
-    tracker.storeHook('deps', `from applitools.selenium import (BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
+    tracker.storeHook('deps', `from selenium.webdriver.common.by import By`)
+    tracker.storeHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
     tracker.storeHook('deps', `from applitools.common import StitchMode`)
 
-    // tracker.storeHook('vars', `eyes = None`)
-    // tracker.storeHook('vars', `driver = None`)
-    // tracker.storeHook('vars', `batch = None`)
-
-    tracker.storeHook('beforeEach', python`@pytest.fixture(scope="session")`)
+    tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
     tracker.storeHook('beforeEach', python`def eyes_runner_class():`)
     if (options.executionMode.isVisualGrid) tracker.storeHook('beforeEach', python`    return VisualGridRunner(10)`)
     else tracker.storeHook('beforeEach', python`    return ClassicRunner()`)
     tracker.storeHook('beforeEach', python`\n`)
 
     if (options.executionMode.isCssStitching || options.executionMode.isScrollStitching) {
-        tracker.storeHook('beforeEach', python`@pytest.fixture(scope="session")`)
+        tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
         tracker.storeHook('beforeEach', python`def stitch_mode():`)
         if (options.executionMode.isCssStitching) tracker.storeHook('beforeEach', python`    return StitchMode.CSS`)
         else tracker.storeHook('beforeEach', python`    return StitchMode.Scroll`)
     }
-
-
-    // tracker.storeHook('afterEach', python`global driver`)
-    // tracker.storeHook('afterEach', python`driver.quit()`)
-    // tracker.storeHook('afterEach', python`global eyes`)
-    // tracker.storeHook('afterEach', python`eyes.close(False)`)
 
     const driver = {
         build(options) {
@@ -61,7 +53,7 @@ function makeSpecEmitter(options) {
             tracker.storeCommand(python`driver.get(${url})`)
         },
         executeScript(script, ...args) {
-            return tracker.storeCommand(python`driver.execute_script(${script}, ...${args})`)
+            return tracker.storeCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
             //tracker.storeCommand(ruby`await specs.sleep(driver, ${ms})`)
@@ -98,7 +90,7 @@ function makeSpecEmitter(options) {
             tracker.storeCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            tracker.storeCommand(python`${element}.click()`)
+            tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
         },
         type(element, keys) {
             tracker.storeCommand(python`${element}.send_keys(${keys})`)
@@ -151,22 +143,21 @@ function makeSpecEmitter(options) {
         open({appName, viewportSize}) {
             tracker.storeCommand(python`conf = eyes.get_configuration()
     conf.app_name = ${appName}
-    conf.test_name =  ${options.baselineTestName}
+    conf.test_name = ${options.baselineTestName}
     conf.viewport_size = {"width": ${viewportSize.width}, "height": ${viewportSize.height}}
-    conf.stitch_mode == StitchMode.CSS
     eyes.set_configuration(conf)
     eyes.open(driver)`)
         },
         check(checkSettings) {
-            tracker.storeCommand(python`eyes.check("", ${checkSettings})`)
+            tracker.storeCommand(`eyes.check("", ${checkSettingsParser(checkSettings)})`)
         },
         checkWindow(tag, matchTimeout, stitchContent) {
-            let Tag = !tag ? `` : `tag=${tag}`
-            let MatchTimeout = !matchTimeout ? `` : `match_timeout=${matchTimeout}`
+            let Tag = !tag ? `` : `tag="${tag}"`
+            let MatchTimeout = !matchTimeout ? `` : `,match_timeout=${matchTimeout}`
             tracker.storeCommand(python`eyes.check_window(` + Tag + MatchTimeout + `)`)
         },
         checkFrame(element, matchTimeout, tag) {
-            let args = `name_or_id: '${element}'` +
+            let args = `"${getVal(element)}"` +
                 `${tag? `, tag: ${tag}`: ''}` +
                 `${matchTimeout? `, timeout: ${matchTimeout}`: ''}`
             tracker.storeCommand(`eyes.check_frame(${args})`)
@@ -225,6 +216,11 @@ function makeSpecEmitter(options) {
     }
 
     return {tracker, driver, eyes}
+}
+
+function getVal (val) {
+    let nameAndValue = val.toString().split("\"")
+    return nameAndValue[1]
 }
 
 module.exports = makeSpecEmitter

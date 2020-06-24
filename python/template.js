@@ -7,7 +7,7 @@ ${emittedTest.hooks.vars.join('\n')}
  
 ${emittedTest.hooks.beforeEach.join('\n')}
 
-
+${emittedTest.disabled ? '@pytest.mark.skip("generated")' : '' }
 def test_${emittedTest.name}(driver, eyes):
     ${emittedTest.commands.join('\n    ')}
 `

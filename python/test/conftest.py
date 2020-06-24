@@ -6,12 +6,12 @@ from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def batch_info():
     return BatchInfo("Python Generated tests")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def eyes_runner_class():
     return None
 
@@ -24,14 +24,14 @@ def driver_setup():
     driver.quit()
 
 
-@pytest.fixture(name="runner", scope="session")
+@pytest.fixture(name="runner", scope="function")
 def runner_setup(eyes_runner_class):
     runner = eyes_runner_class
     yield runner
 #     all_test_results = runner.get_all_test_results()
 #     print(all_test_results)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def stitch_mode():
     return None
 
@@ -44,6 +44,13 @@ def eyes_setup(runner, batch_info, stitch_mode):
     # Initialize the eyes SDK and set your private API key.
     eyes.api_key = os.environ["APPLITOOLS_API_KEY"]
     eyes.configure.batch = batch_info
+    eyes.configure.branch_name = "master"
+    eyes.configure.parent_branch_name = "master"
+    eyes.configure.set_stitch_mode(stitch_mode)
+    eyes.configure.set_hide_scrollbars(True).set_save_new_tests(False).set_hide_caret(True)
+    eyes.add_property(
+        "ForceFPS", "true" if eyes.force_full_page_screenshot else "false"
+    )
     yield eyes
     # If the test was aborted before eyes.close was called, ends the test as aborted.
     eyes.abort_if_not_closed()
