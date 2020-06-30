@@ -3,9 +3,10 @@ const initialize = require('./initialize')
 const testFrameworkTemplate = require('./template')
 
 module.exports = {
-    name: 'python-sdk',
+    name: 'eyes_selenium_python',
     initialize: initialize,
     supportedTests,
     testFrameworkTemplate: testFrameworkTemplate,
-    extname: '.py'
+    ext: '.py',
+    out: './test/coverage/generic'
 }

@@ -1,0 +1,5 @@
+webdriver-manager>=2.4.0
+eyes-selenium>=4.1.25
+selenium>=3.141.0
+pytest>=3.4.2
+pytest-xdist>=1.32.0

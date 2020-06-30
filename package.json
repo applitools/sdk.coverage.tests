@@ -18,10 +18,12 @@
     "ruby:files": "cd ruby/test/coverage/generic && for file in *.spec.js; do mv \"$file\" \"${file/.spec.js/_spec.rb}\"; done",
     "ruby:run": "APPLITOOLS_BATCH_ID=$(uuidgen) cd ruby && rspec --default-path ./test test/coverage/generic",
     "ruby:conf:test": "mocha './ruby/configuration/test/*.spec.js'",
-    "python": "cd python && coverage-tests create-tests --path ."
+    "python": "cd python && coverage-tests create-tests --path .",
+    "python:run": "pip3 install -r python_requirements.txt && cd python && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest ./test/coverage/generic --junitxml=./coverage-test-report.xml && coverage-tests process-report --path .",
+    "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -n 10 ./test/coverage/generic --junitxml=./coverage-test-report.xml && coverage-tests process-report --path ."
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "1.0.3",
+    "@applitools/sdk-coverage-tests": "1.0.4",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },

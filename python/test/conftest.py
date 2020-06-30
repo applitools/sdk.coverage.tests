@@ -1,5 +1,6 @@
 import os
 import pytest
+import time
 
 from selenium import webdriver
 from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner
@@ -8,7 +9,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 @pytest.fixture(scope="session")
 def batch_info():
-    return BatchInfo("Python Generated tests")
+    return BatchInfo("Python Generated tests")#(os.environ["APPLITOOLS_BATCH_NAME"])#
+
+
+def pytest_generate_tests(metafunc):
+    import uuid
+    # setup environment variables once per test run if not settled up
+    # needed for multi thread run
+#     os.environ["APPLITOOLS_BATCH_ID"] = os.getenv(
+#         "APPLITOOLS_BATCH_ID", str(uuid.uuid4())
+#     )
 
 
 @pytest.fixture(scope="function")
@@ -18,7 +28,14 @@ def eyes_runner_class():
 
 @pytest.fixture(name="driver", scope="function")
 def driver_setup():
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    counter = 0
+    while counter < 5:
+        try:
+            driver = webdriver.Chrome(ChromeDriverManager().install())
+            break
+        except Exception as e:
+            print("Tried to start browser. It was exception {}".format(e))
+            time.sleep(1.0)
     yield driver
     # Close the browser.
     driver.quit()

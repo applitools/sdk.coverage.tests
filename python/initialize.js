@@ -13,7 +13,7 @@ function makeSpecEmitter(options) {
             } else if (typeof value === 'function') {
                 stringified = value.toString()
             } else if (typeof value === 'undefined'){
-                stringified = 'null'
+                stringified = 'None'
             } else {
                 stringified = JSON.stringify(value)
             }
@@ -84,7 +84,7 @@ function makeSpecEmitter(options) {
             // TODO: implement if needed
         },
         getWindowSize() {
-            return tracker.storeCommand(python`driver.driver.get_window_size()`)
+            return tracker.storeCommand(python`driver.get_window_size()`)
         },
         setWindowSize(size) {
             tracker.storeCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
@@ -93,7 +93,7 @@ function makeSpecEmitter(options) {
             tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
         },
         type(element, keys) {
-            tracker.storeCommand(python`${element}.send_keys(${keys})`)
+            tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).send_keys(${keys})`)
         },
         waitUntilDisplayed() {
             // TODO: implement if needed
@@ -157,16 +157,19 @@ function makeSpecEmitter(options) {
             tracker.storeCommand(python`eyes.check_window(` + Tag + MatchTimeout + `)`)
         },
         checkFrame(element, matchTimeout, tag) {
-            let args = `"${getVal(element)}"` +
-                `${tag? `, tag: ${tag}`: ''}` +
-                `${matchTimeout? `, timeout: ${matchTimeout}`: ''}`
-            tracker.storeCommand(`eyes.check_frame(${args})`)
+            tracker.storeCommand(python`eyes.check(
+        ${tag},
+        Target.frame(${element})
+        .timeout(${matchTimeout})
+        .fully()
+      )`)
         },
         checkElement(element, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.checkElement(
-        ${element},
-        ${matchTimeout},
+            tracker.storeCommand(python`eyes.check(
         ${tag},
+        Target.region(${element})
+        .timeout(${matchTimeout})
+        .fully()
       )`)
         },
         checkElementBy(selector, matchTimeout, tag) {
@@ -177,9 +180,9 @@ function makeSpecEmitter(options) {
       )`)
         },
         checkRegion(region, matchTimeout, tag) {
-            let args = `css: '${region}'` +
-                `${tag? `, tag: ${tag}`: ''}` +
-                `${matchTimeout? `, timeout: ${matchTimeout}`: ''}`
+            let args = `region='${region}'` +
+                `${tag? `, tag=${tag}`: ''}` +
+                `${matchTimeout? `, timeout=${matchTimeout}`: ''}`
             tracker.storeCommand(python`eyes.check_region(${args})`)
         },
         checkRegionByElement(element, matchTimeout, tag) {
