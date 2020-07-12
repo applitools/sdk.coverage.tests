@@ -395,6 +395,10 @@
     {
       "name": "dom-capture-ie",
       "implementation": "https://github.com/applitools/eyes.sdk.javascript1/blob/master/packages/eyes-selenium/test/coverage/custom/dom-capture-ie.spec.js"
+    },
+    {
+      "name": "Test Timeouts",
+      "implementation": "https://github.com/applitools/Eyes.Sdk.DotNet/blob/7673efc7f908138b06208367d7dcbad8d6caca41/Tests/Test.Eyes.Selenium.DotNet/VisualGridTests/TestTimeouts.cs"
     }
   ]
 }
