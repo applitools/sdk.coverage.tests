@@ -18,12 +18,16 @@
     "ruby:files": "cd ruby/test/coverage/generic && for file in *.spec.js; do mv \"$file\" \"${file/.spec.js/_spec.rb}\"; done",
     "ruby:run": "APPLITOOLS_BATCH_ID=$(uuidgen) cd ruby && rspec --default-path ./test test/coverage/generic",
     "ruby:conf:test": "mocha './ruby/configuration/test/*.spec.js'",
-    "python": "cd python && coverage-tests create-tests --path .",
-    "python:run": "pip3 install -r python_requirements.txt && cd python && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest ./test/coverage/generic --junitxml=./coverage-test-report.xml && coverage-tests process-report --path .",
-    "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -n 10 ./test/coverage/generic --junitxml=./coverage-test-report.xml && coverage-tests process-report --path ."
+    "python:generate": "mkdir -p ./python/test/coverage/generic && cd python && coverage-tests create-tests --path .",
+    "python:run": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
+    "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v -n 10 ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
+    "python:report:sandbox": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT",
+      "python:report:prod": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT --send-report prod",
+      "python:report": "[ \"$TEST_REPORT_SANDBOX\" = \"False\" ] && npm run python:report:prod || npm run python:report:sandbox ",
+      "python:tests": "./python/python_tests.sh"
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "1.0.4",
+    "@applitools/sdk-coverage-tests": "1.0.9",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },

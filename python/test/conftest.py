@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 @pytest.fixture(scope="session")
 def batch_info():
-    return BatchInfo("Python Generated tests")#(os.environ["APPLITOOLS_BATCH_NAME"])#
+    return BatchInfo("Python Generated tests")
 
 
 def pytest_generate_tests(metafunc):
@@ -28,10 +28,12 @@ def eyes_runner_class():
 
 @pytest.fixture(name="driver", scope="function")
 def driver_setup():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
     counter = 0
     while counter < 5:
         try:
-            driver = webdriver.Chrome(ChromeDriverManager().install())
+            driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options,)
             break
         except Exception as e:
             print("Tried to start browser. It was exception {}".format(e))
