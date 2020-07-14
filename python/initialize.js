@@ -9,7 +9,7 @@ function makeSpecEmitter(options) {
         values.forEach((value, index) => {
             let stringified = ''
             if (value && value.isRef) {
-                stringified = value.resolve()
+                stringified = value.ref()
             } else if (typeof value === 'function') {
                 stringified = value.toString()
             } else if (typeof value === 'undefined'){
@@ -27,6 +27,10 @@ function makeSpecEmitter(options) {
     tracker.storeHook('deps', `from selenium.webdriver.common.by import By`)
     tracker.storeHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
     tracker.storeHook('deps', `from applitools.common import StitchMode`)
+
+    tracker.addSyntax('var', ({name, value}) => `${name} = ${value}`)
+  tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
+  tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
 
     tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
     tracker.storeHook('beforeEach', python`def eyes_runner_class():`)
@@ -93,7 +97,7 @@ function makeSpecEmitter(options) {
             tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
         },
         type(element, keys) {
-            tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).send_keys(${keys})`)
+            tracker.storeCommand(python`${element}.send_keys(${keys})`)
         },
         waitUntilDisplayed() {
             // TODO: implement if needed
@@ -173,10 +177,10 @@ function makeSpecEmitter(options) {
       )`)
         },
         checkElementBy(selector, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.checkElementBy(
-        ${selector},
-        ${matchTimeout},
-        ${tag},
+            tracker.storeCommand(python`eyes.check_region(
+        [By.CSS_SELECTOR, ${selector}],
+        tag=${tag},
+        match_timeout=${matchTimeout},
       )`)
         },
         checkRegion(region, matchTimeout, tag) {

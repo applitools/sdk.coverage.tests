@@ -22,9 +22,10 @@
     "python:run": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
     "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v -n 10 ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
     "python:report:sandbox": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT",
-      "python:report:prod": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT --send-report prod",
-      "python:report": "[ \"$TEST_REPORT_SANDBOX\" = \"False\" ] && npm run python:report:prod || npm run python:report:sandbox ",
-      "python:tests": "./python/python_tests.sh"
+    "python:report:prod": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT --send-report prod",
+    "python:report:if": "[ \"$TEST_REPORT_SANDBOX\" = \"False\" ] && npm run python:report:prod || npm run python:report:sandbox ",
+    "python:report": "npm run python:report:sandbox ",
+    "python:tests": "./python/python_tests.sh"
   },
   "dependencies": {
     "@applitools/sdk-coverage-tests": "1.0.9",
