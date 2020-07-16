@@ -21,12 +21,18 @@
     "python": "cd python && coverage-tests create-tests --path .",
     "python:run": "pip3 install -r python_requirements.txt && cd python && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest ./test/coverage/generic --junitxml=./coverage-test-report.xml && coverage-tests process-report --path .",
     "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -n 10 ./test/coverage/generic --junitxml=./coverage-test-report.xml && coverage-tests process-report --path .",
-    "dotnet:generate": "cd dotNet && coverage-tests create-tests --path .",
-    "dotnet:run:parallel": "cd dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
-    "dotnet:report": "cd dotNet && coverage-tests process-report --path ."
+    "dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path .",
+    "dotnet:generate2": "npm install && cd dotNet && coverage-tests create-tests --path ./../../Tests/Tests.Eyes.Selenium.Generated3/",
+    "dotnet:run:parallel": "cd ./../Tests/Tests.Eyes.Selenium.Generated3/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:run:parallel2": "cd ./dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:run:parallel3": "cd ./dotNet/test && dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:report3": "cd dotNet && coverage-tests process-report --path .",
+    "dotnet:report": "cd dotNet && coverage-tests process-report --path ./../../Tests/Tests.Eyes.Selenium.Generated3",
+    "dotnet:tests": "npm run dotnet:generate && npm run dotnet:run:parallel && npm run dotnet:report",
+    "dotnet:tests3": "npm run dotnet:generate && npm run dotnet:run:parallel3 && npm run dotnet:report3"
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "1.0.6",
+    "@applitools/sdk-coverage-tests": "latest",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },

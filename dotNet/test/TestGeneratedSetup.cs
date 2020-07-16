@@ -18,7 +18,9 @@ namespace Applitools.Selenium.Tests
         [SetUp]
         public void SetUpCHE()
         {
-            driver = new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--headless");
+            driver = new ChromeDriver(options);
             driver.Navigate().GoToUrl(testedPageUrl);
         }
 
@@ -31,6 +33,9 @@ namespace Applitools.Selenium.Tests
             if (!isVisualGrid) eyes.StitchMode = isCSSMode ? StitchModes.CSS : StitchModes.Scroll;
             eyes.BranchName = "master";
             eyes.ParentBranchName = "master";
+            eyes.AddProperty("ForceFPS", eyes.ForceFullPageScreenshot ? "true" : "false");
+            eyes.AddProperty("Agent ID", eyes.FullAgentId);
+			eyes.HideScrollbars = true;
         }
 
     }

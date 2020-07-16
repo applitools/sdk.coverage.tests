@@ -7,7 +7,7 @@ namespace Applitools.Selenium.Tests.Generated
 {
   [TestFixture]
   [Parallelizable]
-  public class ${emittedTest.name} : TestGeneratedSetup
+  public class ${emittedTest.name}Class : TestGeneratedSetup
   {
     ${emittedTest.hooks.vars.join('\n    ')}
  
@@ -25,7 +25,7 @@ namespace Applitools.Selenium.Tests.Generated
 
     [Test]
     [Category("Generated")] ${emittedTest.disabled ? '\n    [Ignore("generated")]' : ''}
-    public void ${emittedTest.name}_test()
+    public void ${emittedTest.name}()
     {
         ${emittedTest.commands.join('\n        ')}
     }
