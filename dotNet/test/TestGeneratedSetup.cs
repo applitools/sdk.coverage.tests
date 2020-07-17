@@ -14,13 +14,14 @@ namespace Applitools.Selenium.Tests
         protected Eyes eyes;
         protected string testedPageUrl = "https://applitools.github.io/demo/TestPages/FramesTestPage/";
         public static readonly BatchInfo BatchInfo = new BatchInfo("DotNet Generated Tests");
+		public static readonly string DRIVER_PATH = Environment.GetEnvironmentVariable("DRIVER_PATH");
 
         [SetUp]
         public void SetUpCHE()
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--headless");
-            driver = new ChromeDriver(options);
+            driver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options) : new ChromeDriver(options);
             driver.Navigate().GoToUrl(testedPageUrl);
         }
 
