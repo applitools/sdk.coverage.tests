@@ -16,7 +16,7 @@
   "scripts": {
     "dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path .",
     "dotnet:run:parallel": "cd ./dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
-    "dotnet:report": "cd dotNet && coverage-tests process-report --path .",
+    "dotnet:report": "cd dotNet && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT",
     "dotnet:tests:local": "npm run dotnet:generate && npm run dotnet:run:parallel ; npm run dotnet:report",
 	"dotnet:tests": "./dotNet/dotnet_tests.sh"
   },
