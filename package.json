@@ -18,6 +18,7 @@
     "dotnet:run:parallel": "cd ./dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
 	"dotnet:run:parallel:win": "cd ./dotNet/test && set APPLITOOLS_BATCH_ID=$(uuidgen) && dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:report": "cd dotNet && coverage-tests process-report --path . --reportId $APPLITOOLS_REPORT_ID",
+	"dotnet:report:prod": "cd dotNet && coverage-tests process-report --path . --reportId $APPLITOOLS_REPORT_ID --send-report prod",
 	"dotnet:tests": "./dotNet/dotnet_tests.sh"
   },
   "dependencies": {
