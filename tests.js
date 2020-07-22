@@ -427,6 +427,31 @@ module.exports = {
       .ref('actualViewportSize')
     assert.deepStrictEqual(actualViewportSize, expectedViewportSize)
   },
+  TestSetViewportSizeEdge: {
+    options: {
+      capabilities: {
+        browserName: 'MicrosoftEdge',
+        browserVersion: '18',
+        platformName: 'Windows 10',
+        'sauce:options': {
+          screenResolution: '1920x1080',
+          username: process.env.SAUCE_USERNAME,
+          accesskey: process.env.SAUCE_ACCESS_KEY,
+        },
+      },
+      host: 'https://ondemand.saucelabs.com:443/wd/hub',
+    },
+    // TODO : this is exactly the same test as TestSetViewportSize only on Edge
+    test: ({driver, eyes, assert}) => {
+      const expectedViewportSize = {width: 600, height: 600}
+      eyes.constructor.setViewportSize(expectedViewportSize)
+      const actualViewportSize = driver
+        .executeScript('return {width: window.innerWidth, height: window.innerHeight}')
+        .type('Map<String, Number>')
+        .ref('actualViewportSize')
+      assert.deepStrictEqual(actualViewportSize, expectedViewportSize)
+    },
+  },
   TestVisualLocators: ({driver, eyes, assert}) => {
     driver.visit(url)
     eyes.open({appName: 'Applitools Eyes SDK'})
