@@ -23,7 +23,7 @@
     "python:tests": "./python/python_tests.sh"
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "1.0.9",
+    "@applitools/sdk-coverage-tests": "latest",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },
