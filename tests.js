@@ -464,4 +464,26 @@ module.exports = {
       applitools_title: [{left: 2, top: 11, width: 173, height: 58}],
     })
   },
+  AppiumAndroidCheckRegion: {
+    options: {
+      capabilities: {
+        browserName: '',
+        name: 'Android Demo',
+        platformName: 'Android',
+        platformVersion: '7.0',
+        appiumVersion: '1.17.1',
+        deviceName: 'Samsung Galaxy S8 FHD GoogleAPI Emulator',
+        app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk',
+        automationName: 'uiautomator2',
+        username: process.env.SAUCE_USERNAME,
+        accesskey: process.env.SAUCE_ACCESS_KEY,
+      },
+      host: 'https://ondemand.saucelabs.com:443/wd/hub',
+    },
+    test: ({eyes}) => {
+      eyes.open({appName: 'Applitools Eyes SDK'})
+      eyes.check({region: 'android.widget.Button'})
+      eyes.close(false)
+    },
+  },
 }
