@@ -483,7 +483,7 @@ module.exports = {
     test: ({eyes}) => {
       eyes.open({appName: 'Applitools Eyes SDK'})
       eyes.check({region: 'android.widget.Button'})
-      eyes.close(false)
+      eyes.close(throwException)
     },
   },
 }
