@@ -490,8 +490,11 @@ module.exports = {
     options: {
       capabilities: {
         browserName: 'firefox',
-        username: process.env.SAUCE_USERNAME,
-        accesskey: process.env.SAUCE_ACCESS_KEY,
+        'sauce:options': {
+          seleniumVersion: '3.141.59',
+          username: process.env.SAUCE_USERNAME,
+          accesskey: process.env.SAUCE_ACCESS_KEY,
+        }
       },
       host: 'https://ondemand.saucelabs.com:443/wd/hub',
     },
