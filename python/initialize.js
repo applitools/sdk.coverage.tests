@@ -146,7 +146,9 @@ function makeSpecEmitter(options) {
     const eyes = {
         open({appName, viewportSize}) {
             let special_branch = '\n    '
-            if ((`${options.baselineTestName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent') && ((options.executionMode.isCssStitching) || (options.executionMode.isScrollStitching))) 
+            if ( (`${options.baselineTestName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent') 
+               ||(`${options.baselineTestName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
+               ) 
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
             tracker.storeCommand(python`conf = eyes.get_configuration()
     conf.app_name = ${appName}
