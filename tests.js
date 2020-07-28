@@ -486,4 +486,20 @@ module.exports = {
       eyes.close(throwException)
     },
   },
+  TestHorizonalScroll: {
+    options: {
+      capabilities: {
+        browserName: 'firefox',
+        username: process.env.SAUCE_USERNAME,
+        accesskey: process.env.SAUCE_ACCESS_KEY,
+      },
+      host: 'https://ondemand.saucelabs.com:443/wd/hub',
+    },
+    test: ({driver, eyes}) => {
+      driver.visit('https://applitools.github.io/demo/TestPages/horizontal-scroll.html')
+      eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 400}})
+      eyes.check({isFully: true})
+      eyes.close(throwException)
+    }
+  }
 }
