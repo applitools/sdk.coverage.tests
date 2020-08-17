@@ -13,6 +13,7 @@ function checkSettings(cs) {
         if (cs.region) element += region(cs.region)
     }
     if(cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
+    if(cs.scrollRootElement) options+=scrollRootElement(cs.scrollRootElement)
     if(cs.isFully) options += '.Fully()'
     return target + element + options
 }
@@ -31,6 +32,10 @@ function ignoreRegions(arr) {
 
 function ignore(region){
     return `.Ignore(${regionParameter(region)})`
+}
+
+function scrollRootElement(cssSelector) {
+    return `.ScrollRootElement(By.CssSelector(\"${cssSelector}\"))`
 }
 
 function regionParameter (region) {

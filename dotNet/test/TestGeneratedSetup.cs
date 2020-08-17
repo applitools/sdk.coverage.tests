@@ -25,7 +25,7 @@ namespace Applitools.Selenium.Tests
             driver.Navigate().GoToUrl(testedPageUrl);
         }
 
-        protected void initEyes(Boolean isVisualGrid, Boolean isCSSMode)
+        protected void initEyes(bool isVisualGrid, bool isCSSMode)
         {
             runner = isVisualGrid ? (EyesRunner)(new VisualGridRunner(10)) : new ClassicRunner();
             eyes = new Eyes(runner);
