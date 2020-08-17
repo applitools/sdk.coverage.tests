@@ -1,0 +1,4 @@
+/dotNet/test/.vs
+/dotNet/test/coverage/generic
+/dotNet/test/obj
+node_modules/
