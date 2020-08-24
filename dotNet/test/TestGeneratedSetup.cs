@@ -8,7 +8,7 @@ using Applitools.Tests.Utils;
 
 namespace Applitools.Generated.Selenium.Tests
 {
-    public abstract class TestGeneratedSetup : ReportingTestSuite
+    public abstract class TestGeneratedSetup : ReportingTestSuiteGenerrated
     {
 
         protected IWebDriver driver;
