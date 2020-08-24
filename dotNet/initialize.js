@@ -30,6 +30,7 @@ function makeSpecEmitter(options) {
     tracker.storeHook('deps', `using OpenQA.Selenium;`)
     tracker.storeHook('deps', `using Applitools.Utils.Geometry;`)
     tracker.storeHook('deps', `using System.Drawing;`)
+	tracker.storeHook('deps', `using Applitools.Selenium;`)
 	
 	tracker.addSyntax('var', ({name, value}) => `var ${name} = ${value}`)
     tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)

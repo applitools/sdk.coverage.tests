@@ -3,10 +3,12 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using System;
 using OpenQA.Selenium.Chrome;
+using Applitools.Selenium;
+using Applitools.Tests.Utils;
 
-namespace Applitools.Selenium.Tests
+namespace Applitools.Generated.Selenium.Tests
 {
-    public abstract class TestGeneratedSetup
+    public abstract class TestGeneratedSetup : ReportingTestSuite
     {
 
         protected IWebDriver driver;
