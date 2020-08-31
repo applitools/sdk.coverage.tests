@@ -1,6 +1,6 @@
 'use strict'
 
-function checkSettings(cs) {
+function checkSettings(cs, mobile=false) {
     let target = `Target`
     if(cs === undefined){
         return target + '.Window()'
@@ -10,9 +10,9 @@ function checkSettings(cs) {
     if (cs.frames === undefined && cs.region === undefined) element = '.Window()'
     else {
         if (cs.frames) element += frames(cs.frames)
-        if (cs.region) element += region(cs.region)
+        if (cs.region) element += region(cs.region, mobile)
     }
-    if(cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
+    if(cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions, mobile)
     if(cs.scrollRootElement) options+=scrollRootElement(cs.scrollRootElement)
     if(cs.isFully) options += '.Fully()'
     return target + element + options
@@ -22,27 +22,27 @@ function frames(arr) {
     return arr.reduce((acc, val) => acc + `.Frame(\"${getVal(val)}\")`, '')
 }
 
-function region(region) {
-    return `.Region(${regionParameter(region)})`
+function region(region, mobile=false) {
+    return `.Region(${regionParameter(region, mobile)})`
 }
 
-function ignoreRegions(arr) {
-    return arr.reduce((acc, val) => acc + ignore(val), '')
+function ignoreRegions(arr, mobile=false) {
+    return arr.reduce((acc, val) => acc + ignore(val, mobile), '')
 }
 
-function ignore(region){
-    return `.Ignore(${regionParameter(region)})`
+function ignore(region, mobile=false){
+    return `.Ignore(${regionParameter(region, mobile)})`
 }
 
-function scrollRootElement(cssSelector) {
-    return `.ScrollRootElement(By.CssSelector(\"${cssSelector}\"))`
+function scrollRootElement(cssSelector) {	
+    return `.ScrollRootElement(By.CssSelector(\"${cssSelector}\"))`	
 }
 
-function regionParameter (region) {
+function regionParameter (region, mobile=false) {
     let string
     switch (typeof region) {
         case 'string':
-            string = `By.CssSelector(\"${region}\")`
+            string = mobile? `Utilities.FindElement(driver, \"${region}\")` : `By.CssSelector(\"${region}\")`
             break;
         case "object":
             string = `new Rectangle(${region.left}, ${region.top}, ${region.width}, ${region.height})`

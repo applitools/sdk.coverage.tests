@@ -12,7 +12,7 @@ namespace Applitools.Generated.Selenium.Tests
             TestStatus status = tc.Result.Outcome.Status;
             bool passed = status == TestStatus.Passed;
             string name;
-            string mode;
+            string mode = null;
             if (tc.Test.MethodName.EndsWith("_Scroll"))
             {
                 name = tc.Test.MethodName.Substring(0, tc.Test.MethodName.LastIndexOf('_'));
@@ -23,12 +23,17 @@ namespace Applitools.Generated.Selenium.Tests
                 name = tc.Test.MethodName.Substring(0, tc.Test.MethodName.LastIndexOf('_'));
                 mode = "visualgrid";
             }
+            else if (tc.Test.MethodName.StartsWith("Appium"))
+            {
+                name = tc.Test.MethodName;
+                //mode = "";
+            }
             else
             {
                 name = tc.Test.MethodName;
                 mode = "css";
             }
-                TestResultGenerated result = new TestResultGenerated(name, passed, GetTestParameters(), "chrome", mode);
+            TestResultGenerated result = new TestResultGenerated(name, passed, GetTestParameters(), "chrome", mode);
             return result;
         }
     }
