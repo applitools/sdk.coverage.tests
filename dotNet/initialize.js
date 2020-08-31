@@ -34,7 +34,7 @@ function makeSpecEmitter(options) {
 	tracker.storeHook('deps', `using Applitools.Selenium;`)
     tracker.storeHook('deps', `using System.Drawing;`)
 	tracker.storeHook('deps', `using OpenQA.Selenium.Remote;`)
-	tracker.storeHook('deps', `using OpenQA.Selenium.Appium;`)
+	if (mobile) tracker.storeHook('deps', `using OpenQA.Selenium.Appium;`)
 	tracker.storeHook('deps', `using System.Collections.Generic;`)
 	if (mobile) tracker.storeHook('deps', `using Applitools.Appium.GenericUtils;`)
 	
