@@ -21,20 +21,38 @@ function makeSpecEmitter(options) {
         })
         return code + chunks[chunks.length - 1]
     }
-
-    function argumentCheck(actual, ifUndefined){
+	
+	function argumentCheck(actual, ifUndefined){
         return (typeof actual === 'undefined') ? ifUndefined : actual
     }
+	
+	let mobile = ("env" in options) && ("device" in options.env)? true: false
 
     tracker.storeHook('deps', `using NUnit.Framework;`)
     tracker.storeHook('deps', `using OpenQA.Selenium;`)
     tracker.storeHook('deps', `using Applitools.Utils.Geometry;`)
-    tracker.storeHook('deps', `using System.Drawing;`)
 	tracker.storeHook('deps', `using Applitools.Selenium;`)
+    tracker.storeHook('deps', `using System.Drawing;`)
+	tracker.storeHook('deps', `using OpenQA.Selenium.Remote;`)
+	tracker.storeHook('deps', `using OpenQA.Selenium.Appium;`)
+	tracker.storeHook('deps', `using System.Collections.Generic;`)
+	if (mobile) tracker.storeHook('deps', `using Applitools.Appium.GenericUtils;`)
+	
+	let namespace = mobile? 'Applitools.Appium.Tests': 'Applitools.Generated.Selenium.Tests'
+	let baseClass = mobile? 'TestGeneratedSetupAppium': 'TestGeneratedSetup'
+
+	tracker.storeHook('deps', `namespace ${namespace}`)
+	tracker.storeHook('deps', `{`)
+	tracker.storeHook('deps', `[TestFixture]`)
+	tracker.storeHook('deps', `[Parallelizable]`)
+	tracker.storeHook('deps', `public class ${options.baselineTestName}Class : ${baseClass}`)
 	
 	tracker.addSyntax('var', ({name, value}) => `var ${name} = ${value}`)
     tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
     tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
+
+    if (mobile && ("app" in options.env)) tracker.storeHook('beforeEach', dot_net`    initDriver(${options.env.device}, ${options.env.app});`)
+	//if (("options" in options) && ("capabilities" in options.options)) tracker.storeHook('beforeEach', dot_net`options.options.capabilities = ${options.options.capabilities}`)
 
     tracker.storeHook('beforeEach', dot_net`    initEyes(${argumentCheck(options.executionMode.isVisualGrid, false)}, ${argumentCheck(options.executionMode.isCssStitching, false)});`)
 
@@ -95,7 +113,8 @@ js.ExecuteScript(${script});`)
         click(element) {
 			switch (typeof element) {
 				case 'string':
-					tracker.storeCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
+					if (mobile) tracker.storeCommand(dot_net`Utilities.FindElement(driver, ${element}).Click();`)
+					else tracker.storeCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
 					break;
 				case "object":
 					tracker.storeCommand(dot_net`${element}.Click();`)
@@ -150,11 +169,12 @@ js.ExecuteScript(${script});`)
 
     const eyes = {
         open({appName, viewportSize}) {
+			let rectangle = !viewportSize ? '' : `, new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height})`
             tracker.storeCommand(dot_net`
-        eyes.Open(driver, ${appName}, ${options.baselineTestName}, new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height}));`)
+        eyes.Open(driver, ${appName}, ${options.baselineTestName}` + rectangle + ');')
         },
         check(checkSettings) {
-            tracker.storeCommand(`eyes.Check(${checkSettingsParser(checkSettings)});`)
+            tracker.storeCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
         },
         checkWindow(tag, matchTimeout, stitchContent) {
             let Tag = !tag ? `` : `tag:"${tag}"`
