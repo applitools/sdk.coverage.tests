@@ -371,6 +371,16 @@ module.exports = {
     })
     eyes.close(throwException)
   },
+  TestCheckElementFullyAfterScrollNonScrollableElement: ({driver, eyes}) => {
+    driver.visit('https://applitools.github.io/demo/TestPages/SimpleTestPage/')
+    eyes.open({appName: 'Eyes Selenium SDK - check non scrollable element', viewportSize})
+    driver.executeScript('window.scrollBy(0, 500)')
+    eyes.check({
+      region: '#overflowing-div',
+      isFully: true,
+    })
+    eyes.close(throwException)
+  },
   TestScrollableContentInModal_Fully: ({driver, eyes}) => {
     driver.visit('https://applitools.github.io/demo/TestPages/ModalsPage/index.html')
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
