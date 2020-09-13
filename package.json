@@ -14,7 +14,8 @@
     "url": "git+https://github.com/applitools/sdk.coverage.tests.git"
   },
   "scripts": {
-    "dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js",
+    "dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && mv ./test/Selenium/coverage/generic/Appium_*.cs ./test/Appium/coverage/generic",
+    "dotnet:generate:win": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && move /Y .\\test\\Selenium\\coverage\\generic\\Appium_*.cs .\\test\\Appium\\coverage\\generic",
     "dotnet:run:parallel": "cd ./dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:run:parallel:win": "cd ./dotNet/test && set APPLITOOLS_BATCH_ID=$(uuidgen) && dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:report": "[ \"$TEST_REPORT_SANDBOX\" = \"False\" ] && npm run dotnet:report:prod || npm run dotnet:report:sandbox ",

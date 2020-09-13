@@ -11,9 +11,6 @@ namespace Applitools.Tests.Utils
             this.Parameters = new Dictionary<string, object> { ["browser"] = browser, ["mode"] = mode };
         }
 
-        public TestResultGenerated(string testName, bool passed, Dictionary<string, object> parameters) : base(testName, passed, parameters)
-        {}
-
         [JsonProperty("isGeneric")]
         public bool IsGeneric => true;
     }

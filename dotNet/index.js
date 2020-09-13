@@ -8,5 +8,5 @@ module.exports = {
     supportedTests,
     testFrameworkTemplate: testFrameworkTemplate,
     ext: '.cs',
-    out: './test/coverage/generic'
+    out: './test/Selenium/coverage/generic'
 }
