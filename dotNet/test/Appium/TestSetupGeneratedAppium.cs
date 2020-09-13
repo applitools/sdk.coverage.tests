@@ -11,7 +11,7 @@ using NUnit.Framework.Interfaces;
 
 namespace Applitools.Appium.Tests
 {
-	public abstract class TestGeneratedSetupAppium : ReportingTestSuiteGenerrated
+	public abstract class TestSetupGeneratedAppium : ReportingTestSuiteGenerratedAppium
 	{
 
 		protected RemoteWebDriver driver;
@@ -70,12 +70,6 @@ namespace Applitools.Appium.Tests
 					new Uri(url), options, TimeSpan.FromMinutes(5));
 					break;
 			}
-		}
-
-		[TearDown]
-		public void TearDownTestAppium()
-		{
-			reportSummary_.Group = "appium";
 		}
 
 		private Dictionary<string, Dictionary<string, object>> DEVICES = new Dictionary<string, Dictionary<string, object>>

@@ -5,6 +5,6 @@ namespace Applitools.Tests.Utils
     public partial class TestResultReportSummary
     {
         [JsonProperty("group")]
-        public string Group { get; set; } = "selenium";
+        public virtual string Group => "appium";
     }
 }

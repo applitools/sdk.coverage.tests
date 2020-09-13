@@ -28,16 +28,7 @@ namespace Applitools.Generated.Selenium.Tests
                 name = tc.Test.MethodName;
                 mode = "css";
             }
-            TestResultGenerated result;
-            if (tc.Test.MethodName.StartsWith("Appium"))
-            {
-                result = new TestResultGenerated(name, passed, GetTestParameters());
-            }
-            else
-            {
-                result = new TestResultGenerated(name, passed, GetTestParameters(), "chrome", mode);
-            }
-            return result;
+            return new TestResultGenerated(name, passed, GetTestParameters(), "chrome", mode);
         }
     }
 }

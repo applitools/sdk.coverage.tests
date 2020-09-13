@@ -29,17 +29,20 @@ function makeSpecEmitter(options) {
 	let mobile = ("env" in options) && ("device" in options.env)? true: false
 
     tracker.storeHook('deps', `using NUnit.Framework;`)
-    tracker.storeHook('deps', `using OpenQA.Selenium;`)
-    tracker.storeHook('deps', `using Applitools.Utils.Geometry;`)
-	tracker.storeHook('deps', `using Applitools.Selenium;`)
-    tracker.storeHook('deps', `using System.Drawing;`)
-	tracker.storeHook('deps', `using OpenQA.Selenium.Remote;`)
-	if (mobile) tracker.storeHook('deps', `using OpenQA.Selenium.Appium;`)
-	tracker.storeHook('deps', `using System.Collections.Generic;`)
-	if (mobile) tracker.storeHook('deps', `using Applitools.Appium.GenericUtils;`)
+	if (mobile) {
+	    tracker.storeHook('deps', `using Applitools.Appium.GenericUtils;`)
+	}
+	else {
+        tracker.storeHook('deps', `using OpenQA.Selenium;`)
+        tracker.storeHook('deps', `using Applitools.Utils.Geometry;`)
+	    tracker.storeHook('deps', `using Applitools.Selenium;`)
+        tracker.storeHook('deps', `using System.Drawing;`)
+	    tracker.storeHook('deps', `using OpenQA.Selenium.Remote;`)
+	    tracker.storeHook('deps', `using System.Collections.Generic;`)
+	}
 	
 	let namespace = mobile? 'Applitools.Appium.Tests': 'Applitools.Generated.Selenium.Tests'
-	let baseClass = mobile? 'TestGeneratedSetupAppium': 'TestGeneratedSetup'
+	let baseClass = mobile? 'TestSetupGeneratedAppium': 'TestSetupGenerated'
 
 	tracker.storeHook('deps', `namespace ${namespace}`)
 	tracker.storeHook('deps', `{`)
