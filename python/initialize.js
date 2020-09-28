@@ -22,27 +22,50 @@ function makeSpecEmitter(options) {
         return code + chunks[chunks.length - 1]
     }
 
+    let mobile = ("env" in options) && ("device" in options.env)? true: false
+
     tracker.storeHook('deps', `import pytest`)
     tracker.storeHook('deps', `from selenium import webdriver`)
     tracker.storeHook('deps', `from selenium.webdriver.common.by import By`)
     tracker.storeHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
     tracker.storeHook('deps', `from applitools.common import StitchMode`)
+    if (mobile) tracker.storeHook('deps', `from ...utils import my_find_element`)
 
     tracker.addSyntax('var', ({name, value}) => `${name} = ${value}`)
-  tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
-  tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
+    tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
+    tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
 
-    tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
-    tracker.storeHook('beforeEach', python`def eyes_runner_class():`)
-    if (options.executionMode.isVisualGrid) tracker.storeHook('beforeEach', python`    return VisualGridRunner(10)`)
-    else tracker.storeHook('beforeEach', python`    return ClassicRunner()`)
-    tracker.storeHook('beforeEach', python`\n`)
-
-    if (options.executionMode.isCssStitching || options.executionMode.isScrollStitching) {
+    if (mobile)
+    {
+        let device = (options.env.device == "Samsung Galaxy S8")? "Samsung Galaxy S8 FHD GoogleAPI Emulator": options.env.device         
+        tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")
+def dev():
+    return ${device}
+        `)
+        tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")
+def app():
+    return ${options.env.app}
+        `)
         tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        tracker.storeHook('beforeEach', python`def stitch_mode():`)
-        if (options.executionMode.isCssStitching) tracker.storeHook('beforeEach', python`    return StitchMode.CSS`)
-        else tracker.storeHook('beforeEach', python`    return StitchMode.Scroll`)
+        let desired_caps = (options.baselineTestName.includes("iOS"))? 'ios_desired_capabilities': 'android_desired_capabilities'
+        tracker.storeHook('beforeEach', python`def desired_caps(` + desired_caps + `, request, dev, app):`)
+        tracker.storeHook('beforeEach', python`    return ` + desired_caps)
+        tracker.storeHook('beforeEach', python`\n`)
+    }
+    else
+    {
+	    tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
+	    tracker.storeHook('beforeEach', python`def eyes_runner_class():`)
+	    if (options.executionMode.isVisualGrid) tracker.storeHook('beforeEach', python`    return VisualGridRunner(10)`)
+	    else tracker.storeHook('beforeEach', python`    return ClassicRunner()`)
+	    tracker.storeHook('beforeEach', python`\n`)
+
+	    if (options.executionMode.isCssStitching || options.executionMode.isScrollStitching) {
+		tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
+		tracker.storeHook('beforeEach', python`def stitch_mode():`)
+		if (options.executionMode.isCssStitching) tracker.storeHook('beforeEach', python`    return StitchMode.CSS`)
+		else tracker.storeHook('beforeEach', python`    return StitchMode.Scroll`)
+	    }
     }
 
     const driver = {
@@ -94,7 +117,8 @@ function makeSpecEmitter(options) {
             tracker.storeCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
+            if (mobile) tracker.storeCommand(python`my_find_element(driver, ${element}).click()`)
+            else tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
         },
         type(element, keys) {
             tracker.storeCommand(python`${element}.send_keys(${keys})`)
@@ -150,15 +174,16 @@ function makeSpecEmitter(options) {
                ||(`${options.baselineTestName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
                ) 
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
+            //{"width": ${viewportSize.width}, "height": ${viewportSize.height}}
             tracker.storeCommand(python`conf = eyes.get_configuration()
     conf.app_name = ${appName}
-    conf.test_name = ${options.baselineTestName}
-    conf.viewport_size = {"width": ${viewportSize.width}, "height": ${viewportSize.height}}
-    eyes.set_configuration(conf)` + special_branch +
+    conf.test_name = ${options.baselineTestName}`)
+    if (viewportSize) tracker.storeCommand(python `conf.viewport_size = {"width": ${viewportSize.width}, "height": ${viewportSize.height}}`)
+    tracker.storeCommand(python`eyes.set_configuration(conf)` + special_branch +
     `eyes.open(driver)`)
         },
         check(checkSettings) {
-            tracker.storeCommand(`eyes.check("", ${checkSettingsParser(checkSettings)})`)
+            tracker.storeCommand(`eyes.check("", ${checkSettingsParser(checkSettings, mobile)})`)
         },
         checkWindow(tag, matchTimeout, stitchContent) {
             let Tag = !tag ? `` : `tag="${tag}"`

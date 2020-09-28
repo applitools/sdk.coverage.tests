@@ -14,8 +14,8 @@
     "url": "git+https://github.com/applitools/sdk.coverage.tests.git"
   },
   "scripts": {
-    "python:generate": "mkdir -p ./python/test/coverage/generic && cd python && coverage-tests create-tests --path .",
-    "python:run": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
+    "python:generate": "mkdir -p ./python/test/coverage/generic && cd python && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && > ./test/coverage/generic/__init__.py",
+    "python:run": "cd python && pip3 install --user python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
     "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v -n 10 ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
     "python:report:sandbox": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT",
     "python:report:prod": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT --send-report prod",
