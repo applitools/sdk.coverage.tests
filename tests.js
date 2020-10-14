@@ -381,6 +381,14 @@ module.exports = {
     })
     eyes.close(throwException)
   },
+  TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable: ({driver, eyes}) => {
+    driver.visit('https://demo.applitools.com')
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({
+      isFully: true
+    })
+    eyes.close(throwException)
+  },
   TestScrollableContentInModal_Fully: ({driver, eyes}) => {
     driver.visit('https://applitools.github.io/demo/TestPages/ModalsPage/index.html')
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
