@@ -69,6 +69,12 @@ module.exports = {
     eyes.check({frames: ['[name="frame1"]', '[name="frame1-1"]'], isFully: true})
     eyes.close(throwException)
   },
+  TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent: ({driver, eyes}) => {
+    driver.visit('https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html')
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({frames: ['[name="frame1"]'], region: '#div1', isFully: true})
+    eyes.close(throwException)
+  },
   TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent: ({driver, eyes}) => {
     driver.visit(url)
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
