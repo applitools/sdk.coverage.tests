@@ -395,6 +395,16 @@ module.exports = {
     })
     eyes.close(throwException)
   },
+  TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll: ({driver, eyes}) => {
+    driver.visit('https://applitools.github.io/demo/TestPages/SimpleTestPage/')
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    driver.executeScript('window.scrollBy(0, 100)')
+    eyes.check({
+      scrollRootElement: 'html',
+      isFully: true
+    })
+    eyes.close(throwException)
+  },
   TestScrollableContentInModal_Fully: ({driver, eyes}) => {
     driver.visit('https://applitools.github.io/demo/TestPages/ModalsPage/index.html')
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
