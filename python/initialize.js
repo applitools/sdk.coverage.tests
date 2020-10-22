@@ -182,7 +182,7 @@ function makeSpecEmitter(options) {
       )`)
         },
         checkElementBy(selector, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.check_element(
+            tracker.storeCommand(python`eyes.check_region(
         [By.CSS_SELECTOR, ${selector}],
         tag=${tag},
         match_timeout=${matchTimeout},
