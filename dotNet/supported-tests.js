@@ -300,4 +300,10 @@ module.exports =  [
 	{name: 'Appium_iOS_CheckRegion', executionMode: {isCssStitching: true}},
 	{name: 'Appium_iOS_CheckWindow', executionMode: {isCssStitching: true}},
 	{name: 'Appium_iOS_CheckRegionWithIgnoreRegion', executionMode: {isCssStitching: true}},
+	{name: 'TestCheckCoreceLongImage', executionMode: {isVisualGrid: true}, disabled: true},
+    {name: 'TestCheckCoreceLongImage', executionMode: {isCssStitching: true}},
+    {name: 'TestCheckCoreceLongImage', executionMode: {isScrollStitching: true}},
+	{name: 'TestCheckCoreceLargeImage', executionMode: {isVisualGrid: true}, disabled: true},
+    {name: 'TestCheckCoreceLargeImage', executionMode: {isCssStitching: true}},
+    {name: 'TestCheckCoreceLargeImage', executionMode: {isScrollStitching: true}},
 ]
