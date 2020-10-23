@@ -17,14 +17,18 @@
     "dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && mv ./test/Selenium/coverage/generic/Appium_*.cs ./test/Appium/coverage/generic",
     "dotnet:generate:win": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && move /Y .\\test\\Selenium\\coverage\\generic\\Appium_*.cs .\\test\\Appium\\coverage\\generic",
     "dotnet:run:parallel": "cd ./dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:run:appium": "cd ./dotNet/test/Appium && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:run:selenium": "cd ./dotNet/test/Selenium && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:run:parallel:win": "cd ./dotNet/test && set APPLITOOLS_BATCH_ID=$(uuidgen) && dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:run:appium:win": "cd ./dotNet/test/Appium && set APPLITOOLS_BATCH_ID=$(uuidgen) && dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
+    "dotnet:run:selenium:win": "cd ./dotNet/test/Selenium && set APPLITOOLS_BATCH_ID=$(uuidgen) && dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:report": "[ \"$TEST_REPORT_SANDBOX\" = \"False\" ] && npm run dotnet:report:prod || npm run dotnet:report:sandbox ",
     "dotnet:report:sandbox": "cd dotNet && coverage-tests process-report --path . --reportId $APPLITOOLS_REPORT_ID",
     "dotnet:report:prod": "cd dotNet && coverage-tests process-report --path . --reportId $APPLITOOLS_REPORT_ID --send-report prod",
     "dotnet:tests": "./dotNet/dotnet_tests.sh"
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "latest",
+    "@applitools/sdk-coverage-tests": "^1.0.16",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },

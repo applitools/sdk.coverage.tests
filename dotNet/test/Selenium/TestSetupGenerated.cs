@@ -19,7 +19,7 @@ namespace Applitools.Generated.Selenium.Tests
 		public static readonly string DRIVER_PATH = Environment.GetEnvironmentVariable("DRIVER_PATH");
 
         [SetUp]
-        public void SetUpCHE()
+        public void SetUpSelenium()
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--headless");
@@ -36,6 +36,7 @@ namespace Applitools.Generated.Selenium.Tests
             if (!isVisualGrid) eyes.StitchMode = isCSSMode ? StitchModes.CSS : StitchModes.Scroll;
             eyes.BranchName = "master";
             eyes.ParentBranchName = "master";
+			eyes.SaveNewTests = false;
             //eyes.AddProperty("ForceFPS", eyes.ForceFullPageScreenshot ? "true" : "false");
             //eyes.AddProperty("Agent ID", eyes.FullAgentId);
 			//eyes.HideScrollbars = true;

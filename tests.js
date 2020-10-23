@@ -570,6 +570,18 @@ module.exports = {
     })
     eyes.close()
   },
+  TestCheckCoreceLongImage: ({driver, eyes}) => {
+    driver.visit('https://applitools.github.io/demo/TestPages/SimpleTestPage/?long')
+	eyes.open({appName: 'Eyes Selenium SDK - Test Big Pages', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
+    eyes.close(throwException)
+  },
+  TestCheckCoreceLargeImage: ({driver, eyes}) => {
+    driver.visit('https://applitools.github.io/demo/TestPages/SimpleTestPage/?large')
+	eyes.open({appName: 'Eyes Selenium SDK - Test Big Pages', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
+    eyes.close(throwException)
+  },
   TestGetAllTestResults: ({driver, eyes, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
     assert.throws(() => eyes.close())
