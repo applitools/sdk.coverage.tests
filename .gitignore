@@ -2,3 +2,5 @@
 /dotNet/test/coverage/generic
 /dotNet/test/obj
 node_modules/
+**/bin/
+**/obj/
