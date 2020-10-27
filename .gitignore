@@ -4,3 +4,4 @@
 node_modules/
 **/bin/
 **/obj/
+/dotNet/test/Selenium/coverage/generic/
