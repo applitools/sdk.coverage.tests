@@ -6,5 +6,8 @@ namespace Applitools.Tests.Utils
     {
         [JsonProperty("group")]
         public virtual string Group => "appium";
+
+        [JsonIgnore]
+        public bool IsGenerated => true;
     }
 }

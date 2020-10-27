@@ -6,5 +6,8 @@ namespace Applitools.Tests.Utils
     {
         [JsonProperty("group")]
         public virtual string Group => "selenium";
+
+        [JsonIgnore]
+        public bool IsGenerated => true;
     }
 }
