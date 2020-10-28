@@ -1205,7 +1205,7 @@ test('should abort if not closed', {
 test('should throw if no checkpoints before close', {
   config: {baselineName: 'TestGetAllTestResults'},
   test({eyes, assert}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
     assert.throws(() => eyes.close())
     eyes.runner.getAllTestResults(false)
   },
