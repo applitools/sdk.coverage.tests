@@ -27,6 +27,7 @@ config({
     HelloWorld: 'https://applitools.com/helloworld',
     HelloWorldDiff: 'https://applitools.com/helloworld?diff1',
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
+    PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
   },
 })
 
@@ -1057,6 +1058,21 @@ test('should not send dom', {
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.strictEqual(info.actualAppOutput[0].image.hasDom, false)
+  }
+})
+
+test('should send correct region coordinates in target region with css stitching fully', {
+  page: 'PaddedBody',
+  config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
+    eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.deepStrictEqual(
+      info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
+      {left: 0, top: 65, width: 1084, height: 679}
+    )
   }
 })
 
