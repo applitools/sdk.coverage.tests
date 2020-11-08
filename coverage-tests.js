@@ -27,7 +27,7 @@ config({
     HelloWorld: 'https://applitools.com/helloworld',
     HelloWorldDiff: 'https://applitools.com/helloworld?diff1',
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
-    LayoutRegions: 'https://applitools.github.io/demo/TestPages/LayoutRegionPage/index.html',
+    PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
   },
 })
 
@@ -1062,7 +1062,7 @@ test('should not send dom', {
 })
 
 test('should send correct region coordinates in target region with css stitching fully', {
-  page: 'LayoutRegions',
+  page: 'PaddedBody',
   config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
