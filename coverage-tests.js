@@ -1168,7 +1168,7 @@ test('should fail check of stale element', {
     const element = driver.findElement('#inner-img')
     driver.click('#invalidate-button')
     assert.throws(
-      () => eyes.check({region: element}),
+      () => void eyes.check({region: element}),
       error => driver.constructor.isStaleElementError(error),
     )
     eyes.close(false)
@@ -1222,7 +1222,7 @@ test('should throw if no checkpoints before close', {
   config: {baselineName: 'TestGetAllTestResults'},
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
-    assert.throws(() => eyes.close())
+    assert.throws(() => void eyes.close())
     eyes.runner.getAllTestResults(false)
   },
 })
@@ -1231,7 +1231,7 @@ test('should throw if target frame is not found', {
   page: 'Default',
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    assert.throws(() => eyes.check({frames: ['non-existing-frame']}))
+    assert.throws(() => void eyes.check({frames: ['non-existing-frame']}))
     eyes.abort()
   }
 })
