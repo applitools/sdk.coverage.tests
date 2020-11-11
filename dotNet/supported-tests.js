@@ -306,4 +306,7 @@ module.exports =  [
 	{name: 'TestCheckCoreceLargeImage', executionMode: {isVisualGrid: true}, disabled: true},
     {name: 'TestCheckCoreceLargeImage', executionMode: {isCssStitching: true}},
     {name: 'TestCheckCoreceLargeImage', executionMode: {isScrollStitching: true}},
+    {name: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable', executionMode: {isScrollStitching: true}},
+    {name: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable', executionMode: {isCssStitching: true}},
+    {name: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable', executionMode: {isVisualGrid: true}}
 ]

@@ -393,6 +393,24 @@ module.exports = {
     eyes.check({scrollRootElement: '#scrollable_modal', isFully: true})
     eyes.close(throwException)
   },
+  TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable: ({driver, eyes}) => {
+    driver.visit('https://demo.applitools.com')
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({
+      isFully: true
+    })
+    eyes.close(throwException)
+  },
+  TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll: ({driver, eyes}) => {
+    driver.visit('https://applitools.github.io/demo/TestPages/SimpleTestPage/')
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    driver.executeScript('window.scrollBy(0, 100)')
+    eyes.check({
+      scrollRootElement: 'html',
+      isFully: true
+    })
+    eyes.close(throwException)
+  },
   TestTooBigViewportSize: {
     env: {browser: 'chrome', headless: false},
     test: ({driver, eyes, assert}) => {
