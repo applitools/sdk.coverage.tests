@@ -828,8 +828,8 @@ test('should send ignore regions by selector', {
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedIgnoreRegions = [
       {left: 10, top: 286, width: 800, height: 500},
-      {left: 122, top: 928, width: 456, height: 306},
-      {left: 8, top: 1270, width: 690, height: 206},
+      {left: 122, top: 933, width: 456, height: 306},
+      {left: 8, top: 1277, width: 690, height: 206},
     ]
     for (const [index, expectedIgnoreRegion] of expectedIgnoreRegions.entries()) {
       assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
@@ -997,9 +997,9 @@ test('should send accessibility regions by selector', {
     assert.equal(imageMatchSettings.accessibilitySettings.level, 'AAA')
     assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
     const expectedAccessibilityRegions = [
-      {isDisabled: false, type: 'LargeText', left: 10, top: 284, width: 800, height: 500},
-      {isDisabled: false, type: 'LargeText', left: 122, top: 928, width: 456, height: 306},
-      {isDisabled: false, type: 'LargeText', left: 8, top: 1270, width: 690, height: 206},
+      {isDisabled: false, type: 'LargeText', left: 10, top: 286, width: 800, height: 500},
+      {isDisabled: false, type: 'LargeText', left: 122, top: 933, width: 456, height: 306},
+      {isDisabled: false, type: 'LargeText', left: 8, top: 1277, width: 690, height: 206},
     ]
     for (const [index, expectedAccessibilityRegion] of expectedAccessibilityRegions.entries()) {
       assert.equal(imageMatchSettings.accessibility[index], expectedAccessibilityRegion)
