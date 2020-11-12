@@ -1110,7 +1110,7 @@ test('should find regions by visual locator', {
       .ref('regionsMap')
     eyes.close(false)
     assert.deepStrictEqual(regionsMap, {
-      applitools_title: [{left: 2, top: 11, width: 173, height: 58}],
+      applitools_title: [{left: 6, top: 16, width: 165, height: 45}],
     })
   },
 })
