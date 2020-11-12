@@ -1071,7 +1071,7 @@ test('should send correct region coordinates in target region with css stitching
     const info = helpers.getTestInfo(result).ref('info')
     assert.deepStrictEqual(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 0, top: 65, width: 1084, height: 679}
+      {left: 0, top: 80, width: 1084, height: 679}
     )
   }
 })
