@@ -787,7 +787,7 @@ test('should send ignore region by coordinates', {
     })
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 50, top: 50, width: 100, height: 100},
     )
@@ -806,7 +806,7 @@ test('should send ignore region by selector', {
     eyes.check({ignoreRegions: ['#overflowing-div']})
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 8, top: 80, width: 304, height: 184},
     )
@@ -832,7 +832,7 @@ test('should send ignore regions by selector', {
       {left: 8, top: 1270, width: 690, height: 206},
     ]
     for (const [index, expectedIgnoreRegion] of expectedIgnoreRegions.entries()) {
-      assert.deepStrictEqual(imageMatchSettings.ignore[index], expectedIgnoreRegion)
+      assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
     }
   },
 })
@@ -852,7 +852,7 @@ test('should send ignore region by coordinates in target region', {
     })
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(info.actualAppOutput[0].imageMatchSettings.ignore[0], {left: 50, top: 50, width: 100, height: 100})
+    assert.equal(info.actualAppOutput[0].imageMatchSettings.ignore[0], {left: 50, top: 50, width: 100, height: 100})
   },
 })
 
@@ -868,7 +868,7 @@ test('should send ignore region by the same selector as target region', {
     eyes.check({region: '#overflowing-div-image', ignoreRegions: ['#overflowing-div-image']})
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 0, top: 0, width: 304, height: 184},
     )
@@ -905,7 +905,7 @@ test('should send floating region by coordinates', {
     })
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 10, top: 10, width: 20, height: 20, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
     )
@@ -934,7 +934,7 @@ test('should send floating region by selector', {
     })
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 8, top: 80, width: 304, height: 184, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
     )
@@ -966,7 +966,7 @@ test('should send floating region by coordinates in frame', {
     })
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 200, top: 200, width: 150, height: 150, maxUpOffset: 25, maxDownOffset: 25, maxLeftOffset: 25, maxRightOffset: 25}
     )
@@ -994,15 +994,15 @@ test('should send accessibility regions by selector', {
 
     const info = helpers.getTestInfo(result).ref('info')
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
-    assert.strictEqual(imageMatchSettings.accessibilitySettings.level, 'AAA')
-    assert.strictEqual(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
+    assert.equal(imageMatchSettings.accessibilitySettings.level, 'AAA')
+    assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
     const expectedAccessibilityRegions = [
       {isDisabled: false, type: 'LargeText', left: 10, top: 284, width: 800, height: 500},
       {isDisabled: false, type: 'LargeText', left: 122, top: 928, width: 456, height: 306},
       {isDisabled: false, type: 'LargeText', left: 8, top: 1270, width: 690, height: 206},
     ]
     for (const [index, expectedAccessibilityRegion] of expectedAccessibilityRegions.entries()) {
-      assert.deepStrictEqual(imageMatchSettings.accessibility[index], expectedAccessibilityRegion)
+      assert.equal(imageMatchSettings.accessibility[index], expectedAccessibilityRegion)
     }
   }
 })
@@ -1018,7 +1018,7 @@ test('should send ignore displacements', {
     eyes.check({isFully: true, ignoreDisplacements: true})
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.strictEqual(info.actualAppOutput[0].imageMatchSettings.ignoreDisplacements, true)
+    assert.equal(info.actualAppOutput[0].imageMatchSettings.ignoreDisplacements, true)
   },
 })
 
@@ -1033,7 +1033,7 @@ test('should send dom', {
     eyes.check()
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.strictEqual(info.actualAppOutput[0].image.hasDom, true)
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
 
@@ -1045,7 +1045,7 @@ test('should send dom when check region', {
     eyes.check({region: '#scroll1'})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.strictEqual(info.actualAppOutput[0].image.hasDom, true)
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
 
@@ -1057,7 +1057,7 @@ test('should not send dom', {
     eyes.check({sendDom: false})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.strictEqual(info.actualAppOutput[0].image.hasDom, false)
+    assert.equal(info.actualAppOutput[0].image.hasDom, false)
   }
 })
 
@@ -1069,7 +1069,7 @@ test('should send correct region coordinates in target region with css stitching
     eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.deepStrictEqual(
+    assert.equal(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
       {left: 0, top: 80, width: 1084, height: 679}
     )
@@ -1109,7 +1109,7 @@ test('should find regions by visual locator', {
       .type('Map<String, List<Region>>')
       .ref('regionsMap')
     eyes.close(false)
-    assert.deepStrictEqual(regionsMap, {
+    assert.equal(regionsMap, {
       applitools_title: [{left: 6, top: 16, width: 165, height: 45}],
     })
   },
@@ -1127,8 +1127,8 @@ test('should return actual viewport size', {
       .executeScript('return {height: window.innerHeight, width: window.innerWidth}')
       .type('Map<String, Number>')
       .ref('expectedViewportSize')
-    assert.strictEqual(cachedViewportSize.getWidth(), expectedViewportSize.width)
-    assert.strictEqual(cachedViewportSize.getHeight(), expectedViewportSize.height)
+    assert.equal(cachedViewportSize.getWidth(), expectedViewportSize.width)
+    assert.equal(cachedViewportSize.getHeight(), expectedViewportSize.height)
     eyes.close(false)
   },
 })
@@ -1145,7 +1145,7 @@ test('should set viewport size', {
       .executeScript('return {width: window.innerWidth, height: window.innerHeight}')
       .type('Map<String, Number>')
       .ref('actualViewportSize')
-    assert.deepStrictEqual(actualViewportSize, expectedViewportSize)
+    assert.equal(actualViewportSize, expectedViewportSize)
   },
 })
 
