@@ -1071,7 +1071,7 @@ test('should send correct region coordinates in target region with css stitching
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 0, top: 80, width: 1084, height: 679}
+      {left: 0, top: 81, width: 1084, height: 679}
     )
   }
 })
@@ -1110,7 +1110,7 @@ test('should find regions by visual locator', {
       .ref('regionsMap')
     eyes.close(false)
     assert.equal(regionsMap, {
-      applitools_title: [{left: 6, top: 16, width: 165, height: 45}],
+      applitools_title: [{left: 3, top: 19, width: 158, height: 38}],
     })
   },
 })
