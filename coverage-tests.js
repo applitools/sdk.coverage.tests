@@ -808,7 +808,7 @@ test('should send ignore region by selector', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
-      {left: 8, top: 80, width: 304, height: 184},
+      {left: 8, top: 81, width: 304, height: 184},
     )
   },
 })
@@ -827,7 +827,7 @@ test('should send ignore regions by selector', {
     const info = helpers.getTestInfo(result).ref('info')
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedIgnoreRegions = [
-      {left: 10, top: 284, width: 800, height: 500},
+      {left: 10, top: 286, width: 800, height: 500},
       {left: 122, top: 928, width: 456, height: 306},
       {left: 8, top: 1270, width: 690, height: 206},
     ]
@@ -936,7 +936,7 @@ test('should send floating region by selector', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
-      {left: 8, top: 80, width: 304, height: 184, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
+      {left: 8, top: 81, width: 304, height: 184, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
     )
   },
 })
