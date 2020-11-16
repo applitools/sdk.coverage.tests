@@ -722,7 +722,7 @@ test('check regions by coordinates in frame', {
       {left: 0, top: 10000, width: 385, height: 5000},
       {left: 0, top: 15000, width: 385, height: 5000},
       {left: 0, top: 20000, width: 385, height: 5000},
-      {left: 0, top: 25000, width: 385, height: 788}
+      {left: 0, top: 25000, width: 385, height: 4072}
     ]
     for (const region of regions) {
       eyes.check({
@@ -753,7 +753,7 @@ test('check regions by coordinates in overflowed frame', {
       {left: 0, top: 10000, width: 385, height: 5000},
       {left: 0, top: 15000, width: 385, height: 5000},
       {left: 0, top: 20000, width: 385, height: 5000},
-      {left: 0, top: 25000, width: 385, height: 788}
+      {left: 0, top: 25000, width: 385, height: 4072}
     ]
     for (const region of regions) {
       eyes.check({
