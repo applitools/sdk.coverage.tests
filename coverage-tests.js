@@ -231,7 +231,7 @@ test('check window fully on android chrome emulator', {
     'on desktop page': {page: 'Resolution', config: {baselineName: 'Android Emulator 8.0 Portrait desktop fully', parentBranchName: 'default'}},
   },
   test({eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - iOS Safari Cropping', viewportSize})
+    eyes.open({appName: 'Eyes Selenium SDK - iOS Safari Cropping'})
     eyes.check({isFully: true})
     eyes.close()
   },
@@ -697,7 +697,7 @@ test('check region by selector in frame multiple times', {
     })
     eyes.check({
       frames: ['frame1'],
-      floatingRegions: [{region: {left: 200, top: 200, width: 150, height: 150, maxUpOffset: 25, maxDownOffset: 25, maxLeftOffset: 25, maxRightOffset: 25}}],
+      floatingRegions: [{region: {left: 200, top: 200, width: 150, height: 150,}, maxUpOffset: 25, maxDownOffset: 25, maxLeftOffset: 25, maxRightOffset: 25}],
       isFully: true,
       matchLevel: 'Layout'
     })
