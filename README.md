@@ -3,7 +3,13 @@ A repo to sync all sdks to the same tests
 
 # Adding new generic tests
 
-1. First you need to create new test in the `test.js` inside this repo.
+## JS SDK's (@applitools/sdk-coverage-tests v2)
+
+Create new test in `coverage-tests.js` inside this repo.
+
+## Non-JS SDK's ((@applitools/sdk-coverage-tests v1)
+
+1. Create new test in `test.js` inside this repo.
 2. Updated `supported-test.js` file with the new tests inside SDK implementation of the generic tests
 
 # Debugging new testcases 
