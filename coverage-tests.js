@@ -1127,8 +1127,8 @@ test('should return actual viewport size', {
       .executeScript('return {height: window.innerHeight, width: window.innerWidth}')
       .type('Map<String, Number>')
       .ref('expectedViewportSize')
-    assert.equal(cachedViewportSize.getWidth(), expectedViewportSize.width)
-    assert.equal(cachedViewportSize.getHeight(), expectedViewportSize.height)
+    assert.equal(cachedViewportSize.getWidth().type('Number'), expectedViewportSize.width)
+    assert.equal(cachedViewportSize.getHeight().type('Number'), expectedViewportSize.height)
     eyes.close(false)
   },
 })
