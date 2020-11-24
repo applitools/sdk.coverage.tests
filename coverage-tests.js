@@ -28,6 +28,8 @@ config({
     HelloWorldDiff: 'https://applitools.com/helloworld?diff1',
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
+    Demo: 'https://demo.applitools.com',
+    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html'
   },
 })
 
@@ -1292,6 +1294,69 @@ test('should render special characters', {
   }
 })
 
+test('check region fully after scroll non scrollable element', {
+  page: 'Simple',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_VG'}},
+  },
+  test({driver, eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - check non scrollable element', viewportSize})
+    driver.executeScript('window.scrollBy(0, 500)')
+    eyes.check({
+      region: '#overflowing-div',
+      isFully: true,
+    })
+    eyes.close()
+  }
+})
+
+test('check region fully when body is greater and non scrollable', {
+  page: 'Demo',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_VG'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({
+      isFully: true,
+    })
+    eyes.close()
+  }
+})
+
+test('check region in frame hidden under top bar fully', {
+  page: 'PageWithFrameHiddenByBar',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent_Scroll'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({frames: ['[name="frame1"]'], region: '#div1', isFully: true})
+    eyes.close()
+  }
+})
+
+test('check window fully with html scrollRootElement after scroll', {
+  page: 'Simple',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll_Scroll'}},
+  },
+  test({driver, eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    driver.executeScript('window.scrollBy(0, 100)')
+    eyes.check({
+      scrollRootElement: 'html',
+      isFully: true
+    })
+    eyes.close()
+  }
+})
 // #endregion
 
 // test('CheckRegionBySelector_Image', {
