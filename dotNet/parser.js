@@ -44,7 +44,7 @@ function frames(arr) {
 
 function frame(frames) {
 	console.log("in frames...")
-	//console.log("frame = " + frames)
+	console.log("frame = " + frames)
 	console.log("stringify frame = " + JSON.stringify(frames))
 	if (frames && frames.isRef) return `.Frame(` + frames.ref() + `)`
     switch (typeof frames){
@@ -69,8 +69,11 @@ function frame(frames) {
 
 function takeSelector(selector) {
 	console.log("selector = " + selector)
+	selector = selector.toString()
     selector = selector.replace(/"/g, "")
 	selector = selector.replace(/'/g, "")
+	selector = selector.replace(/\[/g, "")
+	selector = selector.replace(/\]/g, "")
 	selector = selector.replace('name=', "")
 	selector = '"' + selector + '"'
 	return selector
@@ -311,5 +314,6 @@ module.exports = {
 	getTypes: getTypes,
 	parseAssertActual: parseAssertActual,
 	expectParser: expectParser,
+	takeSelector: takeSelector,
 	//chooseCompareProcedure: chooseCompareProcedure
 }

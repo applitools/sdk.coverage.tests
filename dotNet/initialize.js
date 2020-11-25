@@ -6,6 +6,7 @@ const {getTypes} = require('./parser')
 const {parseAssertActual} = require('./parser')
 const {expectParser} = require('./parser')
 const {variable} = require('./parser')
+const {takeSelector} = require('./parser')
 const util = require('util')
 //const {chooseCompareProcedure} = require('./parser')
 let counter = 0
@@ -359,8 +360,10 @@ module.exports = function(tracker, test) {
                 `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
                 `${checkSettings.timeout? `, matchTimeout: ${checkSettings.timeout}`: ''});`)
 			  } else if (checkSettings.frames && checkSettings.frames.length > 0) {
-				const [frameReference] = checkSettings.frames
-				let args = `"${getVal(frameReference)}"` +
+				//const [frameReference] = checkSettings.frames
+				let frameSelector = (checkSettings.frames.isRef)? checkSettings.frames.ref() : takeSelector(checkSettings.frames)
+				console.log("frameSelector = " + frameSelector)
+				let args = frameSelector + //arr.reduce((acc, val) => acc + `${takeSelector(val)}`, '')//`"${frames(checkSettings.frames)}"` + //getVal(frameReference)
                 `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
                 `${checkSettings.timeout? `, timeout: ${checkSettings.timeout}`: ''}`
 				return addCommand(`eyes.CheckFrame(${args});`)
