@@ -59,7 +59,7 @@ function frame(frames) {
 		throw Error(`Couldn't treat frame ${frames} for type 'object'`)
 		break;
 	case 'string':
-		return `.Frame(By.CssSelector(${takeSelector(frames)}))`
+		return `.Frame(${takeSelector(frames)})`//`.Frame(By.CssSelector(${takeSelector(frames)}))`
 		break;
 	default:
 		throw Error(`Couldn't treat frame ${frames} - code for type ${(typeof frames)} is not ready yet`)
