@@ -1,131 +1,276 @@
 'use strict'
-const {makeEmitTracker} = require('@applitools/sdk-coverage-tests')
+//const {makeEmitTracker} = require('@applitools/sdk-coverage-tests')
 const {checkSettingsParser} = require('./parser')
+const {regionParameterParser} = require('./parser')
+const {getTypes} = require('./parser')
+const {parseAssertActual} = require('./parser')
+const {expectParser} = require('./parser')
+const {variable} = require('./parser')
+const util = require('util')
+//const {chooseCompareProcedure} = require('./parser')
+let counter = 0
 
-function makeSpecEmitter(options) {
-    const tracker = makeEmitTracker()
-    function dot_net(chunks, ...values) {
-        let code = ''
-        values.forEach((value, index) => {
-            let stringified = ''
-            if (value && value.isRef) {
-                stringified = value.ref()
-            } else if (typeof value === 'function') {
-                stringified = value.toString()
-            } else if (typeof value === 'undefined'){
-                stringified = 'null'
-            } else {
-                stringified = JSON.stringify(value)
-            }
-            code += chunks[index] + stringified
-        })
-        return code + chunks[chunks.length - 1]
-    }
-	
-	function argumentCheck(actual, ifUndefined){
-        return (typeof actual === 'undefined') ? ifUndefined : actual
-    }
-	
-	let mobile = ("env" in options) && ("device" in options.env)? true: false
+/*function dot_net222(chunks, ...values) {
+	let code = ''
+	values.forEach((value, index) => {
+		let stringified = ''
+		if (value && value.isRef) {
+			stringified = value.ref()
+		} else if (typeof value === 'function') {
+			stringified = value.toString()
+		} else if (typeof value === 'undefined'){
+			stringified = 'null'
+		} else {
+			stringified = JSON.stringify(value)
+		}
+		code += chunks[index] + stringified
+	})
+	return code + chunks[chunks.length - 1]
+}*/
 
-    tracker.storeHook('deps', `using NUnit.Framework;`)
+function dot_net(chunks, ...values) {
+  const commands = []
+  let code = ''
+  values.forEach((value, index) => {
+    if (typeof value === 'function' && !value.isRef) {
+      code += chunks[index]
+      commands.push(code, value)
+      code = ''
+    } else {
+      code += chunks[index] + serialize(value)
+    }
+  })
+  code += chunks[chunks.length - 1]
+  commands.push(code)
+  return commands
+}
+/*function java(chunks, ...values) {
+    const commands = []
+    let code = ''
+    values.forEach((value, index) => {
+        if (typeof value === 'function' && !value.isRef) {
+            code += chunks[index]
+            commands.push(code, value)
+            code = ''
+        } else {
+            code += chunks[index] + serialize(value)
+        }
+    })
+    code += chunks[chunks.length - 1]
+    commands.push(code)
+    return commands
+}*/
+
+function serialize(data) {
+  if (data && data.isRef) {
+    return data.ref()
+  } else if (Array.isArray(data)) {
+    return `[${data.map(serialize).join(', ')}]`
+  } else if (typeof data === 'object' && data !== null) {
+    const properties = Object.entries(data).reduce((data, [key, value]) => {
+      return value !== undefined ? data.concat(`${key}: ${serialize(value)}`) : data
+    }, [])
+    return `{${properties.join(', ')}}`
+  } else {
+    return JSON.stringify(data)
+  }
+}
+
+function serializeOutput(data) {
+  let output = data.ref()
+  /*const properties = Object.entries(data).reduce((data, [key, value]) => {
+      return value !== undefined ? data.concat(`${key}: ${serialize(value)}`) : data
+    }, [])
+  let out2 = `{${properties.join(', ')}}`*/
+  console.log("output = " + output)
+  //output.map(myFunction)
+  //output.join('.')
+  console.log("output = " + output)
+  //console.log("out2 = " + out2)
+    return output
+}
+
+function myFunction(item, index) {
+  console.log("item=" + item + " index=" + index)
+}
+
+function argumentCheck(actual, ifUndefined){
+	return (typeof actual === 'undefined') ? ifUndefined : actual
+}
+
+module.exports = function(tracker, test) {
+  const {addSyntax, addCommand, addHook, withScope} = tracker
+	
+	let mobile = ("env" in test) && ("device" in test.env)? true: false
+	
+	/*addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
+    addSyntax('getter', ({target, key}) => `${target}['${key}']`)
+    addSyntax('call', ({target, args}) => `${target}(${dot_net`...${args}`})`)*/
+	/*tracker.addSyntax('var', ({name, value, type='WebElement'}) => `${type} ${name} = (${type}) ${value}`)
+    tracker.addSyntax('getter', getTypes)
+    tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}()`)*/
+    addSyntax('return', ({value}) => `return ${value}`)
+
+    addHook('deps', `using NUnit.Framework;`)
 	if (mobile) {
-	    tracker.storeHook('deps', `using Applitools.Appium.GenericUtils;`)
+	    addHook('deps', `using Applitools.Appium.GenericUtils;`)
 	}
 	else {
-        tracker.storeHook('deps', `using OpenQA.Selenium;`)
-        tracker.storeHook('deps', `using Applitools.Utils.Geometry;`)
-	    tracker.storeHook('deps', `using Applitools.Selenium;`)
-        tracker.storeHook('deps', `using System.Drawing;`)
-	    tracker.storeHook('deps', `using OpenQA.Selenium.Remote;`)
-	    tracker.storeHook('deps', `using System.Collections.Generic;`)
+        addHook('deps', `using OpenQA.Selenium;`)
+        addHook('deps', `using Applitools.Utils.Geometry;`)
+	    addHook('deps', `using Applitools.Selenium;`)
+		addHook('deps', `using Applitools.Tests.Utils;`)
+		addHook('deps', `using OpenQA.Selenium.Interactions;`)
+        //addHook('deps', `using System.Drawing;`)
+	    addHook('deps', `using OpenQA.Selenium.Remote;`)
+	    addHook('deps', `using System.Collections.Generic;`)
+		addHook('deps', `using System;`)
 	}
 	
 	let namespace = mobile? 'Applitools.Appium.Tests': 'Applitools.Generated.Selenium.Tests'
 	let baseClass = mobile? 'TestSetupGeneratedAppium': 'TestSetupGenerated'
 
-	tracker.storeHook('deps', `namespace ${namespace}`)
-	tracker.storeHook('deps', `{`)
-	tracker.storeHook('deps', `[TestFixture]`)
-	tracker.storeHook('deps', `[Parallelizable]`)
-	tracker.storeHook('deps', `public class ${options.baselineTestName}Class : ${baseClass}`)
+	addHook('deps', `namespace ${namespace}`)
+	addHook('deps', `{`)
+	addHook('deps', `[TestFixture]`)
+	addHook('deps', `[Parallelizable]`)
+	console.log("String 51 !!! TTTTTTTTTTTTTTTTTTTT");
+	console.log(counter)
+	counter = counter + 1
+	console.log(JSON.stringify(test));
+	//let class1 = ("baselineName" in test.config)? test.config.baselineName: 'LAZHA'
+	//addHook('deps', `public class ${class1}Class : ${baseClass}`)
+	addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 	
-	tracker.addSyntax('var', ({name, value}) => `var ${name} = ${value}`)
-    tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
-    tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
+	addSyntax('var', ({name, value, type}) => {
+		if ((type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {console.log("Map<String, Number>")
+			return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
+		}
+		console.log("var type = " + type)
+	//console.log("var " + `${name}` + " has type.name = " + type.name)
+	console.log(util.inspect(type, {showHidden: false, depth: null}))
+		return `var ${name} = ${value}`
+	})
+	//addSyntax('var', variable)
+    addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
+	//tracker.addSyntax('getter', getTypes)
+    addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
 
-    if (mobile && ("app" in options.env)) tracker.storeHook('beforeEach', dot_net`    initDriver(${options.env.device}, ${options.env.app});`)
-	//if (("options" in options) && ("capabilities" in options.options)) tracker.storeHook('beforeEach', dot_net`options.options.capabilities = ${options.options.capabilities}`)
+    if (mobile && ("app" in test.env)) addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
+	//if (("options" in options) && ("capabilities" in options.options)) storeHook('beforeEach', dot_net`options.options.capabilities = ${options.options.capabilities}`)
+		
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 
-    tracker.storeHook('beforeEach', dot_net`    initEyes(${argumentCheck(options.executionMode.isVisualGrid, false)}, ${argumentCheck(options.executionMode.isCssStitching, false)});`)
+    addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
+	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)){
+		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
+		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
+		addHook('beforeEach', dot_net`    AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level +`, AccessibilityGuidelinesVersion.` + version + `);
+        Applitools.Selenium.Configuration configuration = eyes.GetConfiguration();
+        configuration.SetAccessibilityValidation(settings);
+        eyes.SetConfiguration(configuration);`)
+	}
 
-    tracker.storeHook('afterEach', dot_net`    driver.Quit();`)
-    tracker.storeHook('afterEach', dot_net`    eyes.AbortIfNotClosed();`)
+    addHook('afterEach', dot_net`    driver.Quit();`)
+    addHook('afterEach', dot_net`    eyes.AbortIfNotClosed();`)
 
 
 
     const driver = {
-        build(options) {
-            //return tracker.storeCommand(ruby`await specs.build(${options})`)
+		constructor: {
+		  /*isStaleElementError(error) {
+			return addCommand(dot_net`isStaleElementError(${error})`)*/
+			      isStaleElementError: () => 'StaleElementReferenceException'
+		},
+        build(test) {
+            //return addCommand(ruby`await specs.build(${options})`)
             // TODO: implement if needed
         },
         cleanup() {
-            tracker.storeCommand(dot_net`driver.Quit();`)
+            addCommand(dot_net`driver.Quit();`)
         },
         visit(url) {
-            tracker.storeCommand(dot_net`driver.Navigate().GoToUrl(${url});`)
+            addCommand(dot_net`driver.Navigate().GoToUrl(${url});`)
         },
         executeScript(script, ...args) {
-            return tracker.storeCommand(dot_net`IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-js.ExecuteScript(${script});`)
+            return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script});`)
         },
         sleep(ms) {
-            //tracker.storeCommand(ruby`await specs.sleep(driver, ${ms})`)
+            //addCommand(ruby`await specs.sleep(driver, ${ms})`)
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-            tracker.storeCommand(dot_net`driver.SwitchTo().Frame(${selector});`)
+            addCommand(dot_net`driver.SwitchTo().Frame(${selector});`)
         },
         switchToParentFrame() {
-            tracker.storeCommand(dot_net`driver.SwitchTo().ParentFrame();`)
+            addCommand(dot_net`driver.SwitchTo().ParentFrame();`)
         },
         findElement(selector) {
-            return tracker.storeCommand(
+            return addCommand(
                 dot_net`driver.FindElement(By.CssSelector(${selector.toString().replace(/\"/g,'')}));`,
             )
         },
         findElements(selector) {
-            return tracker.storeCommand(
+            return addCommand(
                 dot_net`driver.FindElements(By.CssSelector(${selector}));`,
             )
         },
         getWindowLocation() {
-            // return tracker.storeCommand(ruby`await specs.getWindowLocation(driver)`)
+            // return addCommand(ruby`await specs.getWindowLocation(driver)`)
             // TODO: implement if needed
         },
         setWindowLocation(location) {
-            // tracker.storeCommand(ruby`await specs.setWindowLocation(driver, ${location})`)
+            // addCommand(ruby`await specs.setWindowLocation(driver, ${location})`)
             // TODO: implement if needed
         },
         getWindowSize() {
-            return tracker.storeCommand(dot_net`driver.Manage().Window.Size;`)
+            return addCommand(dot_net`driver.Manage().Window.Size;`)
         },
         setWindowSize(size) {
-            tracker.storeCommand(dot_net`driver.Manage().Window.Size = ${size};`)
+            addCommand(dot_net`driver.Manage().Window.Size = ${size};`)
         },
         click(element) {
 			switch (typeof element) {
 				case 'string':
-					if (mobile) tracker.storeCommand(dot_net`Utilities.FindElement(driver, ${element}).Click();`)
-					else tracker.storeCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
+					if (mobile) addCommand(dot_net`Utilities.FindElement(driver, ${element}).Click();`)
+					else addCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
 					break;
 				case "object":
-					tracker.storeCommand(dot_net`${element}.Click();`)
+					if (element.type === undefined) addCommand(dot_net`${element}.Click();`)
+					else {
+						let selector
+						switch (element.type){
+							case 'css':
+							  selector = 'CssSelector'
+							  break;
+							case 'id':
+							  selector = 'Id'
+							  break;
+							case 'class':
+							  selector = 'ClassName'
+							  break;
+							case 'name':
+							  selector = 'Name'
+							  break;
+							default:
+							  throw new Error(`Click - unimplemented type of selector was used`)
+						}
+						addCommand(dot_net`driver.FindElement(By.` + selector + `(\"${element.selector}\")).Click();`)
+					}
+					break;
 			}
         },
         type(element, keys) {
-            tracker.storeCommand(dot_net`${element}.SendKeys(${keys});`)
+            addCommand(dot_net`${element}.SendKeys(${keys});`)
         },
+		scrollIntoView(element, align) {
+		  addCommand(dot_net`Actions actions = new Actions(driver);
+		actions.MoveToElement(${element}).Perform();`)
+		},
+		hover(element, offset) {
+		  addCommand(dot_net`Actions mouseHover = new Actions(driver);
+		mouseHover.MoveToElement(${element}).Perform();`)
+		},
         waitUntilDisplayed() {
             // TODO: implement if needed
         },
@@ -171,30 +316,78 @@ js.ExecuteScript(${script});`)
     }
 
     const eyes = {
-        open({appName, viewportSize}) {
+        constructor: {
+		  setViewportSize(viewportSize) {
+			addCommand(dot_net`eyes.GetConfiguration().SetViewportSize(new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height}));`)
+		  },
+		},
+		runner: {
+		  getAllTestResults(throwEx) {
+			return addCommand(dot_net`runner.GetAllTestResults(${throwEx});`)
+		  },
+		},
+		open({appName, viewportSize}) {
 			let rectangle = !viewportSize ? '' : `, new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height})`
-            tracker.storeCommand(dot_net`
-        eyes.Open(driver, ${appName}, ${options.baselineTestName}` + rectangle + ');')
+			//let class2 = ("baselineName" in test.config)? test.config.baselineName: 'LAZHA'
+			//addCommand(dot_net`eyes.Open(driver, ${appName}, ${class2}` + rectangle + ');')
+			let appNm = (appName) ? appName : test.config.appName
+            addCommand(dot_net`eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
         },
-        check(checkSettings) {
-            tracker.storeCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
+        check(checkSettings = {}) {
+			if (test.api !== 'classic') {
+              return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
+			}else if (checkSettings.region) {
+				if (checkSettings.frames && checkSettings.frames.length > 0) {
+				  const [frameReference] = checkSettings.frames
+				  let Tag = !checkSettings.name ? `` : `${checkSettings.name}`
+				  let MatchTimeout = !checkSettings.timeout ? `` : `, ${checkSettings.timeout}`
+				  return addCommand(dot_net`eyes.CheckRegionInFrame(
+					${frameReference.toString().replace(/\"/g,'')},
+					By.CssSelector(${checkSettings.region}),
+					${Tag},
+					${checkSettings.isFully}` + 
+					MatchTimeout + 
+				`);`)
+				//` +
+		//`${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}` +
+				}
+				let args = `By.CssSelector(\"${checkSettings.region}\")` +
+                `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
+                `${checkSettings.timeout? `, matchTimeout: ${checkSettings.timeout}`: ''}`
+				//return addCommand(dot_net`eyes.CheckRegion(${args});`)
+				return addCommand(dot_net`eyes.CheckRegion(By.CssSelector(${checkSettings.region})` +
+                `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
+                `${checkSettings.timeout? `, matchTimeout: ${checkSettings.timeout}`: ''});`)
+			  } else if (checkSettings.frames && checkSettings.frames.length > 0) {
+				const [frameReference] = checkSettings.frames
+				let args = `"${getVal(frameReference)}"` +
+                `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
+                `${checkSettings.timeout? `, timeout: ${checkSettings.timeout}`: ''}`
+				return addCommand(`eyes.CheckFrame(${args});`)
+			  } else {
+				  let MatchTimeout = !checkSettings.timeout ? `` : `match_timeout:${checkSettings.timeout}`
+				  let Tag = !checkSettings.name ? `` : `tag:"${checkSettings.name}"`
+				  if (Tag !== `` && MatchTimeout !== ``) Tag = `, ` + Tag
+				  let isFully = !checkSettings.isFully ? `` : `, fully:"${checkSettings.isFully}"`
+				  return addCommand(dot_net`eyes.CheckWindow(` + MatchTimeout + Tag + isFully + `);`)
+			  }
         },
-        checkWindow(tag, matchTimeout, stitchContent) {
+        /*checkWindow(tag, matchTimeout, stitchContent) {
             let Tag = !tag ? `` : `tag:"${tag}"`
             let MatchTimeout = !matchTimeout ? `` : `,match_timeout:${matchTimeout}`
-            tracker.storeCommand(dot_net`eyes.CheckWindow(` + Tag + MatchTimeout + `);`)
+            addCommand(dot_net`eyes.CheckWindow(` + Tag + MatchTimeout + `);`)
         },
         checkFrame(element, matchTimeout, tag) {
             let args = `"${getVal(element)}"` +
                 `${tag? `, tag: ${tag}`: ''}` +
                 `${matchTimeout? `, timeout: ${matchTimeout}`: ''}`
-            tracker.storeCommand(`eyes.CheckFrame(${args});`)
+            addCommand(`eyes.CheckFrame(${args});`)
         },
         checkElement(element, matchTimeout, tag) {
             let args = `region: 'By.CssSelector(\"${region}\")'` +
                 `${tag? `, tag: ${tag}`: ''}` +
                 `${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}`
-            tracker.storeCommand(dot_net`eyes.CheckElement(${args});`)
+            addCommand(dot_net`eyes.CheckElement(${args});`)
         },
         //is absent in DotNet SDK
         checkElementBy(selector, matchTimeout, tag) {
@@ -202,17 +395,17 @@ js.ExecuteScript(${script});`)
 			let args = `selector: 'By.CssSelector(${selector})'` +
                 `${tag? `, tag: ${tag}`: ''}` +
                 `${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}`
-            tracker.storeCommand(dot_net`eyes.CheckRegion(selector: By.CssSelector(${selector}));`)
+            addCommand(dot_net`eyes.CheckRegion(selector: By.CssSelector(${selector}));`)
         },
         checkRegion(region, matchTimeout, tag) {
             let args = `region: 'By.CssSelector(\"${region}\")'` +
                 `${tag? `, tag: ${tag}`: ''}` +
                 `${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}`
-            tracker.storeCommand(dot_net`eyes.CheckRegion(${args});`)
+            addCommand(dot_net`eyes.CheckRegion(${args});`)
         },
 		//is absent in DotNet SDK
         checkRegionByElement(element, matchTimeout, tag) {
-            tracker.storeCommand(dot_net`eyes.checkRegionByElement(
+            addCommand(dot_net`eyes.checkRegionByElement(
         By.CssSelector(${element}),
         ${tag},
         ${matchTimeout},
@@ -220,7 +413,7 @@ js.ExecuteScript(${script});`)
         },
         //is absent in DotNet SDK
         checkRegionBy(selector, tag, matchTimeout, stitchContent) {
-            tracker.storeCommand(dot_net`eyes.checkRegionByElement(
+            addCommand(dot_net`eyes.checkRegionByElement(
         ${selector},
         ${tag},
         ${matchTimeout},
@@ -228,23 +421,166 @@ js.ExecuteScript(${script});`)
       );`)
         },
         checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
-            tracker.storeCommand(dot_net`eyes.CheckRegionInFrame(
+            addCommand(dot_net`eyes.CheckRegionInFrame(
         ${frameReference.toString().replace(/\"/g,'')},
         By.CssSelector(${selector}),
         ${tag},
         ${stitchContent}` +
 		`${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}` +
       `);`)
-        },
+        },*/
         close(throwEx) {
-            tracker.storeCommand(dot_net`eyes.Close(throwEx: ${throwEx});`)
+            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`)
         },
         abort() {
-            tracker.storeCommand(dot_net`eyes.Abort();`)
+            addCommand(dot_net`eyes.Abort();`)
         },
+		getViewportSize() {
+		  return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
+		},
+		locate(visualLocatorSettings) {
+		  return addCommand(dot_net`await eyes.locate(${visualLocatorSettings})`)
+		},
     }
+	
+	const assert = {
+    strictEqual(actual, expected, message) {
+      addCommand(dot_net`assert.strictEqual(${actual}, ${expected}, ${message})`)
+    },
+	//deepStrictEqual(actual, expected, message) {
+	equal(actual, expected, message) {
+		//console.log("NEW type = " + serialize(actual.schema))
+		//console.log("NEW type serialize = " + serialize(actual.type))
+		
+		let objectToString = Object.prototype.toString;
+		console.log("expected type = " + objectToString.call(expected))
+		console.log("expected222 type = " + expected.toString())
+		console.log("verify type = " + objectToString.call(true))
+		if(expected.isRef) {console.log("expected.isRef")
+			console.log("expected.type() = " + expected.type())
+			//const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
+            //addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${extraParameter(message)});`)
+		}
+		let expect = expected
+		if ((objectToString.call(expected) === "[object Object]") || 
+			(objectToString.call(expected) === "[object String]")) expect = expectParser(expected)
+		if (objectToString.call(expected) === "[object Function]") expect = expected.ref()
+			
+		
+		//let expect = regionParameterParser(expected)
+		
+		
+		//let act = actual ? parseAssertExpected(actual) : null
+		console.log("actual type = " + objectToString.call(actual))
+		//console.log("actual1 = " + actual)
+		if (actual.isRef) {
+			console.log("actual.isRef")
+			//console.log("actual.ref = " + actual.ref())
+			//console.log("actual.type().name = " + actual.type().name)
+			if ((actual.type() !== undefined) && (actual.type().name === 'Map<String, Number>')) {console.log("actual.type().name = " + actual.type().name)
+				act = `(Dictionary<string, object>)${actual.ref()}`
+			}
+		}
+		let act = parseAssertActual(serializeOutput(actual))
+		
+		let mess = message ? message : null
+		//let compareProcedure = chooseCompareProcedure(act)
+		console.log("act00 = " + act)
+		console.log("expect00 = " + expect)
+      addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
+    },
+	/*equal(actual, expected, message){
+      if(expected.isRef) {
+        const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
+        addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${extraParameter(message)});`)
+      } else {
+        const type = getTypeName(actual)
+        if(type !== 'Map') {
+          addCommand(java`Assert.assertEquals(${actual}, ${addType(expected, type)}${extraParameter(message)});`)
+        } else {
+          addCommand(java`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${extraParameter(message)});`)
+        }
+      }
+    },*/
+	instanceOf(object, className, message) {
+		let classNm = `${className}`
+		let mess = message ? message : null 
+		let obj = object.ref()
+      addCommand(dot_net` Assert.IsInstanceOf<` + className + `>(` + obj + `, ` + mess + `);`)
+    },
+	throws(func, check) {
+      let command
+	  let funct = `${func}`.replace(/;/g, "")
+	  console.log("funct = " + funct)
+	  console.log("func = " + `${func}`)
+	  if (check) {
+	    command = dot_net`Assert.Throws<${insert(check())}>(() => {${func}});`
+		//`Assert.That(${func}, Throws.Exception.TypeOf<${insert(check())}>);`
+	  }
+	  else {
+		  command = dot_net`Assert.Throws<Exception>(() => {${func}});`
+		  //`Assert.That(() => {${func}}, Throws.Exception.TypeOf<Exception>);`
+	  }
+      addCommand(command)
+    },
+	/*throws(func, check){
+      let command
+      if(check){
+        command = dot_net`Assert.assertThrows(${check()} , new Assert.ThrowingRunnable(){
+          public void run() {${func}}
+        });`
+      } else {
+        command = dot_net`Assert.assertThrows(new Assert.ThrowingRunnable(){ 
+        public void run() {${func}}
+        });`
+      }
+      addCommand(command)
+    },*/
+  }
 
-    return {tracker, driver, eyes}
+    const helpers = {
+    /*getTestInfo(result) {
+      return addCommand(dot_net`TestUtils.GetSessionResults(eyes.ApiKey, ${result});`).type('TestInfo')*/
+	  getTestInfo(result) {
+      const appOutputSchema = {
+        image: {
+          type: 'Image',
+          schema: {hasDom: 'Boolean'},
+        },
+        imageMatchSettings: {
+          type: 'ImageMatchSettings',
+          schema: {
+            ignoreDisplacements: 'Boolean',
+            ignore: {type: 'Array', items: 'Region'},
+            floating: {type: 'Array', items: 'FloatingRegion'},
+            accessibility: {type: 'Array', items: 'AccessibilityRegion'},
+            accessibilitySettings: {
+              type: 'AccessibilitySettings',
+              schema: {level: 'String', version: 'String'},
+            },
+          },
+        },
+      }
+      return addCommand(dot_net`TestUtils.GetSessionResults(eyes.ApiKey, ${result});`).type({
+        type: 'TestInfo',
+        schema: {
+          actualAppOutput: {
+            type: 'Array',
+            items: {type: 'AppOutput', schema: appOutputSchema},
+          },
+        },
+		type: 'String',
+        schema: {
+          actualAppOutput: {
+            type: 'String',
+            items: {type: 'AppOutput', schema: appOutputSchema},
+          },
+        },
+      })
+    },
+  }
+
+  return {driver, eyes, assert, helpers}
 }
 
 function getVal (val) {
@@ -252,5 +588,12 @@ function getVal (val) {
     return nameAndValue[1]
 }
 
+function insert(value) {
+    return {
+      isRef: true,
+      ref: () => value
+    }
+  }
 
-module.exports = makeSpecEmitter
+
+//module.exports = makeSpecEmitter

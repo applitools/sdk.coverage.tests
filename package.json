@@ -14,8 +14,17 @@
     "url": "git+https://github.com/applitools/sdk.coverage.tests.git"
   },
   "scripts": {
-    "dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && mv ./test/Selenium/coverage/generic/Appium_*.cs ./test/Appium/coverage/generic",
+    "dotnet:generate:old": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && mv ./test/Selenium/coverage/generic/Appium_*.cs ./test/Appium/coverage/generic",
+	"dotnet:generate": "npm install && cd dotNet && coverage-tests create-tests --path . --testsPath ../coverage-tests.js",
     "dotnet:generate:win": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && move /Y .\\test\\Selenium\\coverage\\generic\\Appium_*.cs .\\test\\Appium\\coverage\\generic",
+    "dotnet:generate:win2": "npm install && cd dotNet && coverage-tests generate --configPath . && move /Y .\\test\\Selenium\\coverage\\generic\\Appium_*.cs .\\test\\Appium\\coverage\\generic",
+    "dotnet:generate:win3": "npm install && cd dotNet && coverage-tests generate --configPath .",
+	"dotnet:generate:win31": "cd dotNet && coverage-tests generate --configPath .",
+    "dotnet:generate:win32": "cd dotNet && coverage-tests generate --configPath . --testsPath ../coverage-tests.js",
+    "dotnet:generate:win4": "cd dotNet && coverage-tests generate --configPath . --emitOnly \"/^check hovered region by element/\"",
+    "dotnet:generate:win5": "cd dotNet && coverage-tests generate --configPath . --emitOnly \"should fail check of stale element\"",
+    "dotnet:generate:win52": "npm install && cd dotNet && coverage-tests generate --configPath . --emitOnly \"/^should fail check of stale element/\"",
+    "dotnet:generate:win6": "cd dotNet && coverage-tests generate --configPath . --emitOnly \"/^should send ignore region by coordinates with css stitching/\"",
     "dotnet:run:parallel": "cd ./dotNet/test && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:run:appium": "cd ./dotNet/test/Appium && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
     "dotnet:run:selenium": "cd ./dotNet/test/Selenium && APPLITOOLS_BATCH_ID=$(uuidgen) dotnet test --logger \"junit;LogFilePath=./../coverage-test-report.xml\"",
@@ -28,7 +37,7 @@
     "dotnet:tests": "./dotNet/dotnet_tests.sh"
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "^1.0.16",
+    "@applitools/sdk-coverage-tests": "latest",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },
