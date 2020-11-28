@@ -191,18 +191,24 @@ namespace Applitools.Generated.Selenium.Tests
         {
             runner = isVisualGrid ? (EyesRunner)(new VisualGridRunner(10)) : new ClassicRunner();
             eyes = new Eyes(runner);
+            initEyesSettings(isVisualGrid, isCSSMode);
+        }
+
+        protected void initEyesSettings(bool isVisualGrid, bool isCSSMode)
+        {
             //eyes.HostOS = "Linux";
             eyes.Batch = BatchInfo;
             if (!isVisualGrid) eyes.StitchMode = isCSSMode ? StitchModes.CSS : StitchModes.Scroll;
             eyes.BranchName = "master";
             eyes.ParentBranchName = "master";
-			eyes.SaveNewTests = false;
+            eyes.SaveNewTests = false;
             //eyes.AddProperty("ForceFPS", eyes.ForceFullPageScreenshot ? "true" : "false");
             //eyes.AddProperty("Agent ID", eyes.FullAgentId);
             //eyes.HideScrollbars = true;
         }
-		
-		protected bool isStaleElementError(Exception errorObj)
+
+
+        protected bool isStaleElementError(Exception errorObj)
 		{
 			return (errorObj is StaleElementReferenceException);
 		}

@@ -217,6 +217,8 @@ module.exports = function(tracker, test) {
 			else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
 		}
 	}
+	if ("branchName" in test.config) addHook('beforeEach', dot_net`    eyes.BranchName = ${test.config.branchName};`)
+	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`    eyes.ParentBranchName = ${test.config.parentBranchName};`)
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)){
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`

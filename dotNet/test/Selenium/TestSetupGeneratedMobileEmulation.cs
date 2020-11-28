@@ -57,12 +57,7 @@ namespace Applitools.Generated.Selenium.Tests
         protected void initEyes(string page, ScreenOrientation deviceOrientation = ScreenOrientation.Portrait)
         {
             eyes = new Eyes();
-            eyes.Batch = BatchInfo;
-            eyes.SaveNewTests = false;
-            eyes.BranchName = "master";
-            eyes.ParentBranchName = "default";
-            eyes.StitchMode = StitchModes.CSS;
-
+            initEyesSettings(false, true);
             eyes.AddProperty("Orientation", deviceOrientation.ToString());
             eyes.AddProperty("Page", page);
         }
