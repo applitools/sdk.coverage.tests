@@ -7,6 +7,11 @@ using Applitools.Selenium;
 using Applitools.Tests.Utils;
 using Applitools.Utils.Geometry;
 using System.Collections.Generic;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Safari;
+using OpenQA.Selenium.Remote;
 
 namespace Applitools.Generated.Selenium.Tests
 {
@@ -19,21 +24,174 @@ namespace Applitools.Generated.Selenium.Tests
         protected string testedPageUrl = "https://applitools.github.io/demo/TestPages/FramesTestPage/";
         public static readonly BatchInfo BatchInfo = new BatchInfo("DotNet Generated Tests");
 		public static readonly string DRIVER_PATH = Environment.GetEnvironmentVariable("DRIVER_PATH");
+        public static readonly string SAUCE_USERNAME = Environment.GetEnvironmentVariable("SAUCE_USERNAME");
+        public static readonly string SAUCE_ACCESS_KEY = Environment.GetEnvironmentVariable("SAUCE_ACCESS_KEY");
+        public static readonly string SAUCE_SELENIUM_URL = "https://ondemand.saucelabs.com:443/wd/hub";
+        protected enum browserType
+        {
+            Chrome,
+            IE,
+            Edge,
+            Firefox,
+            Safari11,
+            Safari12
+        }
+        protected DriverOptions options_;
+        private SafariOptions browserOptions;
+        private DesiredCapabilities caps;
 
-        [SetUp]
+        /*[SetUp]
         public void SetUpSelenium()
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--headless");
             driver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options) : new ChromeDriver(options);
             driver.Navigate().GoToUrl(testedPageUrl);
+        }*/
+
+        protected void SetUpDriver(browserType browser = browserType.Chrome, Boolean legacy = false)
+        {
+            switch(browser)
+            {
+                case browserType.Chrome:
+                    var optionsChr = new ChromeOptions();
+                    driver = CreateChromeDriver();//DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, optionsChr) : new ChromeDriver(optionsChr);
+                    break;
+                case browserType.Firefox:
+                    var optionsFx = new FirefoxOptions();
+                    optionsFx.AddArgument("--headless");
+                    driver = new FirefoxDriver(DRIVER_PATH, optionsFx);
+                    break;
+                case browserType.IE:
+                    /*var optionsIE = new InternetExplorerOptions();
+                    optionsIE.BrowserVersion = "11.0";
+                    optionsIE.AddAdditionalCapability("username", SAUCE_USERNAME);
+                    optionsIE.AddAdditionalCapability("accesskey", SAUCE_ACCESS_KEY);*/
+
+                    var sauceOptions = new Dictionary<string, object>();
+                    sauceOptions.Add("username", SAUCE_USERNAME);
+                    sauceOptions.Add("accesskey", SAUCE_ACCESS_KEY);
+                    var browserOptionsIE = new InternetExplorerOptions();
+                    browserOptionsIE.PlatformName = "Windows 10";
+                    browserOptionsIE.BrowserVersion = "11.285";
+                    browserOptionsIE.AddAdditionalCapability("sauce:options", sauceOptions, true);
+                    driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), browserOptionsIE.ToCapabilities(), TimeSpan.FromMinutes(4));
+
+                    /*browserOptions = new InternetExplorerOptions();
+                    setDriverOptions(ref browserOptions, "Windows 10", "11.285");
+                    driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), browserOptions.ToCapabilities(), TimeSpan.FromMinutes(4));*/
+                    break;
+                case browserType.Edge:
+                    /*var optionsEdge = new EdgeOptions();
+                    optionsEdge.BrowserVersion = "18.0";
+                    optionsEdge.AddAdditionalCapability("username", SAUCE_USERNAME);
+                    optionsEdge.AddAdditionalCapability("accesskey", SAUCE_ACCESS_KEY);*/
+                    var sauceOptionsEdge = new Dictionary<string, object>();
+                    sauceOptionsEdge.Add("username", SAUCE_USERNAME);
+                    sauceOptionsEdge.Add("accesskey", SAUCE_ACCESS_KEY);
+                    var browserOptionsEdge = new EdgeOptions();
+                    browserOptionsEdge.PlatformName = "Windows 10";
+                    browserOptionsEdge.BrowserVersion = "18.17763";
+                    browserOptionsEdge.AddAdditionalCapability("sauce:options", sauceOptionsEdge);
+                    driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), browserOptionsEdge.ToCapabilities(), TimeSpan.FromMinutes(4));
+
+                    /*browserOptions = new EdgeOptions();
+                    setDriverOptions(ref browserOptions, "Windows 10", "18.17763");
+                    driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), browserOptions.ToCapabilities(), TimeSpan.FromMinutes(4));*/
+                    break;
+                case browserType.Safari11:
+                    if (legacy)
+                    {
+                        setDesiredCapabilities("macOS 10.12", "Safari", "11.0");
+                        driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), caps, TimeSpan.FromMinutes(4));
+                    }
+                    else
+                    {
+                        browserOptions = new SafariOptions();
+                        setDriverOptions(ref browserOptions, "macOS 10.12", "11.0");
+                        driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), browserOptions.ToCapabilities(), TimeSpan.FromMinutes(4));
+                    }
+                    break;
+                case browserType.Safari12:
+                    if (legacy)
+                    {
+                        setDesiredCapabilities("macOS 10.13", "Safari", "12.1");
+                        driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), caps, TimeSpan.FromMinutes(4));
+                    }
+                    else
+                    {
+                        browserOptions = new SafariOptions();
+                        setDriverOptions(ref browserOptions, "macOS 10.13", "12.1");
+                        driver = new RemoteWebDriver(new Uri(SAUCE_SELENIUM_URL), browserOptions.ToCapabilities(), TimeSpan.FromMinutes(4));
+                    }
+                    break;
+                default:
+                    throw new Exception("Unknown browser type");
+            }
+        }
+
+
+        private void setDriverOptions(ref SafariOptions driverOptions, string PlatformName, string BrowserVersion)
+        {
+            var sauceOptions = new Dictionary<string, object>();
+            sauceOptions.Add("username", SAUCE_USERNAME);
+            sauceOptions.Add("accesskey", SAUCE_ACCESS_KEY);
+            driverOptions.PlatformName = PlatformName;
+            driverOptions.BrowserVersion = BrowserVersion;
+            driverOptions.AddAdditionalCapability("username", SAUCE_USERNAME);
+            driverOptions.AddAdditionalCapability("accesskey", SAUCE_ACCESS_KEY);
+            //driverOptions.AddAdditionalCapability("sauce:options", sauceOptions);
+        }
+        /*private void setDriverOptions(ref DriverOptions driverOptions, string PlatformName, string BrowserVersion)
+        {
+            var sauceOptions = new Dictionary<string, object>();
+            sauceOptions.Add("username", SAUCE_USERNAME);
+            sauceOptions.Add("accesskey", SAUCE_ACCESS_KEY);
+            driverOptions.PlatformName = PlatformName;
+            driverOptions.BrowserVersion = BrowserVersion;
+            driverOptions.AddAdditionalCapability("username", SAUCE_USERNAME);
+            driverOptions.AddAdditionalCapability("accesskey", SAUCE_ACCESS_KEY);
+            //driverOptions.AddAdditionalCapability("sauce:options", sauceOptions);
+        }*/
+
+        /*private void setDriverOptions(ref InternetExplorerOptions driverOptions, string PlatformName, string BrowserVersion)
+        {
+            var sauceOptions = new Dictionary<string, object>();
+            sauceOptions.Add("username", SAUCE_USERNAME);
+            sauceOptions.Add("accesskey", SAUCE_ACCESS_KEY);
+            driverOptions.PlatformName = PlatformName;
+            driverOptions.BrowserVersion = BrowserVersion;
+            driverOptions.AddAdditionalCapability("sauce:options", sauceOptions, true);
+        }*/
+
+        private void setDesiredCapabilities(string PlatformName, string BrowserName, string BrowserVersion)
+        {
+            caps = new DesiredCapabilities();
+            caps.SetCapability("browserName", BrowserName);
+            caps.SetCapability("platform", PlatformName);
+            caps.SetCapability("version", BrowserVersion);
+            caps.SetCapability("seleniumVersion", "3.4.0");
+            caps.SetCapability("username", SAUCE_USERNAME);
+            caps.SetCapability("accesskey", SAUCE_ACCESS_KEY);
+        }
+
+        protected static ChromeDriver CreateChromeDriver(ChromeOptions options = null)
+        {
+            if (options == null)
+            {
+                options = new ChromeOptions();
+            }
+            options.AddArgument("--headless");
+
+            ChromeDriver webDriver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options) : new ChromeDriver(options);
+            return webDriver;
         }
 
         protected void initEyes(bool isVisualGrid, bool isCSSMode)
         {
             runner = isVisualGrid ? (EyesRunner)(new VisualGridRunner(10)) : new ClassicRunner();
             eyes = new Eyes(runner);
-            eyes.HostOS = "Linux";
+            //eyes.HostOS = "Linux";
             eyes.Batch = BatchInfo;
             if (!isVisualGrid) eyes.StitchMode = isCSSMode ? StitchModes.CSS : StitchModes.Scroll;
             eyes.BranchName = "master";

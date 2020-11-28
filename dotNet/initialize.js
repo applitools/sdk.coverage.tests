@@ -102,7 +102,14 @@ function argumentCheck(actual, ifUndefined){
 module.exports = function(tracker, test) {
   const {addSyntax, addCommand, addHook, withScope} = tracker
 	
-	let mobile = ("env" in test) && ("device" in test.env)? true: false
+	let mobile = ("env" in test) && ("device" in test.env) && ("features" in test) && (test.features === 'native-selectors') ? true: false
+	let emulator = ((("env" in test) && ("device" in test.env))&& !("features" in test))
+	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
+	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
+	if (("env" in test) && ("legacy" in test.env)) {console.log("test.env.legacy = " + test.env.legacy)
+	console.log("legacy = " + legacy)
+	console.log("(test.env.legacy === true) = " + (test.env.legacy === true))
+	}
 	
 	/*addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
     addSyntax('getter', ({target, key}) => `${target}['${key}']`)
@@ -130,6 +137,7 @@ module.exports = function(tracker, test) {
 	
 	let namespace = mobile? 'Applitools.Appium.Tests': 'Applitools.Generated.Selenium.Tests'
 	let baseClass = mobile? 'TestSetupGeneratedAppium': 'TestSetupGenerated'
+	if (emulator) baseClass = 'TestSetupGeneratedMobileEmulation'
 
 	addHook('deps', `namespace ${namespace}`)
 	addHook('deps', `{`)
@@ -161,8 +169,54 @@ module.exports = function(tracker, test) {
 	//if (("options" in options) && ("capabilities" in options.options)) storeHook('beforeEach', dot_net`options.options.capabilities = ${options.options.capabilities}`)
 		
 	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
-
-    addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
+	
+    if ((!otherBrowser) && (!emulator)) {
+		addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome);`)
+		addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
+	}
+	else {
+		if (!emulator){
+			switch (test.env.browser){
+				case 'ie-11':
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.IE);`)
+					break;
+				case 'edge-18':
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Edge);`)
+					break;
+				case 'firefox':
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox);`)
+					break;
+				case 'safari-11':
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, ${legacy});`)
+					break;
+				case 'safari-12':
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, ${legacy});`)
+					break;
+				default:
+					throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
+			}	
+			addHook('beforeEach', dot_net`    initEyes(false, true);`)
+		}
+		else {
+			if (test.env.device === 'Android 8.0 Chrome Emulator') {
+				addHook('beforeEach', dot_net`     SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
+				switch (test.config.baselineName){
+					case 'Android Emulator 8.0 Portrait mobile fully':
+						addHook('beforeEach', dot_net`    initEyes("mobile", ScreenOrientation.Portrait);`)
+						break;
+					case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
+						addHook('beforeEach', dot_net`    initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
+						break;
+					case 'Android Emulator 8.0 Portrait desktop fully':
+						addHook('beforeEach', dot_net`    initEyes("desktop", ScreenOrientation.Portrait);`)
+						break;
+					default:
+						throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				}
+			}
+			else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
+		}
+	}
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)){
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`

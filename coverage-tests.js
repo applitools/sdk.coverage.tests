@@ -223,7 +223,7 @@ test('check window fully on page with burger menu', {
   }
 })
 
-/*test('check window fully on android chrome emulator', {
+test('check window fully on android chrome emulator', {
   env: {device: 'Android 8.0 Chrome Emulator'},
   variants: {
     'on mobile page': {page: 'ResolutionMobile', config: {baselineName: 'Android Emulator 8.0 Portrait mobile fully', parentBranchName: 'default'}},
@@ -235,7 +235,7 @@ test('check window fully on page with burger menu', {
     eyes.check({isFully: true})
     eyes.close()
   },
-})*/
+})
 
 // #endregion
 
