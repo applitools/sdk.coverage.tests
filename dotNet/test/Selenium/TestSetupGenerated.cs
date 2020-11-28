@@ -49,18 +49,15 @@ namespace Applitools.Generated.Selenium.Tests
             driver.Navigate().GoToUrl(testedPageUrl);
         }*/
 
-        protected void SetUpDriver(browserType browser = browserType.Chrome, Boolean legacy = false)
+        protected void SetUpDriver(browserType browser = browserType.Chrome, bool legacy = false, bool headless = false)
         {
             switch(browser)
             {
                 case browserType.Chrome:
-                    var optionsChr = new ChromeOptions();
-                    driver = CreateChromeDriver();//DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, optionsChr) : new ChromeDriver(optionsChr);
+                    driver = CreateChromeDriver(headless: headless);
                     break;
                 case browserType.Firefox:
-                    var optionsFx = new FirefoxOptions();
-                    optionsFx.AddArgument("--headless");
-                    driver = new FirefoxDriver(DRIVER_PATH, optionsFx);
+                    driver = CreateFirefoxDriver(headless: headless);
                     break;
                 case browserType.IE:
                     /*var optionsIE = new InternetExplorerOptions();
@@ -175,15 +172,23 @@ namespace Applitools.Generated.Selenium.Tests
             caps.SetCapability("accesskey", SAUCE_ACCESS_KEY);
         }
 
-        protected static ChromeDriver CreateChromeDriver(ChromeOptions options = null)
+        protected static ChromeDriver CreateChromeDriver(ChromeOptions options = null, bool headless = false)
         {
             if (options == null)
             {
                 options = new ChromeOptions();
             }
-            options.AddArgument("--headless");
+            if (headless) options.AddArgument("--headless");
 
             ChromeDriver webDriver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options) : new ChromeDriver(options);
+            return webDriver;
+        }
+
+        protected static FirefoxDriver CreateFirefoxDriver(bool headless = false)
+        {
+            var options = new FirefoxOptions();
+            if (headless) options.AddArgument("--headless");
+            FirefoxDriver webDriver = new FirefoxDriver(DRIVER_PATH, options);
             return webDriver;
         }
 
@@ -196,7 +201,7 @@ namespace Applitools.Generated.Selenium.Tests
 
         protected void initEyesSettings(bool isVisualGrid, bool isCSSMode)
         {
-            //eyes.HostOS = "Linux";
+            eyes.HostOS = "Linux";
             eyes.Batch = BatchInfo;
             if (!isVisualGrid) eyes.StitchMode = isCSSMode ? StitchModes.CSS : StitchModes.Scroll;
             eyes.BranchName = "master";
@@ -204,7 +209,7 @@ namespace Applitools.Generated.Selenium.Tests
             eyes.SaveNewTests = false;
             //eyes.AddProperty("ForceFPS", eyes.ForceFullPageScreenshot ? "true" : "false");
             //eyes.AddProperty("Agent ID", eyes.FullAgentId);
-            //eyes.HideScrollbars = true;
+            eyes.HideScrollbars = true;
         }
 
 

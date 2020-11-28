@@ -106,10 +106,8 @@ module.exports = function(tracker, test) {
 	let emulator = ((("env" in test) && ("device" in test.env))&& !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
-	if (("env" in test) && ("legacy" in test.env)) {console.log("test.env.legacy = " + test.env.legacy)
-	console.log("legacy = " + legacy)
-	console.log("(test.env.legacy === true) = " + (test.env.legacy === true))
-	}
+	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
+	
 	
 	/*addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
     addSyntax('getter', ({target, key}) => `${target}['${key}']`)
@@ -171,7 +169,7 @@ module.exports = function(tracker, test) {
 	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 	
     if ((!otherBrowser) && (!emulator)) {
-		addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome);`)
+		addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
 		addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
 	}
 	else {
@@ -184,13 +182,13 @@ module.exports = function(tracker, test) {
 					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Edge);`)
 					break;
 				case 'firefox':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox);`)
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox, headless: ${headless});`)
 					break;
 				case 'safari-11':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, ${legacy});`)
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
 					break;
 				case 'safari-12':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, ${legacy});`)
+					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
 					break;
 				default:
 					throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
@@ -219,6 +217,8 @@ module.exports = function(tracker, test) {
 	}
 	if ("branchName" in test.config) addHook('beforeEach', dot_net`    eyes.BranchName = ${test.config.branchName};`)
 	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`    eyes.ParentBranchName = ${test.config.parentBranchName};`)
+	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`    eyes.HideScrollbars = ${test.config.hideScrollbars};`)
+	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`    eyes.IsDisabled = ${test.config.isDisabled};`)
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)){
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
@@ -263,7 +263,8 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`driver.SwitchTo().ParentFrame();`)
         },
         findElement(selector) {
-            return addCommand(
+			if (selector.includes('name=')) return addCommand(dot_net`driver.FindElement(By.Name(` + takeSelector(selector) + `));`)//${takeSelector(selector)}));`)//`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
+            else return addCommand(
                 dot_net`driver.FindElement(By.CssSelector(${selector.toString().replace(/\"/g,'')}));`,
             )
         },
@@ -290,7 +291,12 @@ module.exports = function(tracker, test) {
 			switch (typeof element) {
 				case 'string':
 					if (mobile) addCommand(dot_net`Utilities.FindElement(driver, ${element}).Click();`)
-					else addCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
+					else { 
+						if (element.includes('name=')) {
+							addCommand(dot_net`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
+						}
+						else addCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
+					}
 					break;
 				case "object":
 					if (element.type === undefined) addCommand(dot_net`${element}.Click();`)
@@ -396,14 +402,12 @@ module.exports = function(tracker, test) {
 			}else if (checkSettings.region) {
 				if (checkSettings.frames && checkSettings.frames.length > 0) {
 				  const [frameReference] = checkSettings.frames
-				  let Tag = !checkSettings.name ? `` : `${checkSettings.name}`
+				  let Tag = !checkSettings.name ? `""` : `${checkSettings.name}`
 				  let MatchTimeout = !checkSettings.timeout ? `` : `, ${checkSettings.timeout}`
-				  return addCommand(dot_net`eyes.CheckRegionInFrame(
-					${frameReference.toString().replace(/\"/g,'')},
-					By.CssSelector(${checkSettings.region}),
-					${Tag},
-					${checkSettings.isFully}` + 
-					MatchTimeout + 
+				  return addCommand(dot_net`eyes.CheckRegionInFrame(` +
+					//${frameReference.toString().replace(/\"/g,'')},
+					takeSelector(frameReference) +
+					`, By.CssSelector("${checkSettings.region}"),` + Tag + `, ${checkSettings.isFully}` + MatchTimeout + 
 				`);`)
 				//` +
 		//`${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}` +
@@ -573,11 +577,13 @@ module.exports = function(tracker, test) {
 	  console.log("funct = " + funct)
 	  console.log("func = " + `${func}`)
 	  if (check) {
-	    command = dot_net`Assert.Throws<${insert(check())}>(() => {${func}});`
+	    //command = dot_net`Assert.Throws<${insert(check())}>(() => {${func}});`
+		command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>());`
 		//`Assert.That(${func}, Throws.Exception.TypeOf<${insert(check())}>);`
 	  }
 	  else {
-		  command = dot_net`Assert.Throws<Exception>(() => {${func}});`
+		  //command = dot_net`Assert.Throws<Exception>(() => {${func}});`
+		  command = dot_net`Assert.That(() => {${func}}, Throws.Exception);`
 		  //`Assert.That(() => {${func}}, Throws.Exception.TypeOf<Exception>);`
 	  }
       addCommand(command)
