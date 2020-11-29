@@ -30,9 +30,11 @@ function checkSettings(cs, mobile=false) {
     if(cs.scrollRootElement) options+=scrollRootElement(cs.scrollRootElement)
 	if(cs.accessibilityRegions) options+=accessibilityRegions(cs.accessibilityRegions[0].region, cs.accessibilityRegions[0].type)
 	if(cs.layoutRegions) options+=layoutRegions(cs.layoutRegions)
+	if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`
 	if (cs.sendDom !== undefined) options += `.SendDom(${cs.sendDom})`
     if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
     if(cs.isFully) options += '.Fully()'
+	if (cs.name) options += `.WithName(${cs.name})`
     return target + element + options
 }
 

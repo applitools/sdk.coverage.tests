@@ -24,7 +24,7 @@ namespace Applitools.Generated.Selenium.Tests
         protected string testedPageUrl = "https://applitools.github.io/demo/TestPages/FramesTestPage/";
         public static readonly BatchInfo BatchInfo = new BatchInfo("DotNet Generated Tests");
 		public static readonly string DRIVER_PATH = Environment.GetEnvironmentVariable("DRIVER_PATH");
-        public static readonly string DRIVER_FIREFOX_PATH = Environment.GetEnvironmentVariable("DRIVER_FIREFOX_PATH"); 
+        //public static readonly string DRIVER_FIREFOX_PATH = Environment.GetEnvironmentVariable("DRIVER_FIREFOX_PATH"); 
         public static readonly string SAUCE_USERNAME = Environment.GetEnvironmentVariable("SAUCE_USERNAME");
         public static readonly string SAUCE_ACCESS_KEY = Environment.GetEnvironmentVariable("SAUCE_ACCESS_KEY");
         public static readonly string SAUCE_SELENIUM_URL = "https://ondemand.saucelabs.com:443/wd/hub";
@@ -181,7 +181,7 @@ namespace Applitools.Generated.Selenium.Tests
             }
             if (headless) options.AddArgument("--headless");
 
-            ChromeDriver webDriver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options) : new ChromeDriver(options);
+            ChromeDriver webDriver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options, TimeSpan.FromMinutes(4)) : new ChromeDriver(options);
             return webDriver;
         }
 
@@ -189,7 +189,7 @@ namespace Applitools.Generated.Selenium.Tests
         {
             var options = new FirefoxOptions();
             if (headless) options.AddArgument("--headless");
-            FirefoxDriver webDriver = new FirefoxDriver(DRIVER_FIREFOX_PATH, options);
+            FirefoxDriver webDriver = new FirefoxDriver(DRIVER_PATH, options);
             return webDriver;
         }
 
@@ -227,7 +227,7 @@ namespace Applitools.Generated.Selenium.Tests
 
         protected void compareProcedure(Dictionary<string, object> actualRegion, RectangleSize expectedRegion, string type)
         {
-            RectangleSize actual = new RectangleSize((int)actualRegion["width"], (int)actualRegion["height"]);
+            RectangleSize actual = new RectangleSize((int)(long)actualRegion["width"], (int)(long)actualRegion["height"]);
             Assert.IsTrue(RectangleSize.AreEqual(expectedRegion, actual), "Actual region with Width="+ actual.Width.ToString()+" Height="+ actual.Height.ToString()+ " don't equal to expected region with Width = "+ expectedRegion.Width.ToString()+" Height = "+ expectedRegion.Height.ToString());
         }
 

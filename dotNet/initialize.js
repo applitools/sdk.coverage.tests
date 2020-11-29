@@ -327,9 +327,8 @@ module.exports = function(tracker, test) {
         type(element, keys) {
             addCommand(dot_net`${element}.SendKeys(${keys});`)
         },
-		scrollIntoView(element, align) {
-		  addCommand(dot_net`Actions actions = new Actions(driver);
-		actions.MoveToElement(${element}).Perform();`)
+		scrollIntoView(element, align=false) {
+		  addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(arguments[1])", ${findElement(element)}, ${align});`)
 		},
 		hover(element, offset) {
 		  addCommand(dot_net`Actions mouseHover = new Actions(driver);
