@@ -15,7 +15,8 @@
   },
   "scripts": {
     "dotnet:generate:old": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && mv ./test/Selenium/coverage/generic/Appium_*.cs ./test/Appium/coverage/generic",
-    "dotnet:generate": "npm install && cd dotNet && coverage-tests generate --configPath . --testsPath ../coverage-tests.js",
+    "dotnet:generate": "npm install && cd dotNet && coverage-tests generate --configPath . && mv ./test/Selenium/coverage/generic/*Native*.cs ./test/Appium/coverage/generic",
+    "dotnet:generate:win0": "npm install && cd dotNet && coverage-tests generate --configPath . && move /Y .\\test\\Selenium\\coverage\\generic\\*Native*.cs .\\test\\Appium\\coverage\\generic",
     "dotnet:generate:win": "npm install && cd dotNet && coverage-tests create-tests --path . --coverage-tests-local-path ../tests.js && move /Y .\\test\\Selenium\\coverage\\generic\\Appium_*.cs .\\test\\Appium\\coverage\\generic",
     "dotnet:generate:win2": "npm install && cd dotNet && coverage-tests generate --configPath . && move /Y .\\test\\Selenium\\coverage\\generic\\Appium_*.cs .\\test\\Appium\\coverage\\generic",
     "dotnet:generate:win3": "npm install && cd dotNet && coverage-tests generate --configPath .",

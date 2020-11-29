@@ -26,8 +26,12 @@ function checkSettings(cs, mobile=false) {
 		}
     }
     if(cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions, mobile)
+	if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if(cs.scrollRootElement) options+=scrollRootElement(cs.scrollRootElement)
 	if(cs.accessibilityRegions) options+=accessibilityRegions(cs.accessibilityRegions[0].region, cs.accessibilityRegions[0].type)
+	if(cs.layoutRegions) options+=layoutRegions(cs.layoutRegions)
+	if (cs.sendDom !== undefined) options += `.SendDom(${cs.sendDom})`
+    if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
     if(cs.isFully) options += '.Fully()'
     return target + element + options
 }
@@ -44,7 +48,7 @@ function frames(arr) {
 
 function frame(frames) {
 	console.log("in frames...")
-	console.log("frame = " + frames)
+	//console.log("frame = " + frames)
 	console.log("stringify frame = " + JSON.stringify(frames))
 	if (frames && frames.isRef) return `.Frame(` + frames.ref() + `)`
     switch (typeof frames){
@@ -135,6 +139,14 @@ function ignoreRegions(arr, mobile=false) {
 
 function ignore(region, type=undefined, mobile=false){
     return `.Ignore(${regionParameter(region, type, mobile)})`
+}
+
+function floatingRegions(arr) {
+	return `.Floating(${regionParameter(arr[0].region)}, ${arr[0].maxUpOffset}, ${arr[0].maxDownOffset}, ${arr[0].maxLeftOffset}, ${arr[0].maxRightOffset})`
+}
+
+function layoutRegions(arr) {
+	return `.Layout(${regionParameter(arr[0])})`
 }
 
 function scrollRootElement(cssSelector) {	
@@ -276,6 +288,7 @@ function expectParser(expected){
 		}
 		//throw new Error(`Haven't implement parser for expected ${expected}`)
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
+		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
 		console.log("expected111 = " + expected)
 		return expected
 	}

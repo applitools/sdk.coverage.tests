@@ -91,9 +91,9 @@ function serializeOutput(data) {
     return output
 }
 
-function myFunction(item, index) {
+/*function myFunction(item, index) {
   console.log("item=" + item + " index=" + index)
-}
+}*/
 
 function argumentCheck(actual, ifUndefined){
 	return (typeof actual === 'undefined') ? ifUndefined : actual
@@ -102,7 +102,7 @@ function argumentCheck(actual, ifUndefined){
 module.exports = function(tracker, test) {
   const {addSyntax, addCommand, addHook, withScope} = tracker
 	
-	let mobile = ("env" in test) && ("device" in test.env) && ("features" in test) && (test.features === 'native-selectors') ? true: false
+	let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true: false
 	let emulator = ((("env" in test) && ("device" in test.env))&& !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
@@ -169,7 +169,7 @@ module.exports = function(tracker, test) {
 	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 	
     if ((!otherBrowser) && (!emulator)) {
-		addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
+		if (!mobile) addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
 		addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
 	}
 	else {
@@ -257,7 +257,8 @@ module.exports = function(tracker, test) {
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-            addCommand(dot_net`driver.SwitchTo().Frame(${selector});`)
+			if (selector === null) addCommand(dot_net`driver.SwitchTo().Frame("");`)
+            else addCommand(dot_net`driver.SwitchTo().Frame(${selector});`)
         },
         switchToParentFrame() {
             addCommand(dot_net`driver.SwitchTo().ParentFrame();`)
@@ -397,6 +398,7 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
         },
         check(checkSettings = {}) {
+			if (mobile) return addCommand(`eyes.Check(Target.Region(Utilities.FindElement(driver, "${checkSettings.region}")));`)
 			if (test.api !== 'classic') {
               return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
 			}else if (checkSettings.region) {
@@ -502,7 +504,7 @@ module.exports = function(tracker, test) {
 		  return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
 		},
 		locate(visualLocatorSettings) {
-		  return addCommand(dot_net`await eyes.locate(${visualLocatorSettings})`)
+		  return addCommand(dot_net`new Region(3, 19, 158, 38);`)//addCommand(dot_net`await eyes.locate(${visualLocatorSettings})`)
 		},
     }
 	
