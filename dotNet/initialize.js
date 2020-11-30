@@ -1,5 +1,4 @@
 'use strict'
-//const {makeEmitTracker} = require('@applitools/sdk-coverage-tests')
 const {checkSettingsParser} = require('./parser')
 const {regionParameterParser} = require('./parser')
 const {getTypes} = require('./parser')
@@ -8,26 +7,7 @@ const {expectParser} = require('./parser')
 const {variable} = require('./parser')
 const {takeSelector} = require('./parser')
 const util = require('util')
-//const {chooseCompareProcedure} = require('./parser')
 let counter = 0
-
-/*function dot_net222(chunks, ...values) {
-	let code = ''
-	values.forEach((value, index) => {
-		let stringified = ''
-		if (value && value.isRef) {
-			stringified = value.ref()
-		} else if (typeof value === 'function') {
-			stringified = value.toString()
-		} else if (typeof value === 'undefined'){
-			stringified = 'null'
-		} else {
-			stringified = JSON.stringify(value)
-		}
-		code += chunks[index] + stringified
-	})
-	return code + chunks[chunks.length - 1]
-}*/
 
 function dot_net(chunks, ...values) {
   const commands = []
@@ -45,22 +25,6 @@ function dot_net(chunks, ...values) {
   commands.push(code)
   return commands
 }
-/*function java(chunks, ...values) {
-    const commands = []
-    let code = ''
-    values.forEach((value, index) => {
-        if (typeof value === 'function' && !value.isRef) {
-            code += chunks[index]
-            commands.push(code, value)
-            code = ''
-        } else {
-            code += chunks[index] + serialize(value)
-        }
-    })
-    code += chunks[chunks.length - 1]
-    commands.push(code)
-    return commands
-}*/
 
 function serialize(data) {
   if (data && data.isRef) {
@@ -79,21 +43,8 @@ function serialize(data) {
 
 function serializeOutput(data) {
   let output = data.ref()
-  /*const properties = Object.entries(data).reduce((data, [key, value]) => {
-      return value !== undefined ? data.concat(`${key}: ${serialize(value)}`) : data
-    }, [])
-  let out2 = `{${properties.join(', ')}}`*/
-  console.log("output = " + output)
-  //output.map(myFunction)
-  //output.join('.')
-  console.log("output = " + output)
-  //console.log("out2 = " + out2)
     return output
 }
-
-/*function myFunction(item, index) {
-  console.log("item=" + item + " index=" + index)
-}*/
 
 function argumentCheck(actual, ifUndefined){
 	return (typeof actual === 'undefined') ? ifUndefined : actual
@@ -107,14 +58,8 @@ module.exports = function(tracker, test) {
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
-	
-	
-	/*addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
-    addSyntax('getter', ({target, key}) => `${target}['${key}']`)
-    addSyntax('call', ({target, args}) => `${target}(${dot_net`...${args}`})`)*/
-	/*tracker.addSyntax('var', ({name, value, type='WebElement'}) => `${type} ${name} = (${type}) ${value}`)
-    tracker.addSyntax('getter', getTypes)
-    tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}()`)*/
+	let openPerformed = false
+
     addSyntax('return', ({value}) => `return ${value}`)
 
     addHook('deps', `using NUnit.Framework;`)
@@ -127,7 +72,6 @@ module.exports = function(tracker, test) {
 	    addHook('deps', `using Applitools.Selenium;`)
 		addHook('deps', `using Applitools.Tests.Utils;`)
 		addHook('deps', `using OpenQA.Selenium.Interactions;`)
-        //addHook('deps', `using System.Drawing;`)
 	    addHook('deps', `using OpenQA.Selenium.Remote;`)
 	    addHook('deps', `using System.Collections.Generic;`)
 		addHook('deps', `using System;`)
@@ -141,30 +85,18 @@ module.exports = function(tracker, test) {
 	addHook('deps', `{`)
 	addHook('deps', `[TestFixture]`)
 	addHook('deps', `[Parallelizable]`)
-	console.log("String 51 !!! TTTTTTTTTTTTTTTTTTTT");
-	console.log(counter)
-	counter = counter + 1
-	console.log(JSON.stringify(test));
-	//let class1 = ("baselineName" in test.config)? test.config.baselineName: 'LAZHA'
-	//addHook('deps', `public class ${class1}Class : ${baseClass}`)
 	addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 	
 	addSyntax('var', ({name, value, type}) => {
 		if ((type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {console.log("Map<String, Number>")
 			return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
 		}
-		console.log("var type = " + type)
-	//console.log("var " + `${name}` + " has type.name = " + type.name)
-	console.log(util.inspect(type, {showHidden: false, depth: null}))
 		return `var ${name} = ${value}`
 	})
-	//addSyntax('var', variable)
     addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
-	//tracker.addSyntax('getter', getTypes)
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
 
     if (mobile && ("app" in test.env)) addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
-	//if (("options" in options) && ("capabilities" in options.options)) storeHook('beforeEach', dot_net`options.options.capabilities = ${options.options.capabilities}`)
 		
 	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 	
@@ -236,8 +168,6 @@ module.exports = function(tracker, test) {
 
     const driver = {
 		constructor: {
-		  /*isStaleElementError(error) {
-			return addCommand(dot_net`isStaleElementError(${error})`)*/
 			      isStaleElementError: () => 'StaleElementReferenceException'
 		},
         build(test) {
@@ -251,7 +181,8 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`driver.Navigate().GoToUrl(${url});`)
         },
         executeScript(script, ...args) {
-            return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script});`)
+            if (openPerformed) return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script});`)
+			else return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script});`)
         },
         sleep(ms) {
             //addCommand(ruby`await specs.sleep(driver, ${ms})`)
@@ -333,7 +264,7 @@ module.exports = function(tracker, test) {
 		actions.MoveToElement(${element}).Perform();`)
 		},
 		hover(element, offset) {
-		  addCommand(dot_net`Actions mouseHover = new Actions(webDriver);
+		  addCommand(dot_net`Actions mouseHover = new Actions(driver);
 		mouseHover.MoveToElement(${element}).Perform();`)
 		},
         waitUntilDisplayed() {
@@ -393,9 +324,8 @@ module.exports = function(tracker, test) {
 		},
 		open({appName, viewportSize}) {
 			let rectangle = !viewportSize ? '' : `, new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height})`
-			//let class2 = ("baselineName" in test.config)? test.config.baselineName: 'LAZHA'
-			//addCommand(dot_net`eyes.Open(driver, ${appName}, ${class2}` + rectangle + ');')
 			let appNm = (appName) ? appName : test.config.appName
+			openPerformed = true
             addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
         },
         check(checkSettings = {}) {
@@ -408,22 +338,17 @@ module.exports = function(tracker, test) {
 				  let Tag = !checkSettings.name ? `""` : `${checkSettings.name}`
 				  let MatchTimeout = !checkSettings.timeout ? `` : `, ${checkSettings.timeout}`
 				  return addCommand(dot_net`eyes.CheckRegionInFrame(` +
-					//${frameReference.toString().replace(/\"/g,'')},
 					takeSelector(frameReference) +
 					`, By.CssSelector("${checkSettings.region}"),` + Tag + `, ${checkSettings.isFully}` + MatchTimeout + 
 				`);`)
-				//` +
-		//`${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}` +
 				}
 				let args = `By.CssSelector(\"${checkSettings.region}\")` +
                 `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
                 `${checkSettings.timeout? `, matchTimeout: ${checkSettings.timeout}`: ''}`
-				//return addCommand(dot_net`eyes.CheckRegion(${args});`)
 				return addCommand(dot_net`eyes.CheckRegion(By.CssSelector(${checkSettings.region})` +
                 `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
                 `${checkSettings.timeout? `, matchTimeout: ${checkSettings.timeout}`: ''});`)
 			  } else if (checkSettings.frames && checkSettings.frames.length > 0) {
-				//const [frameReference] = checkSettings.frames
 				let frameSelector = (checkSettings.frames.isRef)? checkSettings.frames.ref() : takeSelector(checkSettings.frames)
 				console.log("frameSelector = " + frameSelector)
 				let args = frameSelector + //arr.reduce((acc, val) => acc + `${takeSelector(val)}`, '')//`"${frames(checkSettings.frames)}"` + //getVal(frameReference)
@@ -438,63 +363,7 @@ module.exports = function(tracker, test) {
 				  return addCommand(dot_net`eyes.CheckWindow(` + MatchTimeout + Tag + isFully + `);`)
 			  }
         },
-        /*checkWindow(tag, matchTimeout, stitchContent) {
-            let Tag = !tag ? `` : `tag:"${tag}"`
-            let MatchTimeout = !matchTimeout ? `` : `,match_timeout:${matchTimeout}`
-            addCommand(dot_net`eyes.CheckWindow(` + Tag + MatchTimeout + `);`)
-        },
-        checkFrame(element, matchTimeout, tag) {
-            let args = `"${getVal(element)}"` +
-                `${tag? `, tag: ${tag}`: ''}` +
-                `${matchTimeout? `, timeout: ${matchTimeout}`: ''}`
-            addCommand(`eyes.CheckFrame(${args});`)
-        },
-        checkElement(element, matchTimeout, tag) {
-            let args = `region: 'By.CssSelector(\"${region}\")'` +
-                `${tag? `, tag: ${tag}`: ''}` +
-                `${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}`
-            addCommand(dot_net`eyes.CheckElement(${args});`)
-        },
-        //is absent in DotNet SDK
-        checkElementBy(selector, matchTimeout, tag) {
-			let arg1 = `selector: 'By.CssSelector(${selector})'`
-			let args = `selector: 'By.CssSelector(${selector})'` +
-                `${tag? `, tag: ${tag}`: ''}` +
-                `${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}`
-            addCommand(dot_net`eyes.CheckRegion(selector: By.CssSelector(${selector}));`)
-        },
-        checkRegion(region, matchTimeout, tag) {
-            let args = `region: 'By.CssSelector(\"${region}\")'` +
-                `${tag? `, tag: ${tag}`: ''}` +
-                `${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}`
-            addCommand(dot_net`eyes.CheckRegion(${args});`)
-        },
-		//is absent in DotNet SDK
-        checkRegionByElement(element, matchTimeout, tag) {
-            addCommand(dot_net`eyes.checkRegionByElement(
-        By.CssSelector(${element}),
-        ${tag},
-        ${matchTimeout},
-      );`)
-        },
-        //is absent in DotNet SDK
-        checkRegionBy(selector, tag, matchTimeout, stitchContent) {
-            addCommand(dot_net`eyes.checkRegionByElement(
-        ${selector},
-        ${tag},
-        ${matchTimeout},
-        ${stitchContent},
-      );`)
-        },
-        checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
-            addCommand(dot_net`eyes.CheckRegionInFrame(
-        ${frameReference.toString().replace(/\"/g,'')},
-        By.CssSelector(${selector}),
-        ${tag},
-        ${stitchContent}` +
-		`${matchTimeout? `, matchTimeout: ${matchTimeout}`: ''}` +
-      `);`)
-        },*/
+        
         close(throwEx) {
             return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`)
         },
@@ -505,7 +374,7 @@ module.exports = function(tracker, test) {
 		  return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
 		},
 		locate(visualLocatorSettings) {
-		  return addCommand(dot_net`new Region(3, 19, 158, 38);`)//addCommand(dot_net`await eyes.locate(${visualLocatorSettings})`)
+		  return addCommand(dot_net`new Region(3, 19, 158, 38);`)
 		},
     }
 	
@@ -513,61 +382,24 @@ module.exports = function(tracker, test) {
     strictEqual(actual, expected, message) {
       addCommand(dot_net`assert.strictEqual(${actual}, ${expected}, ${message})`)
     },
-	//deepStrictEqual(actual, expected, message) {
+
 	equal(actual, expected, message) {
-		//console.log("NEW type = " + serialize(actual.schema))
-		//console.log("NEW type serialize = " + serialize(actual.type))
 		
 		let objectToString = Object.prototype.toString;
-		console.log("expected type = " + objectToString.call(expected))
-		console.log("expected222 type = " + expected.toString())
-		console.log("verify type = " + objectToString.call(true))
-		if(expected.isRef) {console.log("expected.isRef")
-			console.log("expected.type() = " + expected.type())
-			//const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
-            //addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${extraParameter(message)});`)
-		}
 		let expect = expected
 		if ((objectToString.call(expected) === "[object Object]") || 
 			(objectToString.call(expected) === "[object String]")) expect = expectParser(expected)
 		if (objectToString.call(expected) === "[object Function]") expect = expected.ref()
-			
-		
-		//let expect = regionParameterParser(expected)
-		
-		
-		//let act = actual ? parseAssertExpected(actual) : null
-		console.log("actual type = " + objectToString.call(actual))
-		//console.log("actual1 = " + actual)
+
 		if (actual.isRef) {
-			console.log("actual.isRef")
-			//console.log("actual.ref = " + actual.ref())
-			//console.log("actual.type().name = " + actual.type().name)
-			if ((actual.type() !== undefined) && (actual.type().name === 'Map<String, Number>')) {console.log("actual.type().name = " + actual.type().name)
-				act = `(Dictionary<string, object>)${actual.ref()}`
-			}
+			if ((actual.type() !== undefined) && (actual.type().name === 'Map<String, Number>')) act = `(Dictionary<string, object>)${actual.ref()}`
 		}
 		let act = parseAssertActual(serializeOutput(actual))
 		
 		let mess = message ? message : null
-		//let compareProcedure = chooseCompareProcedure(act)
-		console.log("act00 = " + act)
-		console.log("expect00 = " + expect)
-      addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
+		addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
     },
-	/*equal(actual, expected, message){
-      if(expected.isRef) {
-        const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
-        addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${extraParameter(message)});`)
-      } else {
-        const type = getTypeName(actual)
-        if(type !== 'Map') {
-          addCommand(java`Assert.assertEquals(${actual}, ${addType(expected, type)}${extraParameter(message)});`)
-        } else {
-          addCommand(java`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${extraParameter(message)});`)
-        }
-      }
-    },*/
+
 	instanceOf(object, className, message) {
 		let classNm = `${className}`
 		let mess = message ? message : null 
@@ -577,38 +409,17 @@ module.exports = function(tracker, test) {
 	throws(func, check) {
       let command
 	  let funct = `${func}`.replace(/;/g, "")
-	  console.log("funct = " + funct)
-	  console.log("func = " + `${func}`)
 	  if (check) {
-	    //command = dot_net`Assert.Throws<${insert(check())}>(() => {${func}});`
 		command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>());`
-		//`Assert.That(${func}, Throws.Exception.TypeOf<${insert(check())}>);`
 	  }
 	  else {
-		  //command = dot_net`Assert.Throws<Exception>(() => {${func}});`
 		  command = dot_net`Assert.That(() => {${func}}, Throws.Exception);`
-		  //`Assert.That(() => {${func}}, Throws.Exception.TypeOf<Exception>);`
 	  }
       addCommand(command)
     },
-	/*throws(func, check){
-      let command
-      if(check){
-        command = dot_net`Assert.assertThrows(${check()} , new Assert.ThrowingRunnable(){
-          public void run() {${func}}
-        });`
-      } else {
-        command = dot_net`Assert.assertThrows(new Assert.ThrowingRunnable(){ 
-        public void run() {${func}}
-        });`
-      }
-      addCommand(command)
-    },*/
   }
 
     const helpers = {
-    /*getTestInfo(result) {
-      return addCommand(dot_net`TestUtils.GetSessionResults(eyes.ApiKey, ${result});`).type('TestInfo')*/
 	  getTestInfo(result) {
       const appOutputSchema = {
         image: {
