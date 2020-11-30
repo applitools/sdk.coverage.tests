@@ -228,7 +228,8 @@ module.exports = function(tracker, test) {
         eyes.SetConfiguration(configuration);`)
 	}
 
-    addHook('afterEach', dot_net`    driver.Quit();`)
+    addHook('afterEach', dot_net`    webDriver.Quit();`)
+	addHook('afterEach', dot_net`    driver.Quit();`)
     addHook('afterEach', dot_net`    eyes.AbortIfNotClosed();`)
 
 
@@ -250,28 +251,28 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`driver.Navigate().GoToUrl(${url});`)
         },
         executeScript(script, ...args) {
-            return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script});`)
+            return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script});`)
         },
         sleep(ms) {
             //addCommand(ruby`await specs.sleep(driver, ${ms})`)
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-			if (selector === null) addCommand(dot_net`driver.SwitchTo().Frame("");`)
-            else addCommand(dot_net`driver.SwitchTo().Frame(${selector});`)
+			if (selector === null) addCommand(dot_net`webDriver.SwitchTo().Frame("");`)
+            else addCommand(dot_net`webDriver.SwitchTo().Frame(${selector});`)
         },
         switchToParentFrame() {
-            addCommand(dot_net`driver.SwitchTo().ParentFrame();`)
+            addCommand(dot_net`webDriver.SwitchTo().ParentFrame();`)
         },
         findElement(selector) {
-			if (selector.includes('name=')) return addCommand(dot_net`driver.FindElement(By.Name(` + takeSelector(selector) + `));`)//${takeSelector(selector)}));`)//`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
+			if (selector.includes('name=')) return addCommand(dot_net`webDriver.FindElement(By.Name(` + takeSelector(selector) + `));`)//${takeSelector(selector)}));`)//`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
             else return addCommand(
-                dot_net`driver.FindElement(By.CssSelector(${selector.toString().replace(/\"/g,'')}));`,
+                dot_net`webDriver.FindElement(By.CssSelector(${selector.toString().replace(/\"/g,'')}));`,
             )
         },
         findElements(selector) {
             return addCommand(
-                dot_net`driver.FindElements(By.CssSelector(${selector}));`,
+                dot_net`webDriver.FindElements(By.CssSelector(${selector}));`,
             )
         },
         getWindowLocation() {
@@ -283,20 +284,20 @@ module.exports = function(tracker, test) {
             // TODO: implement if needed
         },
         getWindowSize() {
-            return addCommand(dot_net`driver.Manage().Window.Size;`)
+            return addCommand(dot_net`webDriver.Manage().Window.Size;`)
         },
         setWindowSize(size) {
-            addCommand(dot_net`driver.Manage().Window.Size = ${size};`)
+            addCommand(dot_net`webDriver.Manage().Window.Size = ${size};`)
         },
         click(element) {
 			switch (typeof element) {
 				case 'string':
-					if (mobile) addCommand(dot_net`Utilities.FindElement(driver, ${element}).Click();`)
+					if (mobile) addCommand(dot_net`Utilities.FindElement(webDriver, ${element}).Click();`)
 					else { 
 						if (element.includes('name=')) {
-							addCommand(dot_net`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
+							addCommand(dot_net`webDriver.FindElement(By.Name(${takeSelector(element)})).Click();`)
 						}
-						else addCommand(dot_net`driver.FindElement(By.CssSelector(${element})).Click();`)
+						else addCommand(dot_net`webDriver.FindElement(By.CssSelector(${element})).Click();`)
 					}
 					break;
 				case "object":
@@ -319,7 +320,7 @@ module.exports = function(tracker, test) {
 							default:
 							  throw new Error(`Click - unimplemented type of selector was used`)
 						}
-						addCommand(dot_net`driver.FindElement(By.` + selector + `(\"${element.selector}\")).Click();`)
+						addCommand(dot_net`webDriver.FindElement(By.` + selector + `(\"${element.selector}\")).Click();`)
 					}
 					break;
 			}
@@ -328,10 +329,11 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`${element}.SendKeys(${keys});`)
         },
 		scrollIntoView(element, align=false) {
-		  addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(arguments[1])", ${findElement(element)}, ${align});`)
+		  addCommand(dot_net`Actions actions = new Actions(driver);
+		actions.MoveToElement(${element}).Perform();`)
 		},
 		hover(element, offset) {
-		  addCommand(dot_net`Actions mouseHover = new Actions(driver);
+		  addCommand(dot_net`Actions mouseHover = new Actions(webDriver);
 		mouseHover.MoveToElement(${element}).Perform();`)
 		},
         waitUntilDisplayed() {
@@ -394,10 +396,10 @@ module.exports = function(tracker, test) {
 			//let class2 = ("baselineName" in test.config)? test.config.baselineName: 'LAZHA'
 			//addCommand(dot_net`eyes.Open(driver, ${appName}, ${class2}` + rectangle + ');')
 			let appNm = (appName) ? appName : test.config.appName
-            addCommand(dot_net`eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
+            addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
         },
         check(checkSettings = {}) {
-			if (mobile) return addCommand(`eyes.Check(Target.Region(Utilities.FindElement(driver, "${checkSettings.region}")));`)
+			if (mobile) return addCommand(`eyes.Check(Target.Region(Utilities.FindElement(webDriver, "${checkSettings.region}")));`)
 			if (test.api !== 'classic') {
               return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
 			}else if (checkSettings.region) {
@@ -660,6 +662,5 @@ function insert(value) {
       ref: () => value
     }
   }
-
 
 //module.exports = makeSpecEmitter

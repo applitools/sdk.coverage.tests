@@ -5,6 +5,7 @@ using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.iOS;
 using OpenQA.Selenium.Appium.Enums;
 using OpenQA.Selenium.Remote;
+using OpenQA.Selenium;
 using Applitools.Generated.Selenium.Tests;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -15,6 +16,7 @@ namespace Applitools.Appium.Tests
 	{
 
 		protected RemoteWebDriver driver;
+		protected IWebDriver webDriver;
 		protected EyesRunner runner;
 		protected Eyes eyes;
 		protected string testedPageUrl = "https://applitools.github.io/demo/TestPages/FramesTestPage/";

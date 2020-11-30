@@ -19,6 +19,7 @@ namespace Applitools.Generated.Selenium.Tests
     {
 
         protected IWebDriver driver;
+        protected IWebDriver webDriver;
         protected EyesRunner runner;
         protected Eyes eyes;
         protected string testedPageUrl = "https://applitools.github.io/demo/TestPages/FramesTestPage/";
