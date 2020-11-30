@@ -6,7 +6,7 @@ module.exports = {
 	'check window fully on page with sticky header with scroll stitching': {skip: true},   //diff
 	'check window fully with fixed scroll root element': {skip: true},   //diff
 	'check window on page with sticky header with vg': {skip: true},   //diff
-	'should set viewport size': {skip: true},   //Actual region with Width=800 Height=600 don't equal to expected region with Width = 600 Height = 600
+	'should set viewport size ': {skip: true},   //Actual region with Width=800 Height=600 don't equal to expected region with Width = 600 Height = 600
 	'should set viewport size on edge legacy': {skip: true},   //Actual region with Width=1024 Height=695 don't equal to expected region with Width = 600 Height = 600
 	'should return actual viewport size': {skip: true},   //Chrome failed to start: exited abnormally.
 	//region
