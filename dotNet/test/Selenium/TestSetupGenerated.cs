@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using OpenQA.Selenium;
 using System;
+using System.Threading;
 using OpenQA.Selenium.Chrome;
 using Applitools.Selenium;
 using Applitools.Tests.Utils;
@@ -127,21 +128,29 @@ namespace Applitools.Generated.Selenium.Tests
 
         protected static ChromeDriver CreateChromeDriver(ChromeOptions options = null, bool headless = false)
         {
-            if (options == null)
+            ChromeDriver webDriver = RetryCreateWebDriver(() =>
             {
-                options = new ChromeOptions();
-            }
-            if (headless) options.AddArgument("--headless");
+                if (options == null)
+                {
+                    options = new ChromeOptions();
+                }
+                if (headless) options.AddArgument("--headless");
 
-            ChromeDriver webDriver = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options, TimeSpan.FromMinutes(4)) : new ChromeDriver(options);
+                ChromeDriver webDriverRet = DRIVER_PATH != null ? new ChromeDriver(DRIVER_PATH, options, TimeSpan.FromMinutes(4)) : new ChromeDriver(options);
+                return webDriverRet;
+            });
             return webDriver;
         }
 
         protected static FirefoxDriver CreateFirefoxDriver(bool headless = false)
         {
-            var options = new FirefoxOptions();
-            if (headless) options.AddArgument("--headless");
-            FirefoxDriver webDriver = new FirefoxDriver(DRIVER_PATH, options);
+            FirefoxDriver webDriver = RetryCreateWebDriver(() =>
+            {
+                var options = new FirefoxOptions();
+                if (headless) options.AddArgument("--headless");
+                FirefoxDriver webDriverRet = new FirefoxDriver(DRIVER_PATH, options);
+                return webDriverRet;
+            });
             return webDriver;
         }
 
@@ -237,6 +246,28 @@ namespace Applitools.Generated.Selenium.Tests
         protected void compareProcedure(Boolean actual, Boolean expected, string type = null)
         {
             Assert.AreEqual(expected, actual);
+        }
+
+        public static T RetryCreateWebDriver<T>(Func<T> func, int times = 3) where T : class, IWebDriver
+        {
+            int retriesLeft = times;
+            int wait = 500;
+            while (retriesLeft-- > 0)
+            {
+                try
+                {
+                    T result = func.Invoke();
+                    if (result != null) return result;
+                }
+                catch (Exception)
+                {
+                    if (retriesLeft == 0) throw;
+                }
+                Thread.Sleep(wait);
+                wait *= 2;
+                wait = Math.Min(10000, wait);
+            }
+            return null;
         }
     }
 }

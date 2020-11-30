@@ -1,7 +1,6 @@
 'use strict'
 const {checkSettingsParser} = require('./parser')
 const {regionParameterParser} = require('./parser')
-const {getTypes} = require('./parser')
 const {parseAssertActual} = require('./parser')
 const {expectParser} = require('./parser')
 const {variable} = require('./parser')
@@ -394,7 +393,7 @@ module.exports = function(tracker, test) {
 		if (actual.isRef) {
 			if ((actual.type() !== undefined) && (actual.type().name === 'Map<String, Number>')) act = `(Dictionary<string, object>)${actual.ref()}`
 		}
-		let act = parseAssertActual(serializeOutput(actual))
+		let act = parseAssertActual(actual.ref())//parseAssertActual(serializeOutput(actual))
 		
 		let mess = message ? message : null
 		addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)

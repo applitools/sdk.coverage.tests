@@ -98,7 +98,7 @@ function regionParameter (region) {
             string = `By.CssSelector(\"${region}\")`
             break;
         case "object":
-			if (region.type) string = findElementBySelectorType(region.selector, region.type)//`By.CssSelector(\"${region}\")`
+			if (region.type) string = findElementBySelectorType(region.selector, region.type)
 			else string = `new System.Drawing.Rectangle(${region.left}, ${region.top}, ${region.width}, ${region.height})`
 			break
 		case 'function':
@@ -108,11 +108,6 @@ function regionParameter (region) {
 			throw new Error(`Region parameter of the unimplemented type was used`)
     }
     return string
-}
-
-function getVal (val) {
-    let nameAndValue = val.toString().split("\"")
-    return nameAndValue[1]
 }
 
 function serializeRegion(data) {
@@ -125,12 +120,6 @@ function serializeRegion(data) {
   } else {
     return JSON.stringify(data)
   }
-}
-
-function getTypes({target, key, type}){
-	if (typeof type === 'undefined') return `${target}.${key}`
-    else if(TYPES[type]) return TYPES[type](target, key)
-    else throw new Error(`Haven't implement type ${type}`)
 }
 
 function findElementBySelectorType(selector, type){
@@ -181,24 +170,9 @@ function expectParser(expected){
 	}
 }
 
-function variable(name, value, type){
-	return `${mapTypes(type)} ${name} = (${mapTypes(type)}) ${value}`
-}
-
-function mapTypes(type) {
-    let mapped
-    try {
-        mapped = type ? types[type.name].name(type) : types.Element.name()
-    } catch (e) {
-        throw Error(`SDK haven't implemented support for the ${JSON.stringify(type)} \nWith error: ${e.message} \nStack:${e.stack}`)
-    }
-    return mapped
-}
-
 module.exports = {
     checkSettingsParser: checkSettings,
 	regionParameterParser: regionParameter,
-	getTypes: getTypes,
 	parseAssertActual: parseAssertActual,
 	expectParser: expectParser,
 	takeSelector: takeSelector,
