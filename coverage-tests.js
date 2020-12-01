@@ -1117,6 +1117,25 @@ test('should find regions by visual locator', {
   },
 })
 
+test('should extract text from regions', {
+  page: 'StickyHeader',
+  test({driver, eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    const element = driver.findElement({type: 'css', selector: '.page h1'}).ref('element')
+    const texts = eyes.extractText([
+      {target: {left: 38, top: 38, width: 213, height: 23}, hint: 'This is the navigation bar'},
+      {target: element},
+      {target: '.page p:nth-of-type(3)'}
+    ])
+      .type('List<String>')
+      .ref('texts')
+    eyes.close(false)
+    assert.equal(texts[0], 'This is the navigation bar')
+    assert.equal(texts[1], 'Lorem Ipsum')
+    assert.equal(texts[2], 'Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc ullamcorper nisl id\nporta mollis. Aliquam odio tortor, gravida nec accumsan id, sollicitudin id est.\nVivamus at lacinia leo. Aliquam pharetra metus quis tellus eleifend consectetur.\nDonec sagittis venenatis fermentum. Praesent fermentum dignissim iaculis.')
+  },
+})
+
 test('should return actual viewport size', {
   env: {browser: 'chrome', headless: false},
   test({driver, eyes, assert}) {
