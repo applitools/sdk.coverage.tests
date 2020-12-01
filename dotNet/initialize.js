@@ -55,9 +55,6 @@ module.exports = function(tracker, test) {
 	let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true: false
 	let emulator = ((("env" in test) && ("device" in test.env))&& !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
-	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
-	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
-	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 	let openPerformed = false
 
     addSyntax('return', ({value}) => `return ${value}`)
@@ -88,7 +85,7 @@ module.exports = function(tracker, test) {
 	addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 	
 	addSyntax('var', ({name, value, type}) => {
-		if ((type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {console.log("Map<String, Number>")
+		if ((type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
 			return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
 		}
 		return `var ${name} = ${value}`
@@ -307,7 +304,6 @@ module.exports = function(tracker, test) {
                 `${checkSettings.timeout? `, matchTimeout: ${checkSettings.timeout}`: ''});`)
 			  } else if (checkSettings.frames && checkSettings.frames.length > 0) {
 				let frameSelector = (checkSettings.frames.isRef)? checkSettings.frames.ref() : takeSelector(checkSettings.frames)
-				console.log("frameSelector = " + frameSelector)
 				let args = frameSelector + //arr.reduce((acc, val) => acc + `${takeSelector(val)}`, '')//`"${frames(checkSettings.frames)}"` + //getVal(frameReference)
                 `${checkSettings.name? `, tag: ${checkSettings.name}`: ''}` +
                 `${checkSettings.timeout? `, timeout: ${checkSettings.timeout}`: ''}`
@@ -459,6 +455,7 @@ function setUpWithEmulators(test, addHook) {
 function setUpBrowsers(test, addHook) {
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 	if (("env" in test) && ("browser" in test.env))
 	{
 		switch (test.env.browser){
@@ -485,6 +482,7 @@ function setUpBrowsers(test, addHook) {
 				}
 	}
 	else addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
+	addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
 }
 
 //module.exports = makeSpecEmitter
