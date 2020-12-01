@@ -1119,6 +1119,7 @@ test('should find regions by visual locator', {
 
 test('should extract text from regions', {
   page: 'StickyHeader',
+  config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
     const element = driver.findElement({type: 'css', selector: '.page h1'}).ref('element')
