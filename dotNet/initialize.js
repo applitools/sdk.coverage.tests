@@ -57,6 +57,7 @@ module.exports = function(tracker, test) {
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
 	let openPerformed = false
 
     addSyntax('return', ({value}) => `return ${value}`)
@@ -95,57 +96,14 @@ module.exports = function(tracker, test) {
     addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
 
-    if (mobile && ("app" in test.env)) addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
-		
-	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
-	
-    if ((!otherBrowser) && (!emulator)) {
-		if (!mobile) addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
-		addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
-	}
+    
+	if (mobile) setUpMobileNative(test, addHook)
 	else {
-		if (!emulator){
-			switch (test.env.browser){
-				case 'ie-11':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.IE);`)
-					break;
-				case 'edge-18':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Edge);`)
-					break;
-				case 'firefox':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox, headless: ${headless});`)
-					break;
-				case 'safari-11':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
-					break;
-				case 'safari-12':
-					addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
-					break;
-				default:
-					throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
-			}	
-			addHook('beforeEach', dot_net`    initEyes(false, true);`)
-		}
-		else {
-			if (test.env.device === 'Android 8.0 Chrome Emulator') {
-				addHook('beforeEach', dot_net`     SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
-				switch (test.config.baselineName){
-					case 'Android Emulator 8.0 Portrait mobile fully':
-						addHook('beforeEach', dot_net`    initEyes("mobile", ScreenOrientation.Portrait);`)
-						break;
-					case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
-						addHook('beforeEach', dot_net`    initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
-						break;
-					case 'Android Emulator 8.0 Portrait desktop fully':
-						addHook('beforeEach', dot_net`    initEyes("desktop", ScreenOrientation.Portrait);`)
-						break;
-					default:
-						throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
-				}
-			}
-			else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
-		}
+		if (emulator) setUpWithEmulators(test, addHook)
+		else setUpBrowsers(test, addHook)
 	}
+	
+	
 	if ("branchName" in test.config) addHook('beforeEach', dot_net`    eyes.BranchName = ${test.config.branchName};`)
 	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`    eyes.ParentBranchName = ${test.config.parentBranchName};`)
 	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`    eyes.HideScrollbars = ${test.config.hideScrollbars};`)
@@ -472,5 +430,61 @@ function insert(value) {
       ref: () => value
     }
   }
+  
+function setUpMobileNative(test, addHook) {
+	addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
+	addHook('beforeEach', dot_net`    initEyes(false, false);`)
+}
+
+function setUpWithEmulators(test, addHook) {
+	if (test.env.device === 'Android 8.0 Chrome Emulator') {
+				addHook('beforeEach', dot_net`     SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
+				switch (test.config.baselineName){
+					case 'Android Emulator 8.0 Portrait mobile fully':
+						addHook('beforeEach', dot_net`    initEyes("mobile", ScreenOrientation.Portrait);`)
+						break;
+					case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
+						addHook('beforeEach', dot_net`    initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
+						break;
+					case 'Android Emulator 8.0 Portrait desktop fully':
+						addHook('beforeEach', dot_net`    initEyes("desktop", ScreenOrientation.Portrait);`)
+						break;
+					default:
+						throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				}
+			}
+			else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
+}
+
+function setUpBrowsers(test, addHook) {
+	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
+	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
+	if (("env" in test) && ("browser" in test.env))
+	{
+		switch (test.env.browser){
+					case 'ie-11':
+						addHook('beforeEach', dot_net`    SetUpDriver(browserType.IE);`)
+						break;
+					case 'edge-18':
+						addHook('beforeEach', dot_net`    SetUpDriver(browserType.Edge);`)
+						break;
+					case 'firefox':
+						addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox, headless: ${headless});`)
+						break;
+					case 'safari-11':
+						addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
+						break;
+					case 'safari-12':
+						addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
+						break;
+					case 'chrome':
+						addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
+						break;
+					default:
+						throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
+				}
+	}
+	else addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
+}
 
 //module.exports = makeSpecEmitter
