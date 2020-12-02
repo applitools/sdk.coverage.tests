@@ -28,7 +28,7 @@
     "dotnet:tests": "./dotNet/dotnet_tests.sh"
   },
   "dependencies": {
-    "@applitools/sdk-coverage-tests": "latest",
+    "@applitools/sdk-coverage-tests": "2.1.4",
     "@typescript-eslint/parser": "^2.14.0",
     "typescript": "^3.7.4"
   },
