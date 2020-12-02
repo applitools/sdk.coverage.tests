@@ -50,6 +50,40 @@ function getVal (val) {
     return nameAndValue[1]
 }
 
+// General functions
+
+function python(chunks, ...values) {
+    const commands = []
+    let code = ''
+    values.forEach((value, index) => {
+        if (typeof value === 'function' && !value.isRef) {
+            code += chunks[index]
+            commands.push(code, value)
+            code = ''
+        } else {
+            code += chunks[index] + serialize(value)
+        }
+    })
+    code += chunks[chunks.length - 1]
+    commands.push(code)
+    return commands
+}
+
+function serialize(value) {
+        let stringified = ''
+        if (value && value.isRef) {
+            stringified = value.ref()
+        } else if (typeof value === 'function') {
+            stringified = value.toString()
+        } else if (typeof value === 'undefined') {
+            stringified = 'None'
+        } else {
+            stringified = JSON.stringify(value)
+        }
+    return stringified
+}
+
 module.exports = {
-    checkSettingsParser: checkSettings
+    checkSettingsParser: checkSettings,
+    python: python,
 }

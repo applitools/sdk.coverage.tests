@@ -1,172 +1,141 @@
 'use strict'
-const {makeEmitTracker} = require('@applitools/sdk-coverage-tests')
-const {checkSettingsParser} = require('./parser')
+const {checkSettingsParser, python} = require('./parser')
 
-function makeSpecEmitter(options) {
-    const tracker = makeEmitTracker()
-    function python(chunks, ...values) {
-        let code = ''
-        values.forEach((value, index) => {
-            let stringified = ''
-            if (value && value.isRef) {
-                stringified = value.ref()
-            } else if (typeof value === 'function') {
-                stringified = value.toString()
-            } else if (typeof value === 'undefined'){
-                stringified = 'None'
-            } else {
-                stringified = JSON.stringify(value)
-            }
-            code += chunks[index] + stringified
-        })
-        return code + chunks[chunks.length - 1]
-    }
+module.exports = function (tracker, test) {
+    const {addSyntax, addCommand, addHook} = tracker
 
-    tracker.storeHook('deps', `import pytest`)
-    tracker.storeHook('deps', `from selenium import webdriver`)
-    tracker.storeHook('deps', `from selenium.webdriver.common.by import By`)
-    tracker.storeHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
-    tracker.storeHook('deps', `from applitools.common import StitchMode`)
 
-    tracker.addSyntax('var', ({name, value}) => `${name} = ${value}`)
-  tracker.addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
-  tracker.addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
 
-    tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
-    tracker.storeHook('beforeEach', python`def eyes_runner_class():`)
-    if (options.executionMode.isVisualGrid) tracker.storeHook('beforeEach', python`    return VisualGridRunner(10)`)
-    else tracker.storeHook('beforeEach', python`    return ClassicRunner()`)
-    tracker.storeHook('beforeEach', python`\n`)
+    addHook('deps', `import pytest`)
+    addHook('deps', `from selenium import webdriver`)
+    addHook('deps', `from selenium.webdriver.common.by import By`)
+    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
+    addHook('deps', `from applitools.common import StitchMode`)
 
-    if (options.executionMode.isCssStitching || options.executionMode.isScrollStitching) {
-        tracker.storeHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        tracker.storeHook('beforeEach', python`def stitch_mode():`)
-        if (options.executionMode.isCssStitching) tracker.storeHook('beforeEach', python`    return StitchMode.CSS`)
-        else tracker.storeHook('beforeEach', python`    return StitchMode.Scroll`)
+    addSyntax('var', ({name, value}) => `${name} = ${value}`)
+    addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
+    addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
+
+    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+    addHook('beforeEach', python`def eyes_runner_class():`)
+    if (test.config.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
+    else addHook('beforeEach', python`    return ClassicRunner()`)
+    addHook('beforeEach', python`\n`)
+
+    if (test.config.stitchMode) {
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def stitch_mode():`)
+        if (test.config.stitchMode === 'CSS') addHook('beforeEach', python`    return StitchMode.CSS`)
+        else addHook('beforeEach', python`    return StitchMode.Scroll`)
     }
 
     const driver = {
-        build(options) {
-            //return tracker.storeCommand(ruby`await specs.build(${options})`)
-            // TODO: implement if needed
+        constructor: {
+            isStaleElementError(error) {
+                return addCommand(python`StaleElementError`)
+            },
         },
         cleanup() {
-            tracker.storeCommand(python`driver.quit()`)
+            return addCommand(python`driver.quit()`)
         },
         visit(url) {
-            tracker.storeCommand(python`driver.get(${url})`)
+            return addCommand(python`driver.get(${url})`)
         },
         executeScript(script, ...args) {
-            return tracker.storeCommand(python`driver.execute_script(${script})`)
+            if(args.length > 0) console.log('Need to Implement args for the execute script')
+            return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
-            //tracker.storeCommand(ruby`await specs.sleep(driver, ${ms})`)
+            console.log('Sleep was used Need to Implement')
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-            tracker.storeCommand(python`driver.switch_to.frame(${selector})`)
+            return addCommand(python`driver.switch_to.frame(${selector})`)
         },
         switchToParentFrame() {
-            tracker.storeCommand(python`driver.switch_to.parent_frame()`)
+            return addCommand(python`driver.switch_to.parent_frame()`)
         },
         findElement(selector) {
-            return tracker.storeCommand(
+            return addCommand(
                 python`driver.find_element_by_css_selector(${selector})`,
             )
         },
         findElements(selector) {
-            return tracker.storeCommand(
+            return addCommand(
                 python`driver.find_elements_by_css_selector(${selector})`,
             )
         },
         getWindowLocation() {
-            // return tracker.storeCommand(ruby`await specs.getWindowLocation(driver)`)
+            // return addCommand(ruby`await specs.getWindowLocation(driver)`)
             // TODO: implement if needed
         },
         setWindowLocation(location) {
-            // tracker.storeCommand(ruby`await specs.setWindowLocation(driver, ${location})`)
+            // addCommand(ruby`await specs.setWindowLocation(driver, ${location})`)
             // TODO: implement if needed
         },
         getWindowSize() {
-            return tracker.storeCommand(python`driver.get_window_size()`)
+            return addCommand(python`driver.get_window_size()`)
         },
         setWindowSize(size) {
-            tracker.storeCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
+            return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            tracker.storeCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
+            return addCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
         },
         type(element, keys) {
-            tracker.storeCommand(python`${element}.send_keys(${keys})`)
+            return addCommand(python`${element}.send_keys(${keys})`)
         },
-        waitUntilDisplayed() {
-            // TODO: implement if needed
+        scrollIntoView(element, align){
+            console.log('scroll into view Need to be implemented')
+            return addCommand(python`scroll_into_view`)
         },
-        getElementRect() {
-            // TODO: implement if needed
-        },
-        getOrientation() {
-            // TODO: implement if needed
-        },
-        isMobile() {
-            // TODO: implement if needed
-        },
-        isAndroid() {
-            // TODO: implement if needed
-        },
-        isIOS() {
-            // TODO: implement if needed
-        },
-        isNative() {
-            // TODO: implement if needed
-        },
-        getPlatformVersion() {
-            // TODO: implement if needed
-        },
-        getBrowserName() {
-            // TODO: implement if needed
-        },
-        getBrowserVersion() {
-            // TODO: implement if needed
-        },
-        getSessionId() {
-            // TODO: implement if needed
-        },
-        takeScreenshot() {
-            // TODO: implement if needed
-        },
-        getTitle() {
-            // TODO: implement if needed
-        },
-        getUrl() {
-            // TODO: implement if needed
+        hover(element, offset) {
+            console.log('hover Need to be implemented')
+            return addCommand(python`hover`)
         },
     }
 
     const eyes = {
+
+        constructor: {
+            setViewportSize(viewportSize) {
+                return addCommand(python`Eyes.set_viewport_size(driver, ${viewportSize})`)
+            }
+        },
+
+        getViewportSize(){
+          return addCommand(python`eyes.get_viewport_size(driver)`)
+        },
+
+        runner: {
+            getAllTestResults(throwEx) {
+                return addCommand(python`eyes.getRunner().getAllTestResults()`)
+            },
+        },
+
         open({appName, viewportSize}) {
             let special_branch = '\n    '
-            if ( (`${options.baselineTestName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent') 
-               ||(`${options.baselineTestName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
-               ) 
+            if ((`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent')
+                || (`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
+            )
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
-            tracker.storeCommand(python`conf = eyes.get_configuration()
+            return addCommand(python`conf = eyes.get_configuration()
     conf.app_name = ${appName}
-    conf.test_name = ${options.baselineTestName}
-    conf.viewport_size = {"width": ${viewportSize.width}, "height": ${viewportSize.height}}
+    conf.test_name = ${test.config.baselineName}
+    conf.viewport_size = ${viewportSize}
     eyes.set_configuration(conf)` + special_branch +
-    `eyes.open(driver)`)
+                `eyes.open(driver)`)
         },
         check(checkSettings) {
-            tracker.storeCommand(`eyes.check("", ${checkSettingsParser(checkSettings)})`)
+            return addCommand(`eyes.check("", ${checkSettingsParser(checkSettings)})`)
         },
         checkWindow(tag, matchTimeout, stitchContent) {
             let Tag = !tag ? `` : `tag="${tag}"`
             let MatchTimeout = !matchTimeout ? `` : `,match_timeout=${matchTimeout}`
-            tracker.storeCommand(python`eyes.check_window(` + Tag + MatchTimeout + `)`)
+            return addCommand(python`eyes.check_window(` + Tag + MatchTimeout + `)`)
         },
         checkFrame(element, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.check(
+            return addCommand(python`eyes.check(
         ${tag},
         Target.frame(${element})
         .timeout(${matchTimeout})
@@ -174,7 +143,7 @@ function makeSpecEmitter(options) {
       )`)
         },
         checkElement(element, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.check(
+            return addCommand(python`eyes.check(
         ${tag},
         Target.region(${element})
         .timeout(${matchTimeout})
@@ -182,7 +151,7 @@ function makeSpecEmitter(options) {
       )`)
         },
         checkElementBy(selector, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.check_region(
+            return addCommand(python`eyes.check_region(
         [By.CSS_SELECTOR, ${selector}],
         tag=${tag},
         match_timeout=${matchTimeout},
@@ -190,19 +159,19 @@ function makeSpecEmitter(options) {
         },
         checkRegion(region, matchTimeout, tag) {
             let args = `region='${region}'` +
-                `${tag? `, tag=${tag}`: ''}` +
-                `${matchTimeout? `, timeout=${matchTimeout}`: ''}`
-            tracker.storeCommand(python`eyes.check_region(${args})`)
+                `${tag ? `, tag=${tag}` : ''}` +
+                `${matchTimeout ? `, timeout=${matchTimeout}` : ''}`
+            return addCommand(python`eyes.check_region(${args})`)
         },
         checkRegionByElement(element, matchTimeout, tag) {
-            tracker.storeCommand(python`eyes.checkRegionByElement(
+            return addCommand(python`eyes.checkRegionByElement(
         ${element},
         ${tag},
         ${matchTimeout},
       )`)
         },
         checkRegionBy(selector, tag, matchTimeout, stitchContent) {
-            tracker.storeCommand(python`eyes.checkRegionByElement(
+            return addCommand(python`eyes.checkRegionByElement(
         ${selector},
         ${tag},
         ${matchTimeout},
@@ -210,7 +179,7 @@ function makeSpecEmitter(options) {
       )`)
         },
         checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
-            tracker.storeCommand(python`eyes.check_region_in_frame(
+            return addCommand(python`eyes.check_region_in_frame(
         ${frameReference},
         ${selector},
         ${tag},
@@ -218,21 +187,62 @@ function makeSpecEmitter(options) {
         ${stitchContent},
       )`)
         },
-        close(throwEx) {
+        close(throwEx=true) {
             let isThrow = throwEx.toString()
-            tracker.storeCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
+            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
         },
         abort() {
-            tracker.storeCommand(python`eyes.abort`)
+            return addCommand(python`eyes.abort`)
+        },
+        locate(visualLocatorSettings){
+            return addCommand(python`eyes.locate(${visualLocatorSettings})`)
         },
     }
 
-    return {tracker, driver, eyes}
+    const assert = {
+        equal(actual, expected, message) {
+            return addCommand(python`assert.deepStrictEqual(${actual}, ${expected}, ${message})`)
+        },
+        notEqual(actual, expected, message) {
+            return addCommand(python`assert.notDeepStrictEqual(${actual}, ${expected}, ${message})`)
+        },
+        ok(value, message) {
+            return addCommand(python`assert.ok(${value}, ${message})`)
+        },
+        instanceOf(object, className, message) {
+            return addCommand(python`assert.ok(${object}.constructor.name === ${className}, ${message})`)
+        },
+        throws(func, check, message) {
+            let command
+            if (check) {
+                command = python`await assert.rejects(
+          async () => {${func}},
+          error => {error},
+          ${message},
+        )`
+            } else {
+                command = python`await assert.rejects(
+            async () => {${func}},
+            undefined,
+            ${message},
+          )`
+            }
+            return addCommand(command)
+        },
+    }
+
+    const helpers = {
+        getTestInfo(result) {
+            return addCommand(python`await getTestInfo(${result})`).type('TestInfo')
+        },
+    }
+
+    return {driver, eyes, assert, helpers}
 }
 
-function getVal (val) {
+function getVal(val) {
     let nameAndValue = val.toString().split("\"")
     return nameAndValue[1]
 }
 
-module.exports = makeSpecEmitter
+

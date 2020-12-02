@@ -1,12 +1,12 @@
-const supportedTests = require('./supported-tests')
+const overrideTests = require('./override-tests')
 const initialize = require('./initialize')
 const testFrameworkTemplate = require('./template')
 
 module.exports = {
     name: 'eyes_selenium_python',
-    initialize: initialize,
-    supportedTests,
+    initializeSdk: initialize,
+    overrideTests,
     testFrameworkTemplate: testFrameworkTemplate,
     ext: '.py',
-    out: './test/coverage/generic'
+    outPath: './test/coverage/generic'
 }
