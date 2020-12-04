@@ -127,7 +127,21 @@ module.exports = function (tracker, test) {
                 `eyes.open(driver)`)
         },
         check(checkSettings) {
-            return addCommand(`eyes.check("", ${checkSettingsParser(checkSettings)})`)
+            if(test.api === 'classic') {
+		  if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
+		    eyes.checkWindow()
+		  } else if (checkSettings.frames && checkSettings.region) {
+		    eyes.checkRegionInFrame(checkSettings.frames, checkSettings.region, checkSettings.matchTimeout, checkSettings.tag, checkSettings.isFully)
+		  } else if (checkSettings.frames) {
+		    eyes.checkFrame(checkSettings.frames, checkSettings.matchTimeout, checkSettings.tag)
+		  } else if (checkSettings.region) {
+		    eyes.checkRegion(checkSettings.region, checkSettings.matchTimeout, checkSettings.tag)
+		  } else {
+		    throw new Error('Not implemented classic api method was tried to generate')
+		  }
+	      } else {
+		addCommand(`eyes.check(${checkSettingsParser(checkSettings)});`)
+	      }
         },
         checkWindow(tag, matchTimeout, stitchContent) {
             let Tag = !tag ? `` : `tag="${tag}"`
