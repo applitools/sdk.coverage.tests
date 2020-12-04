@@ -1,4 +1,5 @@
 'use strict'
+const {capitalizeFirstLetter} = require('./util')
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 
@@ -43,9 +44,6 @@ function frameSelector(selector) {
         return (string.includes('[') && string.includes(']')) || string.includes('#')
     }
 }
-/*function frames(arr) {
-    return arr.reduce((acc, val) => acc + `.frame(\"${getVal(val)}\")`, '')
-}*/
 
 function region(region) {
     return `.region(${regionParameter(region)})`
@@ -94,41 +92,6 @@ function regionParameter(region) {
     }
     return string
 }
-/*function region(region) {
-    return `.region(${regionParameter(region)})`
-}
-
-function ignoreRegions(arr) {
-    return arr.reduce((acc, val) => acc + ignore(val), '')
-}
-
-function ignore(region){
-    return `.ignore(${regionParameter(region)})`
-}
-
-function regionParameter (region) {
-    let string
-    switch (typeof region) {
-        case 'string':
-            string = `\"${region}\"`
-            break;
-        case "object":
-            string = `Region(${region.left}, ${region.top}, ${region.width}, ${region.height})`
-            break;
-        case "undefined":
-            string = 'None'
-            break;
-        case "function":
-            string = region.isRef ? region.ref() : region()
-            break;
-    }
-    return string
-}
-
-function getVal (val) {
-    let nameAndValue = val.toString().split("\"")
-    return nameAndValue[1]
-}*/
 
 // General functions
 
@@ -215,38 +178,6 @@ const returnSyntax = ({value}) => {
     return `return ${value};`
 }
 
-/*function python(chunks, ...values) {
-    const commands = []
-    let code = ''
-    values.forEach((value, index) => {
-        if (typeof value === 'function' && !value.isRef) {
-            code += chunks[index]
-            commands.push(code, value)
-            code = ''
-        } else {
-            code += chunks[index] + serialize(value)
-        }
-    })
-    code += chunks[chunks.length - 1]
-    commands.push(code)
-    return commands
-}
-
-function serialize(value) {
-        let stringified = ''
-        if (value && value.isRef) {
-            stringified = value.ref()
-        } else if (typeof value === 'function') {
-            stringified = value.toString()
-        } else if (typeof value === 'undefined') {
-            stringified = 'None'
-        } else if (typeof value === 'boolean') {
-            stringified = value ? 'True' : 'False'
-        } else {
-            stringified = JSON.stringify(value)
-        }
-    return stringified
-}*/
 module.exports = {
     checkSettingsParser: checkSettings,
     python: python,
@@ -256,7 +187,3 @@ module.exports = {
     returnSyntax: returnSyntax,
     wrapSelector: wrapSelector,
 }
-/*module.exports = {
-    checkSettingsParser: checkSettings,
-    python: python,
-}*/
