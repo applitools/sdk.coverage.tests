@@ -114,6 +114,13 @@ function regionParameter (region) {
             break;
         case "object":
             string = `Region(${region.left}, ${region.top}, ${region.width}, ${region.height})`
+            break;
+        case "undefined":
+            string = 'None'
+            break;
+        case "function":
+            string = region.isRef ? region.ref() : region()
+            break;
     }
     return string
 }
@@ -233,6 +240,8 @@ function serialize(value) {
             stringified = value.toString()
         } else if (typeof value === 'undefined') {
             stringified = 'None'
+        } else if (typeof value === 'boolean') {
+            stringified = value ? 'True' : 'False'
         } else {
             stringified = JSON.stringify(value)
         }

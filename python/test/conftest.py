@@ -3,7 +3,7 @@ import pytest
 import time
 
 from selenium import webdriver
-from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner
+from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner, StitchMode
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -52,7 +52,7 @@ def runner_setup(eyes_runner_class):
 
 @pytest.fixture(scope="function")
 def stitch_mode():
-    return None
+    return StitchMode.Scroll
 
 @pytest.fixture(name="eyes", scope="function")
 def eyes_setup(runner, batch_info, stitch_mode):
