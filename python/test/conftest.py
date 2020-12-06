@@ -68,6 +68,7 @@ def eyes_setup(runner, batch_info, stitch_mode):
     eyes.configure.set_stitch_mode(stitch_mode)
     eyes.configure.set_save_new_tests(False)
     eyes.configure.set_hide_caret(True)
+    eyes.configure.set_hide_scrollbars(True)
     eyes.add_property(
         "ForceFPS", "true" if eyes.force_full_page_screenshot else "false"
     )
