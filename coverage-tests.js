@@ -99,7 +99,7 @@ test('check window two times', {
   },
 })
 
-test('check window with layout breakpoints', {
+/*test('check window with layout breakpoints', {
   page: 'JsLayout',
   vg: true,
   config: {
@@ -132,7 +132,7 @@ test('check window with layout breakpoints in config', {
     eyes.check()
     eyes.close()
   }
-})
+})*/
 
 test('check window on page with sticky header', {
   page: 'StickyHeader',
@@ -515,7 +515,7 @@ test('check scrollable modal region by selector fully', {
   },
 })
 
-test('check region by native selector', {
+/*test('check region by native selector', {
   features: ['native-selectors'],
   env: {
     device: 'Samsung Galaxy S8',
@@ -527,7 +527,7 @@ test('check region by native selector', {
     eyes.check({region: 'android.widget.Button'})
     eyes.close()
   },
-})
+})*/
 
 test('check hovered region by element', {
   page: 'StickyHeaderWithRegions',
