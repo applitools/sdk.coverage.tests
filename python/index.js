@@ -8,5 +8,5 @@ module.exports = {
     overrideTests,
     testFrameworkTemplate: testFrameworkTemplate,
     ext: '.py',
-    outPath: './test/coverage/generic'
+    outPath: './python/test/coverage/generic'
 }

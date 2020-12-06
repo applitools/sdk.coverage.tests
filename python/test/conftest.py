@@ -3,7 +3,7 @@ import pytest
 import time
 
 from selenium import webdriver
-from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner
+from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner, StitchMode
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -52,7 +52,7 @@ def runner_setup(eyes_runner_class):
 
 @pytest.fixture(scope="function")
 def stitch_mode():
-    return None
+    return StitchMode.Scroll
 
 @pytest.fixture(name="eyes", scope="function")
 def eyes_setup(runner, batch_info, stitch_mode):
@@ -66,7 +66,8 @@ def eyes_setup(runner, batch_info, stitch_mode):
     eyes.configure.branch_name = "master"
     eyes.configure.parent_branch_name = "master"
     eyes.configure.set_stitch_mode(stitch_mode)
-    eyes.configure.set_hide_scrollbars(True).set_save_new_tests(False).set_hide_caret(True)
+    eyes.configure.set_save_new_tests(False)
+    #eyes.configure.set_hide_caret(True)
     eyes.add_property(
         "ForceFPS", "true" if eyes.force_full_page_screenshot else "false"
     )

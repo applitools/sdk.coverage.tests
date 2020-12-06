@@ -1,9 +1,13 @@
 'use strict'
+const {capitalizeFirstLetter} = require('./util')
+const types = require('./mapping/types')
+const selectors = require('./mapping/selectors')
 
 function checkSettings(cs) {
+    let name = `'', `
     let target = `Target`
     if(cs === undefined){
-        return target + '.window()'
+        return name + target + '.window()'
     }
     let element = ''
     let options = ''
@@ -12,13 +16,83 @@ function checkSettings(cs) {
         if (cs.frames) element += frames(cs.frames)
         if (cs.region) element += region(cs.region)
     }
-    if(cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
-    if(cs.isFully) options += '.fully()'
-    return target + element + options
+    if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
+    if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
+    if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
+    if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
+    if (cs.scrollRootElement/* && !cs.frames*/) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
+    if (cs.ignoreDisplacements) options += `.ignore_displacements(${cs.ignoreDisplacements})`
+    if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
+    if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
+    if (cs.isFully) options += '.fully()'
+    if (cs.name) options += `.with_name(${cs.name})`
+    return name + target + element + options
 }
 
-function frames(arr) {
-    return arr.reduce((acc, val) => acc + `.frame(\"${getVal(val)}\")`, '')
+function frames(arr) {console.log("in frames")
+    //arr.reduce((acc, val) => console.log("acc = " + acc + "  val = " + val + "  frame(val) = " + `${frame(val)}`))
+    return arr.reduce((acc, val) => acc + `${frame(val)}`, '')
+}
+function framesClassic(arr) {
+    console.log("in framesClassic")
+    if (arr === null) return ""
+    if (arr.isRef) return arr.ref()
+    return arr.reduce((acc, val) => acc + `${parseSelector(val)}`, '')
+}
+function frame(frame) {
+    //console.log("in frame, frame=" + frame)
+    return  ( !frame.isRef && frame.frame) ? `.frame(${parseSelector(frame.frame)}).scroll_root_element(${printSelector(frame.scrollRootElement)})` : `.frame(${parseSelector(frame)})`
+}
+function parseSelectorByType(selector) {
+     if ((typeof selector) === 'string') {
+         if (selector.includes('name=')) {
+             selector = selector.replace('name=', "")
+             return `By.NAME, ${parseSelector(selector)}`
+         }
+         else if (selector.includes('#')) {
+                  selector = selector.replace('#', "")
+                  return `By.ID, ${parseSelector(selector)}`
+              }
+              else if (selector.includes('.')) {
+                       selector = selector.replace('.', "")
+                       return `By.CLASS_NAME, ${parseSelector(selector)}`
+                   }
+                   else return `By.CSS_SELECTOR, ${parseSelector(selector)}`
+     } else return parseSelector(selector)
+}
+function parseSelector(selector) {
+/*//console.log("in frameSelector selector=" + selector)    
+if(typeof selector === 'string' && !checkCss(selector)) {console.log("frameSelector string")
+        return `${JSON.stringify(selector)}`//JSON.stringify(selector)
+    } else {console.log("frameSelector printSelector")
+        console.log("frameSelector printSelector = " + printSelector(selector))
+        return printSelector(selector);
+    }
+    function checkCss(string) {
+        return (string.includes('[') && string.includes(']')) || string.includes('#')
+    }*/
+    //console.log("in parseSelector selector=" + selector)
+    let string
+    switch (typeof selector) {
+        case 'string':
+            console.log("in string")            
+	    string = wrapSelector(selector)
+            break;
+        case "object":
+            console.log("in object") 
+            string = parseObject(selector)
+            break;
+        case "undefined":
+            console.log("in undefined") 
+            string = 'None'
+            break;
+        case "function":
+            console.log("in function") 
+            string = selector.isRef ? selector.ref() : 'None'
+            break;
+    }
+    console.log("string=" + string) 
+    return string
 }
 
 function region(region) {
@@ -26,28 +100,47 @@ function region(region) {
 }
 
 function ignoreRegions(arr) {
-    return arr.reduce((acc, val) => acc + ignore(val), '')
+    return arr.reduce((acc, val) => `${acc}.ignore(${regionParameter(val)})`, '')
+}
+function layoutRegions(arr){
+    return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '')
+}
+function floatingRegions(arr) {
+    return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``)
 }
 
-function ignore(region){
-    return `.ignore(${regionParameter(region)})`
-}
-
-function regionParameter (region) {
+function floating(floating) {
     let string
-    switch (typeof region) {
-        case 'string':
-            string = `\"${region}\"`
-            break;
-        case "object":
-            string = `Region(${region.left}, ${region.top}, ${region.width}, ${region.height})`
-    }
+    string = regionParameter(floating.region)
+    string += `, ${floating.maxUpOffset}, ${floating.maxDownOffset}, ${floating.maxLeftOffset}, ${floating.maxRightOffset}`
     return string
 }
 
-function getVal (val) {
-    let nameAndValue = val.toString().split("\"")
-    return nameAndValue[1]
+function accessibilityRegions(arr) {
+    return arr.reduce((acc, val) => `${acc}.accessibility(${accessibility(val)})`, ``)
+}
+
+function accessibility(val) {
+    return `${regionParameter(val.region)}, AccessibilityRegionType.${capitalizeFirstLetter(val.type)}`
+}
+
+function regionParameter(region) {
+    let string
+    switch (typeof region) {
+        case 'string':
+            string = `${JSON.stringify(region)}`
+            break;
+        case "object":
+            string = parseObject(region.type ? region : {value: region, type:'Region'})
+            break;
+        case "undefined":
+            string = 'None'
+            break;
+        case "function":
+            string = region.isRef ? region.ref() : region()
+            break;
+    }
+    return string
 }
 
 // General functions
@@ -70,20 +163,93 @@ function python(chunks, ...values) {
 }
 
 function serialize(value) {
-        let stringified = ''
-        if (value && value.isRef) {
-            stringified = value.ref()
-        } else if (typeof value === 'function') {
-            stringified = value.toString()
-        } else if (typeof value === 'undefined') {
-            stringified = 'None'
-        } else {
-            stringified = JSON.stringify(value)
-        }
+    let stringified = ''
+    if (value && value.isRef) {
+        stringified = value.ref()
+    } else if (value === null) {
+        throw Error(`Null shouldn't be passed to the python code. \n ${value}`)
+    } else if (typeof value === 'object') {
+        stringified = parseObject(value)
+    } else if (typeof value === 'function') {
+        stringified = value.toString()
+    } else if (typeof value === 'undefined') {
+        stringified = 'None'
+    } else if (typeof value === 'boolean') {
+        stringified = value ? 'True' : 'False'
+    } else {
+        stringified = JSON.stringify(value)
+    }
     return stringified
+}
+
+function parseObject(object) {
+    if (object.selector) {
+        return selectors[object.type](JSON.stringify(object.selector))
+    } else if (object.type) {
+// console.log("object.type = " + object.type)
+        const typeBuilder = types[object.type]
+        if (typeBuilder) {
+            if(typeBuilder.isGeneric) {
+                return typeBuilder.constructor(object.value, object.generic)
+            } else {
+                return typeBuilder.constructor(object.value)
+            }
+        } else throw new Error(`Constructor wasn't implemented for the type: ${object.type}`)
+    } else return JSON.stringify(object)
+}
+
+function getter({target, key, type}) {
+    // console.log(`target: ${target} , key: ${key}, type: ${JSON.stringify(type, null, 3)}, typeOfKey: ${typeof key}, isArray: ${Array.isArray(key)}`)
+    if (typeof type === 'undefined') return `${target}.${key}`
+    else if (types[type.name]) return types[type.name].get(target, key)
+    else throw new Error(`Haven't implement type ${JSON.stringify(type)}`)
+}
+
+function mapTypes(type) {
+    let mapped
+    try {
+        mapped = type ? types[type.name].name(type) : types.Element.name()
+    } catch (e) {
+        throw Error(`SDK haven't implemented support for the ${JSON.stringify(type)} \nWith error: ${e.message} \nStack:${e.stack}`)
+    }
+    return mapped
+}
+function wrapSelector(selector) {
+console.log("in wrapSelector") 
+    selector = selector.toString()
+console.log("in wrapSelector selector="+selector) 
+    selector = selector.replace(/"/g, "")
+	selector = selector.replace(/'/g, "")
+	selector = selector.replace(/\[/g, "")
+	selector = selector.replace(/\]/g, "")
+	selector = selector.replace('name=', "")
+console.log("in wrapSelector selector2="+selector)
+	selector = '"' + selector + '"'
+console.log("in wrapSelector selector3="+selector)
+	return selector   
+    return val//val.selector ? val : {type: 'css', selector: val}
+}
+function printSelector(val) {
+    return serialize(val)//((val && val.isRef) ? val : wrapSelector(val))
+}
+const variable = ({name, value, type}) => `${name} = ${value}`
+const call = ({target, args}) => {
+    return args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}()`
+}
+const returnSyntax = ({value}) => {
+    return `return ${value};`
 }
 
 module.exports = {
     checkSettingsParser: checkSettings,
     python: python,
+    getter: getter,
+    variable: variable,
+    call: call,
+    returnSyntax: returnSyntax,
+    wrapSelector: wrapSelector,
+    framesClassic: framesClassic,
+    parseSelector: parseSelector,
+    parseSelectorByType: parseSelectorByType,
+    regionParameter: regionParameter,
 }

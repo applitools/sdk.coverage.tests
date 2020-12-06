@@ -1,20 +1,38 @@
 'use strict'
-const {checkSettingsParser, python} = require('./parser')
+const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
+const {capitalizeFirstLetter} = require('./util')
+
+function directString(String) {
+    return {
+        isRef: true,
+        ref: () => String
+    }
+}
 
 module.exports = function (tracker, test) {
-    const {addSyntax, addCommand, addHook} = tracker
+    const {addSyntax, addCommand, addHook, withScope} = tracker
 
-
-
+    function findElementFunc(element) {
+    if(element.isRef) return element
+    else return driver.findElement(element)
+  }
+   
     addHook('deps', `import pytest`)
-    addHook('deps', `from selenium import webdriver`)
+    addHook('deps', `import selenium`)
     addHook('deps', `from selenium.webdriver.common.by import By`)
-    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner)`)
+    addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
+    addHook('deps', `from python.test import *`)
+    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults)`)
     addHook('deps', `from applitools.common import StitchMode`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
-    addSyntax('getter', ({target, key}) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
+    addSyntax('getter', ({target, key, type}) => {
+        return `${target}${key.startsWith('get') ?
+            `.${key.slice(3).toLowerCase()}` :
+            `[${type.name === 'Array' ? key : `"${key}"`}]`}`
+    })
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
+    addSyntax('return', ({value}) => `return ${value}`)
 
     addHook('beforeEach', python`@pytest.fixture(scope="function")`)
     addHook('beforeEach', python`def eyes_runner_class():`)
@@ -27,12 +45,29 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`def stitch_mode():`)
         if (test.config.stitchMode === 'CSS') addHook('beforeEach', python`    return StitchMode.CSS`)
         else addHook('beforeEach', python`    return StitchMode.Scroll`)
+        addHook('beforeEach', python`\n`)
     }
+    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+    addHook('beforeEach', python`def configuration(eyes):`)
+    addHook('beforeEach', python`    conf = eyes.get_configuration()`)
+    //addHook('beforeEach', python`    conf.app_name = ${appName}`)
+    addHook('beforeEach', python`    conf.test_name = ${test.config.baselineName}`)
+    //addHook('beforeEach', python`    conf.viewport_size = ${viewportSize}`)
+    if ("branchName" in test.config) addHook('beforeEach', python`    conf.branch_name = ${test.config.branchName};`)
+    if ("parentBranchName" in test.config) addHook('beforeEach', python`    conf.parent_branch_name = ${test.config.parentBranchName};`)
+    if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
+    if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)){
+	let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
+	let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
+	addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level +`, AccessibilityGuidelinesVersion.` + version + `))`)
+    }
+    addHook('beforeEach', python`    return conf`)
+    //addHook('beforeEach', python`\n`)
 
     const driver = {
         constructor: {
             isStaleElementError(error) {
-                return addCommand(python`StaleElementError`)
+                addCommand(python`selenium.common.exceptions.StaleElementReferenceException`)
             },
         },
         cleanup() {
@@ -42,7 +77,7 @@ module.exports = function (tracker, test) {
             return addCommand(python`driver.get(${url})`)
         },
         executeScript(script, ...args) {
-            if(args.length > 0) console.log('Need to Implement args for the execute script')
+            if (args.length > 0) console.log('Need to Implement args for the execute script')
             return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
@@ -50,20 +85,18 @@ module.exports = function (tracker, test) {
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-            return addCommand(python`driver.switch_to.frame(${selector})`)
+            //return addCommand(python`driver.switch_to.frame(${selector})`)
+            return addCommand(python`driver.switch_to.frame(` + framesClassic(selector) + `)`)
         },
         switchToParentFrame() {
             return addCommand(python`driver.switch_to.parent_frame()`)
         },
         findElement(selector) {
-            return addCommand(
-                python`driver.find_element_by_css_selector(${selector})`,
-            )
+            //return addCommand(python`driver.find_element_by_css_selector(${selector})`)
+            return addCommand(python`driver.find_element(` + parseSelectorByType(selector) + `)`)
         },
         findElements(selector) {
-            return addCommand(
-                python`driver.find_elements_by_css_selector(${selector})`,
-            )
+            return addCommand(python`driver.find_elements_by_css_selector(${selector})`)
         },
         getWindowLocation() {
             // return addCommand(ruby`await specs.getWindowLocation(driver)`)
@@ -80,18 +113,19 @@ module.exports = function (tracker, test) {
             return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            return addCommand(python`driver.find_element(By.CSS_SELECTOR, ${element}).click()`)
+            return addCommand(python`driver.find_element(` + parseSelectorByType(element) + `).click()`)
         },
         type(element, keys) {
             return addCommand(python`${element}.send_keys(${keys})`)
         },
-        scrollIntoView(element, align){
+        scrollIntoView(element, align) {
             console.log('scroll into view Need to be implemented')
-            return addCommand(python`scroll_into_view`)
+            return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
         },
         hover(element, offset) {
             console.log('hover Need to be implemented')
-            return addCommand(python`hover`)
+            return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
+    hover.perform()`)
         },
     }
 
@@ -103,13 +137,13 @@ module.exports = function (tracker, test) {
             }
         },
 
-        getViewportSize(){
-          return addCommand(python`eyes.get_viewport_size(driver)`)
+        getViewportSize() {
+            return addCommand(python`eyes.get_viewport_size(driver)`)
         },
 
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(python`eyes.getRunner().getAllTestResults()`)
+                return addCommand(python`eyes._runner.get_all_test_results(${throwEx})`)
             },
         },
 
@@ -119,28 +153,40 @@ module.exports = function (tracker, test) {
                 || (`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
             )
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
-            return addCommand(python`conf = eyes.get_configuration()
-    conf.app_name = ${appName}
-    conf.test_name = ${test.config.baselineName}
-    conf.viewport_size = ${viewportSize}
-    eyes.set_configuration(conf)` + special_branch +
+            let appNm = (appName) ? appName : test.config.appName
+            return addCommand(python`configuration.app_name = ${appNm}
+    configuration.viewport_size = ${viewportSize}
+    eyes.set_configuration(configuration)` + special_branch +
                 `eyes.open(driver)`)
         },
         check(checkSettings) {
-            return addCommand(`eyes.check("", ${checkSettingsParser(checkSettings)})`)
+            if(test.api === 'classic') {
+		  if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
+		    let nm = ((checkSettings) && (checkSettings.name))? checkSettings.name : undefined
+                    eyes.checkWindow(nm)
+		  } else if (checkSettings.frames && checkSettings.region) {
+		    eyes.checkRegionInFrame(checkSettings.frames, checkSettings.region, checkSettings.timeout, checkSettings.tag, checkSettings.isFully)
+		  } else if (checkSettings.frames) {
+		    eyes.checkFrame(checkSettings.frames, checkSettings.timeout, checkSettings.tag)
+		  } else if (checkSettings.region) {
+		    eyes.checkRegion(checkSettings.region, checkSettings.tag, checkSettings.timeout, checkSettings.isFully)
+		  } else {
+		    throw new Error('Not implemented classic api method was tried to generate')
+		  }
+	      } else {
+		addCommand(`eyes.check(${checkSettingsParser(checkSettings)})`)
+	      }
         },
         checkWindow(tag, matchTimeout, stitchContent) {
             let Tag = !tag ? `` : `tag="${tag}"`
             let MatchTimeout = !matchTimeout ? `` : `,match_timeout=${matchTimeout}`
-            return addCommand(python`eyes.check_window(` + Tag + MatchTimeout + `)`)
+            let fully = !stitchContent ? `` : `, fully=${capitalizeFirstLetter(stitchContent)}`
+            return addCommand(python`eyes.check_window(` + Tag + MatchTimeout + fully + `)`)
         },
-        checkFrame(element, matchTimeout, tag) {
-            return addCommand(python`eyes.check(
-        ${tag},
-        Target.frame(${element})
-        .timeout(${matchTimeout})
-        .fully()
-      )`)
+        checkFrame(frameReference, matchTimeout, tag) {
+            let Tag = !tag ? `` : `, tag="${tag}"`
+            let MatchTimeout = !matchTimeout ? `` : `, match_timeout=${matchTimeout}`
+            return addCommand(python`eyes.check_frame(` + framesClassic(frameReference) + Tag + MatchTimeout + `)`)
         },
         checkElement(element, matchTimeout, tag) {
             return addCommand(python`eyes.check(
@@ -157,11 +203,15 @@ module.exports = function (tracker, test) {
         match_timeout=${matchTimeout},
       )`)
         },
-        checkRegion(region, matchTimeout, tag) {
-            let args = `region='${region}'` +
+        checkRegion(region, tag, matchTimeout, isFully) {
+            /*let args = `region='${region}'` +
                 `${tag ? `, tag=${tag}` : ''}` +
                 `${matchTimeout ? `, timeout=${matchTimeout}` : ''}`
-            return addCommand(python`eyes.check_region(${args})`)
+            return addCommand(python`eyes.check_region(${args})`)*/
+            let Tag = !tag ? `` : `, tag="${tag}"`
+            let MatchTimeout = !matchTimeout ? `` : `, match_timeout=${matchTimeout}`
+            let fully = !isFully ? `` : `, stitch_content=${capitalizeFirstLetter(isFully)}`
+            return addCommand(python`eyes.check_region(` + regionParameter(region) + Tag + MatchTimeout + fully + `)`)
         },
         checkRegionByElement(element, matchTimeout, tag) {
             return addCommand(python`eyes.checkRegionByElement(
@@ -178,67 +228,103 @@ module.exports = function (tracker, test) {
         ${stitchContent},
       )`)
         },
-        checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
-            return addCommand(python`eyes.check_region_in_frame(
-        ${frameReference},
-        ${selector},
-        ${tag},
-        ${matchTimeout},
-        ${stitchContent},
-      )`)
+        checkRegionInFrame(frameReference, region, matchTimeout, tag, isFully) {
+            let Tag = !tag ? `` : `, tag="${tag}"`
+            let MatchTimeout = !matchTimeout ? `` : `, match_timeout=${matchTimeout}`
+            let fully = !isFully ? `` : `, stitch_content=${capitalizeFirstLetter(isFully)}`
+            return addCommand(python`eyes.check_region_in_frame(` +
+        	framesClassic(frameReference) + `, ` +
+        	regionParameter(region) + Tag + MatchTimeout + fully + `)`
+            )
         },
-        close(throwEx=true) {
+        close(throwEx = true) {
             let isThrow = throwEx.toString()
             return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
         },
         abort() {
             return addCommand(python`eyes.abort`)
         },
-        locate(visualLocatorSettings){
+        locate(visualLocatorSettings) {
             return addCommand(python`eyes.locate(${visualLocatorSettings})`)
         },
+        extractText(regions) {
+            return addCommand(python`eyes.extract_text(${regions})`)
+        }
     }
 
     const assert = {
         equal(actual, expected, message) {
-            return addCommand(python`assert.deepStrictEqual(${actual}, ${expected}, ${message})`)
+            return addCommand(python`assert ${actual} == ${directString(JSON.stringify(expected))}, ${message}`)
         },
         notEqual(actual, expected, message) {
-            return addCommand(python`assert.notDeepStrictEqual(${actual}, ${expected}, ${message})`)
+            return addCommand(python`assert ${actual} != ${directString(JSON.stringify(expected))}, ${message}`)
         },
         ok(value, message) {
-            return addCommand(python`assert.ok(${value}, ${message})`)
+            return addCommand(python`assert ${value}, ${message}`)
         },
         instanceOf(object, className, message) {
-            return addCommand(python`assert.ok(${object}.constructor.name === ${className}, ${message})`)
+            return addCommand(python`assert isinstance(${object}, ${directString(className)}), ${message}`)
         },
-        throws(func, check, message) {
+        throws(func, check) {
             let command
             if (check) {
-                command = python`await assert.rejects(
-          async () => {${func}},
-          error => {error},
-          ${message},
-        )`
+                command = python`with pytest.raises(${check}):
+                     ${func}`
             } else {
-                command = python`await assert.rejects(
-            async () => {${func}},
-            undefined,
-            ${message},
-          )`
+                command = python`with pytest.raises(Exception):${func}`
             }
-            return addCommand(command)
+            const commands = test.output.commands
+            const initialLength = commands.length
+            addCommand(command)
+            commands.splice(commands.length - 1, 1)
+            commands.forEach((el, index, arr) => {
+                if (index > initialLength) arr[index] = `    ${el}`
+            })
         },
     }
 
     const helpers = {
         getTestInfo(result) {
-            return addCommand(python`await getTestInfo(${result})`).type('TestInfo')
+            return addCommand(python`get_test_info(eyes.api_key, ${result})`).type({
+                type: 'TestInfo',
+                schema: {
+                    actualAppOutput: {
+                        type: 'Array',
+                        items: {
+                            type: 'AppOutput',
+                            schema: {
+                                image: {
+                                    type: 'Image',
+                                    schema: {hasDom: 'Boolean'},
+                                },
+                                imageMatchSettings: {
+                                    type: 'ImageMatchSettings',
+                                    schema: {
+                                        ignoreDisplacements: 'Boolean',
+                                        ignore: {type: 'Array', items: 'Region'},
+                                        floating: {type: 'Array', items: 'FloatingRegion'},
+                                        accessibility: {type: 'Array', items: 'AccessibilityRegion'},
+                                        accessibilitySettings: {
+                                            type: 'AccessibilitySettings',
+                                            schema: {
+                                                level: 'AccessibilityLevel',
+                                                version: 'AccessibilityGuidelinesVersion'
+                                            },
+                                        },
+                                        layout: {type: 'Array', items: 'Region'}
+                                    },
+                                },
+                            }
+                        },
+                    },
+                },
+            })
         },
     }
 
     return {driver, eyes, assert, helpers}
 }
+
 
 function getVal(val) {
     let nameAndValue = val.toString().split("\"")
