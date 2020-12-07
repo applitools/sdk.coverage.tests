@@ -22,7 +22,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `from selenium.webdriver.common.by import By`)
     addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
     addHook('deps', `from python.test import *`)
-    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults)`)
+    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings)`)
     addHook('deps', `from applitools.common import StitchMode`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
