@@ -1,7 +1,7 @@
 module.exports = {
-    "css": (selector) => `By.CSS_SELECTOR(${selector})`,
-    "className": (selector) => `By.className(${selector})`,
-    "id": (selector) => `By.id(${selector})`,
+    "css": (selector) => `[By.CSS_SELECTOR, ${selector}]`,
+    "className": (selector) => `[By.CLASS_NAME, ${selector}]`,
+    "id": (selector) => `[By.ID, ${selector}]`,
     "accessibilityId": (selector) => `MobileBy.AccessibilityId(${selector})`,
     "androidUIAutomator": (selector) => `MobileBy.AndroidUIAutomator(${selector})`,
     "androidViewTag": (selector) => `MobileBy.AndroidViewTag(${selector})`,

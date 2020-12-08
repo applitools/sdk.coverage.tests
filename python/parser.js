@@ -57,21 +57,10 @@ function parseSelectorByType(selector) {
                        selector = selector.replace('.', "")
                        return `By.CLASS_NAME, ${parseSelector(selector)}`
                    }
-                   else return `By.CSS_SELECTOR, ${parseSelector(selector)}`
+                   else return `[By.CSS_SELECTOR, ${parseSelector(selector)}]`
      } else return parseSelector(selector)
 }
 function parseSelector(selector) {
-/*//console.log("in frameSelector selector=" + selector)    
-if(typeof selector === 'string' && !checkCss(selector)) {console.log("frameSelector string")
-        return `${JSON.stringify(selector)}`//JSON.stringify(selector)
-    } else {console.log("frameSelector printSelector")
-        console.log("frameSelector printSelector = " + printSelector(selector))
-        return printSelector(selector);
-    }
-    function checkCss(string) {
-        return (string.includes('[') && string.includes(']')) || string.includes('#')
-    }*/
-    //console.log("in parseSelector selector=" + selector)
     let string
     switch (typeof selector) {
         case 'string':
@@ -131,6 +120,7 @@ function regionParameter(region) {
             string = `${JSON.stringify(region)}`
             break;
         case "object":
+		console.log("in regionParameter object")
             string = parseObject(region.type ? region : {value: region, type:'Region'})
             break;
         case "undefined":
@@ -183,7 +173,7 @@ function serialize(value) {
 }
 
 function parseObject(object) {
-    if (object.selector) {
+    if (object.selector) {console.log("in parseObject object.selector")
         return selectors[object.type](JSON.stringify(object.selector))
     } else if (object.type) {
 // console.log("object.type = " + object.type)
