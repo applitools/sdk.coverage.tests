@@ -41,7 +41,7 @@ module.exports = function (tracker, test) {
 
     addHook('beforeEach', python`@pytest.fixture(scope="function")`)
     addHook('beforeEach', python`def eyes_runner_class():`)
-    if (test.config.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
+    if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
     else addHook('beforeEach', python`    return ClassicRunner()`)
     addHook('beforeEach', python`\n`)
 
