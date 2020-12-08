@@ -17,6 +17,11 @@ module.exports = function (tracker, test) {
     else return driver.findElement(element)
   }
    
+    let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true: false
+    let emulator = ((("env" in test) && ("device" in test.env))&& !("features" in test))
+    let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
+    let openPerformed = false
+
     addHook('deps', `import pytest`)
     addHook('deps', `import selenium`)
     addHook('deps', `from selenium.webdriver.common.by import By`)
@@ -53,6 +58,7 @@ module.exports = function (tracker, test) {
     //addHook('beforeEach', python`    conf.app_name = ${appName}`)
     addHook('beforeEach', python`    conf.test_name = ${test.config.baselineName}`)
     //addHook('beforeEach', python`    conf.viewport_size = ${viewportSize}`)
+
     if ("branchName" in test.config) addHook('beforeEach', python`    conf.branch_name = ${test.config.branchName};`)
     if ("parentBranchName" in test.config) addHook('beforeEach', python`    conf.parent_branch_name = ${test.config.parentBranchName};`)
     if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
@@ -62,7 +68,13 @@ module.exports = function (tracker, test) {
 	addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level +`, AccessibilityGuidelinesVersion.` + version + `))`)
     }
     addHook('beforeEach', python`    return conf`)
-    //addHook('beforeEach', python`\n`)
+    addHook('beforeEach', python`\n`)
+
+    if (mobile) setUpMobileNative(test, addHook)
+    else {
+	if (emulator) setUpWithEmulators(test, addHook)
+	else setUpBrowsers(test, addHook)
+    }
 
     const driver = {
         constructor: {
@@ -330,5 +342,85 @@ function getVal(val) {
     let nameAndValue = val.toString().split("\"")
     return nameAndValue[1]
 }
+
+function setUpMobileNative(test, addHook) {
+	//addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
+	//addHook('beforeEach', dot_net`    initEyes(false, false);`)
+}
+
+function setUpWithEmulators(test, addHook) {
+	if (test.env.device === 'Android 8.0 Chrome Emulator') {
+				addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        			addHook('beforeEach', python`def browser_type():`)
+			        addHook('beforeEach', python`    return "ChromeEmulator"`)
+				addHook('beforeEach', python`\n`)
+            			addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            			addHook('beforeEach', python`def emulation():`)
+				addHook('beforeEach', python`    is_emulation = True`)
+				switch (test.config.baselineName){
+					case 'Android Emulator 8.0 Portrait mobile fully':
+						addHook('beforeEach', python`    orientation = "Portrait"`)
+						addHook('beforeEach', python`    page = "mobile"`)
+						break;
+					case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
+						addHook('beforeEach', python`    orientation = "Portrait"`)
+						addHook('beforeEach', python`    page = "scrolled_mobile"`)						
+						break;
+					case 'Android Emulator 8.0 Portrait desktop fully':
+						addHook('beforeEach', python`    orientation = "Portrait"`)
+						addHook('beforeEach', python`    page = "desktop"`)
+						break;
+					default:
+						throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				}
+				addHook('beforeEach', python`    return is_emulation, orientation, page`)
+				addHook('beforeEach', python`\n`)
+			}
+			else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
+}
+
+function setUpBrowsers(test, addHook) {
+    let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false)? false: true
+    let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true)? true: false
+    let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS'))? true: false
+    if (("env" in test) && ("browser" in test.env))
+    {
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def browser_type():`)
+        switch (test.env.browser){
+          case 'firefox':
+            addHook('beforeEach', python`    return "Firefox"`)
+            addHook('beforeEach', python`\n`)
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def options():`)
+            addHook('beforeEach', python`    return webdriver.FirefoxOptions()`)
+            break;
+          case 'ie-11':
+            addHook('beforeEach', python`    return "IE11"`)
+            break;
+          case 'edge-18':
+            addHook('beforeEach', python`    return "Edge"`)
+            break;
+          case 'safari-11':
+            addHook('beforeEach', python`    return "Safari11"`)
+            break;
+          case 'safari-12':
+            addHook('beforeEach', python`    return "Safari12"`)
+            break;
+          case 'chrome':
+            break;
+          default:
+            throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
+        }
+        if (legacy) {
+	    addHook('beforeEach', python`\n`)
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def legacy():`)
+            addHook('beforeEach', python`    return True`)
+        }
+        addHook('beforeEach', python`\n`)
+    }
+}
+
 
 
