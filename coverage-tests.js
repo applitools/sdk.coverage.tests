@@ -1,14 +1,15 @@
 /* eslint-disable */
 const viewportSize = {width: 700, height: 460}
 const TYPE = {
-  CSS: `css`,
-  CLASSNAME: 'className',
+  CSS: `css`, // in the selenium api it's 'css selector'
+  CLASSNAME: 'class name',
   ID: 'id',
-  ACCESSIBILITY_ID: 'accessibilityId',
-  ANDROID_UI_AUTOMATOR: 'androidUIAutomator',
-  ANDROID_VIEW_TAG: 'androidViewTag',
-  IOS_PREDICATE: 'iosPredicate',
-  IOS_CLASS_CHAIN: 'iosClassChain',
+  XPATH: 'xpath',
+  NAME: 'name',
+  ACCESSIBILITY_ID: 'accessibility id',
+  ANDROID_UI_AUTOMATOR: '-android uiautomator',
+  IOS_PREDICATE: '-ios predicate string',
+  IOS_CLASS_CHAIN: '-ios class chain',
 }
 config({
   pages: {
