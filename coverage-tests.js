@@ -1,6 +1,15 @@
 /* eslint-disable */
 const viewportSize = {width: 700, height: 460}
-
+const TYPE = {
+  CSS: `css`,
+  CLASSNAME: 'className',
+  ID: 'id',
+  ACCESSIBILITY_ID: 'accessibilityId',
+  ANDROID_UI_AUTOMATOR: 'androidUIAutomator',
+  ANDROID_VIEW_TAG: 'androidViewTag',
+  IOS_PREDICATE: 'iosPredicate',
+  IOS_CLASS_CHAIN: 'iosClassChain',
+}
 config({
   pages: {
     Default: 'https://applitools.github.io/demo/TestPages/FramesTestPage/',
@@ -1376,6 +1385,109 @@ test('check window fully with html scrollRootElement after scroll', {
     })
     eyes.close()
   }
+})
+
+test('appium android check window', {
+  skipEmit: true,
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  config: {baselineName: 'Appium_Android_CheckWindow'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({ignoreRegions: [{type: TYPE.CLASSNAME, selector: 'android.widget.Button'}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 136, top: 237, width: 90, height: 48},
+    )
+  },
+})
+
+test('appium android check region with ignore region', {
+  skipEmit: true,
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  config: {baselineName: 'Appium_Android_CheckRegionWithIgnoreRegion'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image_container'},ignoreRegions: [{type: TYPE.ANDROID_UI_AUTOMATOR, selector: 'new UiSelector().textContains("You successfully clicked the button!")'}, {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image'}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 53, top: 0, width: 254, height: 22},
+    )
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[1],
+        {left: 0, top: 21, width: 360, height: 234},
+    )
+  },
+})
+
+test('appium android check region', {
+  skipEmit: true,
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  config: {baselineName: 'Appium_Android_CheckRegion'},
+  features: ['native-selectors'],
+  test: ({eyes}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.CLASSNAME, selector: 'android.widget.Button'}})
+    eyes.close()
+  },
+})
+
+test('appium iOS check window', {
+  skipEmit: true,
+  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  config: {baselineName: 'Appium_iOS_CheckWindow'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({ignoreRegions: [{type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 155, top: 258, width: 65, height: 30},
+    )
+  },
+})
+
+test('appium iOS check region with ignore region', {
+  skipEmit: true,
+  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.ACCESSIBILITY_ID, selector: 'BottomContainer'},ignoreRegions: [{type: TYPE.ACCESSIBILITY_ID, selector: 'BottomLabel'}, {type: TYPE.ACCESSIBILITY_ID, selector: 'BottomImage'}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 0, top: 0, width: 343, height: 21},
+    )
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[1],
+        {left: 115, top: 35, width: 113, height: 65},
+    )
+  },
+})
+test('appium iOS check region', {
+  skipEmit: true,
+  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  config: {baselineName: 'Appium_iOS_CheckRegion'},
+  features: ['native-selectors'],
+  test: ({eyes}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}})
+    eyes.close()
+  },
 })
 // #endregion
 
