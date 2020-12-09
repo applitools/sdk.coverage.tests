@@ -21,7 +21,7 @@ function checkSettings(cs) {
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
     if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
     if (cs.scrollRootElement/* && !cs.frames*/) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
-    if (cs.ignoreDisplacements) options += `.ignore_displacements(${cs.ignoreDisplacements})`
+    if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.isFully) options += '.fully()'
@@ -57,7 +57,7 @@ function parseSelectorByType(selector) {
                        selector = selector.replace('.', "")
                        return `By.CLASS_NAME, ${parseSelector(selector)}`
                    }
-                   else return `[By.CSS_SELECTOR, ${parseSelector(selector)}]`
+                   else return `By.CSS_SELECTOR, ${parseSelector(selector)}`
      } else return parseSelector(selector)
 }
 function parseSelector(selector) {

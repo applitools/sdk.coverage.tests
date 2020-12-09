@@ -5,7 +5,14 @@ const {capitalizeFirstLetter} = require('./util')
 function directString(String) {
     return {
         isRef: true,
-        ref: () => String
+	//ref: () => String
+        ref: () => {
+	if ((String !== undefined) && (((typeof String) === 'string') || (JSON.stringify(String).includes('true')) || (JSON.stringify(String).includes('false')))) {		
+		if (String.includes('true')) String = String.replace('true','True')
+		if (String.includes('false')) String = String.replace('false','False')
+	}
+	return String
+	}
     }
 }
 
@@ -24,11 +31,12 @@ module.exports = function (tracker, test) {
 
     addHook('deps', `import pytest`)
     addHook('deps', `import selenium`)
+    addHook('deps', `from selenium import webdriver`)
     addHook('deps', `from selenium.webdriver.common.by import By`)
     addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
     addHook('deps', `from python.test import *`)
-    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings)`)
-    addHook('deps', `from applitools.common import StitchMode`)
+    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
+    addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
@@ -70,6 +78,8 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', python`    return conf`)
     addHook('beforeEach', python`\n`)
 
+	console.log("mobile = " + mobile)
+console.log("emulator = " + emulator)
     if (mobile) setUpMobileNative(test, addHook)
     else {
 	if (emulator) setUpWithEmulators(test, addHook)
@@ -125,7 +135,10 @@ module.exports = function (tracker, test) {
             return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            return addCommand(python`driver.find_element(` + parseSelectorByType(element) + `).click()`)
+            let selector = parseSelectorByType(element)
+            selector = selector.replace(/\[/g, "")
+	    selector = selector.replace(/\]/g, "")
+            return addCommand(python`driver.find_element(` + selector + `).click()`)
         },
         type(element, keys) {
             return addCommand(python`${element}.send_keys(${keys})`)
@@ -210,7 +223,7 @@ module.exports = function (tracker, test) {
         },
         checkElementBy(selector, matchTimeout, tag) {
             return addCommand(python`eyes.check_region(
-        [By.CSS_SELECTOR, ${selector}],
+        By.CSS_SELECTOR, ${selector},
         tag=${tag},
         match_timeout=${matchTimeout},
       )`)
@@ -266,9 +279,18 @@ module.exports = function (tracker, test) {
 
     const assert = {
         equal(actual, expected, message) {
-            return addCommand(python`assert ${actual} == ${directString(JSON.stringify(expected))}, ${message}`)
+	    //let expect = (expected && expected.isRef) ? expected.ref() : directString(JSON.stringify(expected))
+	    
+	    //let expect = ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) ? expected.ref() : directString(JSON.stringify(expected))
+	    //let expect2 = directString(JSON.stringify(expected))
+	    //console.log("assert expect2 = " + expect2)
+	    //console.log("assert JSON.stringify(expected) = " + JSON.stringify(expected))
+
+            if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())// + `${message}`)
+	    return addCommand(python`assert ${actual} == ${directString(JSON.stringify(expected))}, ${message}`)
+	    //return addCommand(python`assert ${actual} == ` + expect2 + `, ${message}`)
         },
-        notEqual(actual, expected, message) {
+        notEqual(actual, expected, message) {console.log("JSON.stringify(expected) = " + JSON.stringify(expected))
             return addCommand(python`assert ${actual} != ${directString(JSON.stringify(expected))}, ${message}`)
         },
         ok(value, message) {
@@ -408,6 +430,7 @@ function setUpBrowsers(test, addHook) {
             addHook('beforeEach', python`    return "Safari12"`)
             break;
           case 'chrome':
+	    addHook('beforeEach', python`    return "Chrome"`)
             break;
           default:
             throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)

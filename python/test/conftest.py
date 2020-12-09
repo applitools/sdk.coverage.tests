@@ -77,6 +77,7 @@ def driver_setup(options, browser_type):
                     'browserName': 'MicrosoftEdge',
                     'browserVersion': '18.17763',
                     'platformName': 'Windows 10',
+                    'screenResolution': '1920x1080',
                     }
                 driver = webdriver.Remote(command_executor=sauce_url, desired_capabilities=capabilities)
                 break
@@ -91,9 +92,9 @@ def driver_setup(options, browser_type):
                     'browserName': 'safari',
                     'browserVersion': '11.0',
                     'platformName': 'macOS 10.12',
-                    }
-                  driver = webdriver.Remote(command_executor=sauce_url, desired_capabilities=capabilities)
-                  break
+                  }
+                driver = webdriver.Remote(command_executor=sauce_url, desired_capabilities=capabilities)
+                break
             if browser_type == "Safari12":
                 if (legacy):
                   capabilities = {}
@@ -105,9 +106,9 @@ def driver_setup(options, browser_type):
                     'browserName': 'safari',
                     'browserVersion': '12.1',
                     'platformName': 'macOS 10.13',
-                    }
-                  driver = webdriver.Remote(command_executor=sauce_url, desired_capabilities=capabilities)
-                  break
+                  }
+                driver = webdriver.Remote(command_executor=sauce_url, desired_capabilities=capabilities)
+                break
             if browser_type == "ChromeEmulator":
                 mobile_emulation = {
                         "deviceMetrics": { "width": 384, "height": 512, "pixelRatio": 2.0 },
