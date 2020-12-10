@@ -54,8 +54,6 @@ def driver_setup(options, browser_type):
         )
     while counter < 5:
         try:
-            print("----------------")
-            print("browser_type=", browser_type)
             if browser_type == "Chrome":
                 options.add_argument("--headless")
                 driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options,)

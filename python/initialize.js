@@ -78,8 +78,6 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', python`    return conf`)
     addHook('beforeEach', python`\n`)
 
-	console.log("mobile = " + mobile)
-console.log("emulator = " + emulator)
     if (mobile) setUpMobileNative(test, addHook)
     else {
 	if (emulator) setUpWithEmulators(test, addHook)
@@ -279,18 +277,10 @@ console.log("emulator = " + emulator)
 
     const assert = {
         equal(actual, expected, message) {
-	    //let expect = (expected && expected.isRef) ? expected.ref() : directString(JSON.stringify(expected))
-	    
-	    //let expect = ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) ? expected.ref() : directString(JSON.stringify(expected))
-	    //let expect2 = directString(JSON.stringify(expected))
-	    //console.log("assert expect2 = " + expect2)
-	    //console.log("assert JSON.stringify(expected) = " + JSON.stringify(expected))
-
-            if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())// + `${message}`)
+            if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())
 	    return addCommand(python`assert ${actual} == ${directString(JSON.stringify(expected))}, ${message}`)
-	    //return addCommand(python`assert ${actual} == ` + expect2 + `, ${message}`)
         },
-        notEqual(actual, expected, message) {console.log("JSON.stringify(expected) = " + JSON.stringify(expected))
+        notEqual(actual, expected, message) {
             return addCommand(python`assert ${actual} != ${directString(JSON.stringify(expected))}, ${message}`)
         },
         ok(value, message) {

@@ -20,7 +20,7 @@ function checkSettings(cs) {
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
     if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
-    if (cs.scrollRootElement/* && !cs.frames*/) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
+    if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
@@ -29,18 +29,15 @@ function checkSettings(cs) {
     return name + target + element + options
 }
 
-function frames(arr) {console.log("in frames")
-    //arr.reduce((acc, val) => console.log("acc = " + acc + "  val = " + val + "  frame(val) = " + `${frame(val)}`))
+function frames(arr) {
     return arr.reduce((acc, val) => acc + `${frame(val)}`, '')
 }
 function framesClassic(arr) {
-    console.log("in framesClassic")
     if (arr === null) return ""
     if (arr.isRef) return arr.ref()
     return arr.reduce((acc, val) => acc + `${parseSelector(val)}`, '')
 }
 function frame(frame) {
-    //console.log("in frame, frame=" + frame)
     return  ( !frame.isRef && frame.frame) ? `.frame(${parseSelector(frame.frame)}).scroll_root_element(${printSelector(frame.scrollRootElement)})` : `.frame(${parseSelector(frame)})`
 }
 function parseSelectorByType(selector) {
@@ -63,24 +60,19 @@ function parseSelectorByType(selector) {
 function parseSelector(selector) {
     let string
     switch (typeof selector) {
-        case 'string':
-            console.log("in string")            
+        case 'string':          
 	    string = wrapSelector(selector)
             break;
         case "object":
-            console.log("in object") 
             string = parseObject(selector)
             break;
         case "undefined":
-            console.log("in undefined") 
             string = 'None'
             break;
         case "function":
-            console.log("in function") 
             string = selector.isRef ? selector.ref() : 'None'
             break;
     }
-    console.log("string=" + string) 
     return string
 }
 
@@ -120,7 +112,6 @@ function regionParameter(region) {
             string = `${JSON.stringify(region)}`
             break;
         case "object":
-		console.log("in regionParameter object")
             string = parseObject(region.type ? region : {value: region, type:'Region'})
             break;
         case "undefined":
@@ -173,10 +164,9 @@ function serialize(value) {
 }
 
 function parseObject(object) {
-    if (object.selector) {console.log("in parseObject object.selector")
+    if (object.selector) {
         return selectors[object.type](JSON.stringify(object.selector))
     } else if (object.type) {
-// console.log("object.type = " + object.type)
         const typeBuilder = types[object.type]
         if (typeBuilder) {
             if(typeBuilder.isGeneric) {
@@ -189,7 +179,6 @@ function parseObject(object) {
 }
 
 function getter({target, key, type}) {
-    // console.log(`target: ${target} , key: ${key}, type: ${JSON.stringify(type, null, 3)}, typeOfKey: ${typeof key}, isArray: ${Array.isArray(key)}`)
     if (typeof type === 'undefined') return `${target}.${key}`
     else if (types[type.name]) return types[type.name].get(target, key)
     else throw new Error(`Haven't implement type ${JSON.stringify(type)}`)
@@ -205,22 +194,18 @@ function mapTypes(type) {
     return mapped
 }
 function wrapSelector(selector) {
-console.log("in wrapSelector") 
     selector = selector.toString()
-console.log("in wrapSelector selector="+selector) 
     selector = selector.replace(/"/g, "")
 	selector = selector.replace(/'/g, "")
 	selector = selector.replace(/\[/g, "")
 	selector = selector.replace(/\]/g, "")
 	selector = selector.replace('name=', "")
-console.log("in wrapSelector selector2="+selector)
 	selector = '"' + selector + '"'
-console.log("in wrapSelector selector3="+selector)
 	return selector   
-    return val//val.selector ? val : {type: 'css', selector: val}
+    return val
 }
 function printSelector(val) {
-    return serialize(val)//((val && val.isRef) ? val : wrapSelector(val))
+    return serialize(val)
 }
 const variable = ({name, value, type}) => `${name} = ${value}`
 const call = ({target, args}) => {
