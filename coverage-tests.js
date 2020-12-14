@@ -1088,6 +1088,98 @@ test('should send correct region coordinates in target region with css stitching
   }
 })
 
+add test to test('should send image location when check window', {
+  page: 'Default',
+  test({eyes, assert, driver, helpers}) {
+    driver.executeScript('window.scrollTo(0, 350)')
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check()
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
+  }
+})
+
+test('should send image location when check window fully', {
+  page: 'Default',
+  test({eyes, assert, driver, helpers}) {
+    driver.executeScript('window.scrollTo(0, 350)')
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+  }
+})
+
+test('should send image location when check frame', {
+  page: 'Default',
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({frames: ['[name="frame1"]']})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 506})
+  }
+})
+
+test('should send image location when check frame fully', {
+  page: 'Default',
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({frames: ['[name="frame1"]'], isFully: true})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+  }
+})
+
+test('should send image location when check region by selector', {
+  page: 'Default',
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: '#centered'})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
+  }
+})
+
+test('should send image location when check region by selector fully', {
+  page: 'Default',
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
+  }
+})
+
+test('should send image location when check region by selector in frame', {
+  page: 'Default',
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({frames: ['[name="frame1"]'], region: '[name="frame1-1"]'})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 192})
+  }
+})
+
+test('should send image location when check region by selector with custom scroll root', {
+  page: 'Default',
+  test({eyes, assert, driver, helpers}) {
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.click('#centered')
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: '#modal-content', scrollRootElement: '#modal1'})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+  }
+})
+
 // #endregion
 
 // #region OTHERS
@@ -1479,6 +1571,7 @@ test('appium iOS check region with ignore region', {
     )
   },
 })
+
 test('appium iOS check region', {
   skipEmit: true,
   env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
@@ -1491,59 +1584,3 @@ test('appium iOS check region', {
   },
 })
 // #endregion
-
-// test('CheckRegionBySelector_Image', {
-//   page: 'Default',
-//   variants: {
-//     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckRegion2'}},
-//     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegion2_Scroll'}},
-//     'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckRegion2_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
-//     eyes.check({region: '#overflowing-div-image'})
-//     eyes.close()
-//   },
-// })
-
-// test('CheckWindowFully_Simple_Html', {
-//   page: 'Simple',
-//   variants: {
-//     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow_Simple_Html'}},
-//     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Simple_Html_Scroll'}},
-//     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_Simple_Html_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Scroll Root Element', viewportSize})
-//     eyes.check({scrollRootElement: 'html', isFully: true})
-//     eyes.close()
-//   },
-// })
-
-// test('CheckWindow_IgnoreRegionBySelector_Centered', {
-//   page: 'Default',
-//   variants: {
-//     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowWithIgnoreBySelector_Centered_Fluent'}},
-//     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowWithIgnoreBySelector_Centered_Fluent_Scroll'}},
-//     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Centered_Fluent_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-//     eyes.check({ignoreRegions: ['#centered']})
-//     eyes.close()
-//   },
-// })
-
-// test('CheckWindow_IgnoreRegionBySelector_Stretched', {
-//   page: 'Default',
-//   variants: {
-//     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowWithIgnoreBySelector_Stretched_Fluent'}},
-//     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowWithIgnoreBySelector_Stretched_Fluent_Scroll'}},
-//     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Stretched_Fluent_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-//     eyes.check({ignoreRegions: ['#stretched']})
-//     eyes.close()
-//   },
-// })
