@@ -14,8 +14,8 @@
     "url": "git+https://github.com/applitools/sdk.coverage.tests.git"
   },
   "scripts": {
-    "python:generate": "coverage-tests generate ./python",
-    "python:generate:local": "coverage-tests generate ./python --testsPath ./coverage-tests.js",
+    "python:generate:orig": "coverage-tests generate ./python",
+    "python:generate": "coverage-tests generate ./python --testsPath ./coverage-tests.js",
     "python:run": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -s -v ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
     "python:run:parallel": "cd python && pip3 install -r python_requirements.txt && APPLITOOLS_BATCH_ID=$(uuidgen) python3 -m pytest -v -n 10 ./test/coverage/generic --rootdir=./test --junitxml=./coverage-test-report.xml",
     "python:report:sandbox": "cd python && coverage-tests process-report --path . --reportId $TRAVIS_COMMIT",
