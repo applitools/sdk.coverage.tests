@@ -1389,7 +1389,6 @@ test('check window fully with html scrollRootElement after scroll', {
 })
 
 test('appium android check window', {
-  skipEmit: true,
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckWindow'},
   features: ['native-selectors'],
@@ -1407,7 +1406,6 @@ test('appium android check window', {
 })
 
 test('appium android check region with ignore region', {
-  skipEmit: true,
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckRegionWithIgnoreRegion'},
   features: ['native-selectors'],
@@ -1429,7 +1427,6 @@ test('appium android check region with ignore region', {
 })
 
 test('appium android check region', {
-  skipEmit: true,
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckRegion'},
   features: ['native-selectors'],
@@ -1441,7 +1438,6 @@ test('appium android check region', {
 })
 
 test('appium iOS check window', {
-  skipEmit: true,
   env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckWindow'},
   features: ['native-selectors'],
@@ -1459,7 +1455,6 @@ test('appium iOS check window', {
 })
 
 test('appium iOS check region with ignore region', {
-  skipEmit: true,
   env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
   features: ['native-selectors'],
@@ -1480,7 +1475,6 @@ test('appium iOS check region with ignore region', {
   },
 })
 test('appium iOS check region', {
-  skipEmit: true,
   env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegion'},
   features: ['native-selectors'],
