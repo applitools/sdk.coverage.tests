@@ -1,10 +1,10 @@
 module.exports = {
     "css": (selector) => `[By.CSS_SELECTOR, ${selector}]`,
-    "className": (selector) => `[By.CLASS_NAME, ${selector}]`,
+    "class name": (selector) => `[By.CLASS_NAME, ${selector}]`,
     "id": (selector) => `[By.ID, ${selector}]`,
-    "accessibilityId": (selector) => `MobileBy.AccessibilityId(${selector})`,
-    "androidUIAutomator": (selector) => `MobileBy.AndroidUIAutomator(${selector})`,
-    "androidViewTag": (selector) => `MobileBy.AndroidViewTag(${selector})`,
-    "iosPredicate": (selector) => `MobileBy.ByIosNsPredicate(${selector})`,
-    "iosClassChain": (selector) => `MobileBy.ByIosClassChain(${selector})`,
+    "accessibility id": (selector) => `[MobileBy.ACCESSIBILITY_ID, (${selector})]`,
+    "-android uiautomator": (selector) => `[MobileBy.ANDROID_UIAUTOMATOR, (${selector})]`,
+    "androidViewTag": (selector) => `[MobileBy.ANDROID_VIEWTAG, (${selector})]`,
+    "-ios predicate string": (selector) => `[MobileBy.IOS_PREDICATE, (${selector})]`,
+    "-ios class chain": (selector) => `[MobileBy.IOS_CLASS_CHAIN, (${selector})]`,
 }

@@ -34,6 +34,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `from selenium import webdriver`)
     addHook('deps', `from selenium.webdriver.common.by import By`)
     addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
+    if (mobile) addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
     addHook('deps', `from python.test import *`)
     addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
@@ -47,26 +48,42 @@ module.exports = function (tracker, test) {
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
     addSyntax('return', ({value}) => `return ${value}`)
 
-    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-    addHook('beforeEach', python`def eyes_runner_class():`)
-    if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
-    else addHook('beforeEach', python`    return ClassicRunner()`)
-    addHook('beforeEach', python`\n`)
-
-    if (test.config.stitchMode) {
+    if (mobile)
+    {
+        let device = (test.env.device == "Samsung Galaxy S8")? "Samsung Galaxy S8 FHD GoogleAPI Emulator": test.env.device         
+        addHook('beforeEach', python`@pytest.fixture(scope="function")
+def dev():
+    return ${device}
+        `)
+        addHook('beforeEach', python`@pytest.fixture(scope="function")
+def app():
+    return ${test.env.app}
+        `)
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def stitch_mode():`)
-        if (test.config.stitchMode === 'CSS') addHook('beforeEach', python`    return StitchMode.CSS`)
-        else addHook('beforeEach', python`    return StitchMode.Scroll`)
+        let desired_caps = (test.config.baselineName.includes("iOS"))? 'ios_desired_capabilities': 'android_desired_capabilities'
+        addHook('beforeEach', python`def desired_caps(` + desired_caps + `, request, dev, app):`)
+        addHook('beforeEach', python`    return ` + desired_caps)
         addHook('beforeEach', python`\n`)
+    }
+    else{
+	    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+	    addHook('beforeEach', python`def eyes_runner_class():`)
+	    if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
+	    else addHook('beforeEach', python`    return ClassicRunner()`)
+	    addHook('beforeEach', python`\n`)
+
+	    if (test.config.stitchMode) {
+		addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+		addHook('beforeEach', python`def stitch_mode():`)
+		if (test.config.stitchMode === 'CSS') addHook('beforeEach', python`    return StitchMode.CSS`)
+		else addHook('beforeEach', python`    return StitchMode.Scroll`)
+		addHook('beforeEach', python`\n`)
+	    }
     }
     addHook('beforeEach', python`@pytest.fixture(scope="function")`)
     addHook('beforeEach', python`def configuration(eyes):`)
     addHook('beforeEach', python`    conf = eyes.get_configuration()`)
-    //addHook('beforeEach', python`    conf.app_name = ${appName}`)
     addHook('beforeEach', python`    conf.test_name = ${test.config.baselineName}`)
-    //addHook('beforeEach', python`    conf.viewport_size = ${viewportSize}`)
-
     if ("branchName" in test.config) addHook('beforeEach', python`    conf.branch_name = ${test.config.branchName};`)
     if ("parentBranchName" in test.config) addHook('beforeEach', python`    conf.parent_branch_name = ${test.config.parentBranchName};`)
     if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
@@ -356,8 +373,10 @@ function getVal(val) {
 }
 
 function setUpMobileNative(test, addHook) {
-	//addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
-	//addHook('beforeEach', dot_net`    initEyes(false, false);`)
+	addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def browser_type():`)
+	addHook('beforeEach', python`    return "Appium"`)
+	addHook('beforeEach', python`\n`)
 }
 
 function setUpWithEmulators(test, addHook) {

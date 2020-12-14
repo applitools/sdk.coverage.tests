@@ -1,9 +1,11 @@
 import os
 import pytest
 import time
+from copy import copy
 
 from selenium import webdriver
-from applitools.selenium import Eyes, Target, BatchInfo, ClassicRunner, StitchMode
+from appium import webdriver as appium_webdriver
+from applitools.selenium import Eyes, Target, BatchInfo, StitchMode, Region, BrowserType, Configuration, VisualGridRunner, ClassicRunner
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
@@ -42,8 +44,43 @@ def legacy():
     return False
 
 
+@pytest.fixture(scope="function")
+def desired_caps():
+    return None
+
+
+@pytest.yield_fixture(scope="function")
+def android_desired_capabilities(request, dev, app):
+    desired_caps = copy(getattr(request, "param", {}))  # browser_config.copy()
+    desired_caps["app"] = app
+    desired_caps["NATIVE_APP"] = True
+    desired_caps["browserName"] = ""
+    desired_caps["deviceName"] = "Samsung Galaxy S8 WQHD GoogleAPI Emulator"
+    desired_caps["platformVersion"] = "8.1"
+    desired_caps["platformName"] = "Android"
+    desired_caps["clearSystemFiles"] = True
+    desired_caps["noReset"] = True
+    desired_caps["name"] = "AndroidNativeApp checkWindow"
+    return desired_caps
+
+
+@pytest.yield_fixture(scope="function")
+def ios_desired_capabilities(request, dev, app):
+    desired_caps = copy(getattr(request, "param", {}))
+    desired_caps["app"] = app
+    desired_caps["NATIVE_APP"] = True
+    desired_caps["browserName"] = ""
+    desired_caps["deviceName"] = "iPhone XS Simulator"
+    desired_caps["platformVersion"] = "12.2"
+    desired_caps["platformName"] = "iOS"
+    desired_caps["clearSystemFiles"] = True
+    desired_caps["noReset"] = True
+    desired_caps["name"] = "iOSNativeApp checkWindow"
+    return desired_caps
+
+
 @pytest.fixture(name="driver", scope="function")
-def driver_setup(options, browser_type):
+def driver_setup(options, browser_type, desired_caps):
     #options = webdriver.ChromeOptions()
     counter = 0
     sauce_url = (
@@ -54,6 +91,14 @@ def driver_setup(options, browser_type):
         )
     while counter < 5:
         try:
+            if browser_type == "Appium":
+                sauce_url = "https://{username}:{password}@ondemand.saucelabs.com:443/wd/hub".format(
+                username=os.getenv("SAUCE_USERNAME", None),
+                password=os.getenv("SAUCE_ACCESS_KEY", None),
+                )
+                selenium_url = os.getenv("SELENIUM_SERVER_URL", sauce_url)
+                driver = appium_webdriver.Remote(command_executor=selenium_url, desired_capabilities=desired_caps)
+                break
             if browser_type == "Chrome":
                 options.add_argument("--headless")
                 driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options,)
@@ -116,7 +161,7 @@ def driver_setup(options, browser_type):
                 options.add_argument("--headless")
                 driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options,)
                 break
-            if browser_type != "Chrome" and browser_type != "Firefox" and browser_type != "IE11" and browser_type != "Edge" and browser_type != "Safari11" and browser_type != "Safari12": raise ValueError           
+            if browser_type != "Chrome" and browser_type != "Firefox" and browser_type != "IE11" and browser_type != "Edge" and browser_type != "Safari11" and browser_type != "Safari12" and browser_type != "Appium": raise ValueError           
         except Exception as e:
             if isinstance(e,ValueError): raise ValueError ("Wrong browser type " + browser_type)
             print("Tried to start browser. It was exception {}".format(e))
