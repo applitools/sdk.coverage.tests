@@ -1131,7 +1131,7 @@ test('should extract text from regions', {
   page: 'StickyHeader',
   config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const element = driver.findElement({type: 'css', selector: '.page h1'}).ref('element')
     const texts = eyes.extractText([
       {target: {left: 38, top: 38, width: 213, height: 23}, hint: 'This is the navigation bar'},
@@ -1143,7 +1143,7 @@ test('should extract text from regions', {
     eyes.close(false)
     assert.equal(texts[0], 'This is the navigation bar')
     assert.equal(texts[1], 'Lorem Ipsum')
-    assert.equal(texts[2], 'Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc ullamcorper nisl id porta mollis. Aliquam odio tortor, gravida nec accumsan id,\nsollicitudin id est. Vivamus at lacinia leo. Aliquam pharetra metus quis tellus eleifend consectetur. Donec sagittis venenatis fermentum.\nPraesent fermentum dignissim iaculis.')
+    assert.equal(texts[2], 'Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc ullamcorper\nnisl id porta mollis. Aliquam odio tortor, gravida nec accumsan id,\nsollicitudin id est. Vivamus at lacinia leo. Aliquam pharetra metus quis\ntellus eleifend consectetur. Donec sagittis venenatis fermentum.\nPraesent fermentum dignissim')
   },
 })
 
