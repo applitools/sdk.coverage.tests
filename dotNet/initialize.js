@@ -60,14 +60,17 @@ module.exports = function(tracker, test) {
     addSyntax('return', ({value}) => `return ${value}`)
 
     addHook('deps', `using NUnit.Framework;`)
+	addHook('deps', `using Applitools.Tests.Utils;`)
+	addHook('deps', `using Applitools.Generated.Utils;`)
+	addHook('deps', `using Applitools.Utils.Geometry;`)
 	if (mobile) {
 	    addHook('deps', `using Applitools.Appium.GenericUtils;`)
+		addHook('deps', `using OpenQA.Selenium;`)
+		addHook('deps', `using OpenQA.Selenium.Appium;`)
 	}
 	else {
         addHook('deps', `using OpenQA.Selenium;`)
-        addHook('deps', `using Applitools.Utils.Geometry;`)
 	    addHook('deps', `using Applitools.Selenium;`)
-		addHook('deps', `using Applitools.Tests.Utils;`)
 		addHook('deps', `using OpenQA.Selenium.Interactions;`)
 	    addHook('deps', `using OpenQA.Selenium.Remote;`)
 	    addHook('deps', `using System.Collections.Generic;`)
@@ -150,9 +153,11 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`webDriver.SwitchTo().ParentFrame();`)
         },
         findElement(selector) {
-			if (selector.includes('name=')) return addCommand(dot_net`webDriver.FindElement(By.Name(` + takeSelector(selector) + `));`)//${takeSelector(selector)}));`)//`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
+			let drv = "driver"
+			if (openPerformed) drv = "webDriver"
+			if (selector.includes('name=')) return addCommand(dot_net`` + drv + `.FindElement(By.Name(` + takeSelector(selector) + `));`)//${takeSelector(selector)}));`)//`driver.FindElement(By.Name(${takeSelector(element)})).Click();`)
             else return addCommand(
-                dot_net`webDriver.FindElement(By.CssSelector(${selector.toString().replace(/\"/g,'')}));`,
+                dot_net`` + drv + `.FindElement(By.CssSelector("${selector.toString().replace(/\"/g,'')}"));`,
             )
         },
         findElements(selector) {
@@ -175,15 +180,15 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`webDriver.Manage().Window.Size = ${size};`)
         },
         click(element) {
+			let drv = "driver"
+			if (openPerformed) drv = "webDriver"
 			switch (typeof element) {
 				case 'string':
-					if (mobile) addCommand(dot_net`Utilities.FindElement(webDriver, ${element}).Click();`)
-					else { 
-						if (element.includes('name=')) {
-							addCommand(dot_net`webDriver.FindElement(By.Name(${takeSelector(element)})).Click();`)
-						}
-						else addCommand(dot_net`webDriver.FindElement(By.CssSelector(${element})).Click();`)
+					if (element.includes('name=')) {
+						addCommand(dot_net`` + drv + `.FindElement(By.Name(${takeSelector(element)})).Click();`)
 					}
+					else addCommand(dot_net`` + drv + `.FindElement(By.CssSelector(\"${element}\")).Click();`)
+					//}
 					break;
 				case "object":
 					if (element.type === undefined) addCommand(dot_net`${element}.Click();`)
@@ -191,21 +196,28 @@ module.exports = function(tracker, test) {
 						let selector
 						switch (element.type){
 							case 'css':
-							  selector = 'CssSelector'
+							  selector = 'By.CssSelector'
 							  break;
 							case 'id':
-							  selector = 'Id'
+							  selector = 'By.Id'
 							  break;
 							case 'class':
-							  selector = 'ClassName'
+							case 'class name':
+							  selector = 'By.ClassName'
 							  break;
 							case 'name':
-							  selector = 'Name'
+							  selector = 'By.Name'
+							  break;
+							case '-ios predicate string':
+							  selector = 'MobileBy.IosNSPredicate'
+							  break;
+							case '-ios class chain':
+							  selector = 'MobileBy.iOSClassChain'
 							  break;
 							default:
-							  throw new Error(`Click - unimplemented type of selector was used`)
+							  throw new Error(`Click - unimplemented type of selector ` + element.type + ` was used`)
 						}
-						addCommand(dot_net`webDriver.FindElement(By.` + selector + `(\"${element.selector}\")).Click();`)
+						addCommand(dot_net`` + drv + `.FindElement(` + selector + `(\"${element.selector}\")).Click();`)
 					}
 					break;
 			}
@@ -283,7 +295,7 @@ module.exports = function(tracker, test) {
             addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
         },
         check(checkSettings = {}) {
-			if (mobile) return addCommand(`eyes.Check(Target.Region(Utilities.FindElement(webDriver, "${checkSettings.region}")));`)
+			//if (mobile) return addCommand(`eyes.Check(Target.Region(Utilities.FindElement(webDriver, "${checkSettings.region}")));`)
 			if (test.api !== 'classic') {
               return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
 			}else if (checkSettings.region) {
@@ -350,7 +362,7 @@ module.exports = function(tracker, test) {
 		let act = parseAssertActual(actual.ref())//parseAssertActual(serializeOutput(actual))
 		
 		let mess = message ? message : null
-		addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
+		addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
     },
 
 	instanceOf(object, className, message) {
