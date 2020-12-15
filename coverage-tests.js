@@ -1094,7 +1094,7 @@ test('should send image location when check window', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check()
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
   }
@@ -1106,7 +1106,7 @@ test('should send image location when check window fully', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({isFully: true})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
   }
@@ -1117,7 +1117,7 @@ test('should send image location when check frame', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({frames: ['[name="frame1"]']})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 506})
   }
@@ -1128,7 +1128,7 @@ test('should send image location when check frame fully', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({frames: ['[name="frame1"]'], isFully: true})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
   }
@@ -1139,7 +1139,7 @@ test('should send image location when check region by selector', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({region: '#centered'})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
   }
@@ -1150,7 +1150,7 @@ test('should send image location when check region by selector fully', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({region: '#overflowing-div', isFully: true})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
   }
@@ -1161,7 +1161,7 @@ test('should send image location when check region by selector in frame', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({frames: ['[name="frame1"]'], region: '[name="frame1-1"]'})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 192})
   }
@@ -1174,7 +1174,7 @@ test('should send image location when check region by selector with custom scrol
     driver.executeScript('window.scrollTo(0, 350)')
     driver.click('#centered')
     eyes.check({region: '#modal-content', scrollRootElement: '#modal1'})
-    const result = eyes.close().ref('result')
+    const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
   }
