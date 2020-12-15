@@ -1145,10 +1145,34 @@ test('should send image location when check region by selector', {
   }
 })
 
+test('should send image location when check region by selector after scroll', {
+  page: 'Default',
+  test({eyes, assert, driver, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    eyes.check({region: '#centered'})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
+  }
+})
+
 test('should send image location when check region by selector fully', {
   page: 'Default',
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
+  }
+})
+
+test('should send image location when check region by selector fully after scroll', {
+  page: 'Default',
+  test({eyes, assert, driver, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({region: '#overflowing-div', isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
