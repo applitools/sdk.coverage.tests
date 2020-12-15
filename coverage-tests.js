@@ -1088,7 +1088,7 @@ test('should send correct region coordinates in target region with css stitching
   }
 })
 
-add test to test('should send image location when check window', {
+test('should send image location when check window', {
   page: 'Default',
   test({eyes, assert, driver, helpers}) {
     driver.executeScript('window.scrollTo(0, 350)')
