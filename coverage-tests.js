@@ -1091,8 +1091,8 @@ test('should send correct region coordinates in target region with css stitching
 test('should send image location when check window', {
   page: 'Default',
   test({eyes, assert, driver, helpers}) {
-    driver.executeScript('window.scrollTo(0, 350)')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
     eyes.check()
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
@@ -1103,8 +1103,8 @@ test('should send image location when check window', {
 test('should send image location when check window fully', {
   page: 'Default',
   test({eyes, assert, driver, helpers}) {
-    driver.executeScript('window.scrollTo(0, 350)')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({isFully: true})
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
@@ -1170,9 +1170,9 @@ test('should send image location when check region by selector in frame', {
 test('should send image location when check region by selector with custom scroll root', {
   page: 'Default',
   test({eyes, assert, driver, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     driver.click('#centered')
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({region: '#modal-content', scrollRootElement: '#modal1'})
     const result = eyes.close().ref('result')
     const info = helpers.getTestInfo(result).ref('info')
