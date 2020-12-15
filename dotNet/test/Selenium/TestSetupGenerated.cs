@@ -185,6 +185,10 @@ namespace Applitools.Generated.Selenium.Tests
             HashSet<Region> expectedRegions = new HashSet<Region> { expectedRegion };
             TestUtils.CompareSimpleRegionsList_(actualRegions, expectedRegions, "Region");
         }
+        protected void compareProcedure(Location actualLocation, Location expectedLocation, string type = null)
+        {
+            Assert.AreEqual(expectedLocation, actualLocation, type);
+        }
 
         protected void compareProcedure(Dictionary<string, object> actualRegion, RectangleSize expectedRegion, string type)
         {

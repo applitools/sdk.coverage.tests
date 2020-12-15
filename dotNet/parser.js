@@ -95,7 +95,7 @@ function regionParameter (region) {
     let string
     switch (typeof region) {
         case 'string':
-            string = `By.CssSelector(\"${region}\")`
+            string = `By.CssSelector(\"${region.toString().replace(/\"/g, '')}\")`
             break;
         case "object":
 			if (region.type) string = findElementBySelectorType(region.selector, region.type)
@@ -166,6 +166,7 @@ function expectParser(expected){
 		}
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
 		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
+		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
 		return expected
 	}
 }
