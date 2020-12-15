@@ -165,8 +165,6 @@ function serialize(value) {
 
 function parseObject(object) {
     if (object.selector) {
-	console.log("JSON.stringify(object.selector) = " + JSON.stringify(object.selector))
-	console.log("object.type = " + object.type)
         return selectors[object.type](JSON.stringify(object.selector))
     } else if (object.type) {
         const typeBuilder = types[object.type]

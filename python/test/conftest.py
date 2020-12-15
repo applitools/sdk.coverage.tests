@@ -89,7 +89,7 @@ def driver_setup(options, browser_type, desired_caps):
                 password=os.getenv("SAUCE_ACCESS_KEY", None),
             )
         )
-    while counter < 5:
+    for _ in range(5):
         try:
             if browser_type == "Appium":
                 sauce_url = "https://{username}:{password}@ondemand.saucelabs.com:443/wd/hub".format(
@@ -161,7 +161,7 @@ def driver_setup(options, browser_type, desired_caps):
                 options.add_argument("--headless")
                 driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options,)
                 break
-            if browser_type != "Chrome" and browser_type != "Firefox" and browser_type != "IE11" and browser_type != "Edge" and browser_type != "Safari11" and browser_type != "Safari12" and browser_type != "Appium": raise ValueError           
+            if browser_type not in ["Chrome", "Firefox", "IE11", "Edge", "Safari11", "Safari12", "Appium"]: raise ValueError           
         except Exception as e:
             if isinstance(e,ValueError): raise ValueError ("Wrong browser type " + browser_type)
             print("Tried to start browser. It was exception {}".format(e))
