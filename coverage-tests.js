@@ -1019,6 +1019,21 @@ test('should send accessibility regions by selector', {
   }
 })
 
+test('should send region by selector in padded page', {
+  page: 'PaddedBody',
+  config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
+    eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+      info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
+      {left: 0, top: 81, width: 1084, height: 679}
+    )
+  }
+})
+
 test('should send ignore displacements', {
   page: 'Default',
   variants: {
@@ -1049,18 +1064,6 @@ test('should send dom', {
   }
 })
 
-test('should send dom when check region', {
-  page: 'DomCapture',
-  config: {baselineName: 'Test SendDom'},
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Test SendDom', viewportSize: {width: 1000, height: 700}})
-    eyes.check({region: '#scroll1'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-  }
-})
-
 test('should not send dom', {
   page: 'HelloWorld',
   config: {baselineName: 'Test NOT SendDom'},
@@ -1073,127 +1076,106 @@ test('should not send dom', {
   }
 })
 
-test('should send correct region coordinates in target region with css stitching fully', {
-  page: 'PaddedBody',
-  config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
-    eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(
-      info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 0, top: 81, width: 1084, height: 679}
-    )
-  }
-})
-
-test('should send image location when check window', {
+test('should send dom and location when check window', {
   page: 'Default',
-  test({eyes, assert, driver, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check()
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
   }
 })
 
-test('should send image location when check window fully', {
+test('should send dom and location when check window fully', {
   page: 'Default',
-  test({eyes, assert, driver, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.attributes['data-applitools-scroll'], 'true')
   }
 })
 
-test('should send image location when check frame', {
+test('should send dom and location when check frame', {
   page: 'Default',
-  test({eyes, assert, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({frames: ['[name="frame1"]']})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 506})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
 
-test('should send image location when check frame fully', {
+test('should send dom and location when check frame fully', {
   page: 'Default',
-  test({eyes, assert, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({frames: ['[name="frame1"]'], isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.attributes['data-applitools-scroll'], 'true')
   }
 })
 
-test('should send image location when check region by selector', {
+test('should send dom and location when check region by selector', {
   page: 'Default',
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({region: '#centered'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
-  }
-})
-
-test('should send image location when check region by selector after scroll', {
-  page: 'Default',
-  test({eyes, assert, driver, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({region: '#centered'})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
 
-test('should send image location when check region by selector fully', {
+test('should send dom and location when check region by selector fully', {
   page: 'Default',
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({region: '#overflowing-div', isFully: true})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
-  }
-})
-
-test('should send image location when check region by selector fully after scroll', {
-  page: 'Default',
-  test({eyes, assert, driver, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({region: '#overflowing-div', isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.childNodes[1].childNodes[3].attributes['data-applitools-scroll'], 'true')
   }
 })
 
-test('should send image location when check region by selector in frame', {
+test('should send dom and location when check region by selector in frame', {
   page: 'Default',
-  test({eyes, assert, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
     eyes.check({frames: ['[name="frame1"]'], region: '[name="frame1-1"]'})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 192})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
 
-test('should send image location when check region by selector with custom scroll root', {
+test('should send dom and location when check region by selector with custom scroll root', {
   page: 'Default',
-  test({eyes, assert, driver, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     driver.click('#centered')
@@ -1201,6 +1183,23 @@ test('should send image location when check region by selector with custom scrol
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+  }
+})
+
+test('should send dom and location when check region by selector fully with custom scroll root', {
+  page: 'Default',
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.click('#centered')
+    eyes.check({region: '#modal-content', isFully: true, scrollRootElement: '#modal1'})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.childNodes[1].childNodes[33].attributes['data-applitools-scroll'], 'true')
   }
 })
 
