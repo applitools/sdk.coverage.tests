@@ -15,6 +15,8 @@ using OpenQA.Selenium.Safari;
 using OpenQA.Selenium.Remote;
 using System.Web;
 using System.Collections.Specialized;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Applitools.Generated.Selenium.Tests
 {
@@ -254,9 +256,10 @@ namespace Applitools.Generated.Selenium.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        protected string getDom(TestResults results, string domId)
+        protected JObject getDom(TestResults results, string domId)
         {
-            return TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);
+            string dom = TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);
+            return JObject.Parse(dom);
         }
 
         public static T RetryCreateWebDriver<T>(Func<T> func, int times = 3) where T : class, IWebDriver
