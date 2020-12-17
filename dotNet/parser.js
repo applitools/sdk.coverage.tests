@@ -141,7 +141,8 @@ function parseAssertActual(actual){
 			if (result === "") {result = "(bool)" + element; return;}
 			element = element.replace(/"/g, "")
 			element = element.replace(/]/g, "")
-			element = "[\"" + element + "\"]"
+			if (Number(element)) element = "[" + element + "]"
+			else element = "[\"" + element + "\"]"
 			result = result + element
 		})
 		return result
