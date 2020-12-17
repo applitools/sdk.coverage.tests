@@ -344,10 +344,9 @@ module.exports = function (tracker, test) {
 				(objectToString.call(expected) === "[object String]")) expect = expectParser(expected)
 			if (objectToString.call(expected) === "[object Function]") expect = expected.ref()
 
-			if (actual.isRef) {
-				if ((actual.type() !== undefined) && (actual.type().name === 'Map<String, Number>')) act = `(Dictionary<string, object>)${actual.ref()}`
-			}
-			let act = parseAssertActual(actual.ref())//parseAssertActual(serializeOutput(actual))
+			let act
+			if (actual.isRef) act = parseAssertActual(actual.ref())
+			else act = `${actual}`
 
 			let mess = message ? message : null
 			addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
@@ -409,6 +408,10 @@ module.exports = function (tracker, test) {
 					},
 				},
 			})
+		},
+		getDom(result, domId) {
+			let id = parseAssertActual(domId.ref())
+			return addCommand(dot_net`getDom(${result}, ` + id + `);`)
 		},
 	}
 

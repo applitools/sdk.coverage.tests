@@ -95,7 +95,8 @@ function regionParameter (region) {
     let string
     switch (typeof region) {
         case 'string':
-            string = `By.CssSelector(\"${region.toString().replace(/\"/g, '')}\")`
+            if (region.includes('name=')) string = `By.Name(${takeSelector(region)})`
+            else string = `By.CssSelector(${takeSelector(region)})`
             break;
         case "object":
 			if (region.type) string = findElementBySelectorType(region.selector, region.type)
@@ -135,6 +136,16 @@ function findElementBySelectorType(selector, type){
 function parseAssertActual(actual){
 	let elements = actual.includes('[')? actual.split('[') : actual.split('.');
 	let result = ""
+	if (elements[0] === "dom") {
+			elements.forEach(element => {
+			if (result === "") {result = "(bool)" + element; return;}
+			element = element.replace(/"/g, "")
+			element = element.replace(/]/g, "")
+			element = "[\"" + element + "\"]"
+			result = result + element
+		})
+		return result
+	}
 	elements.forEach(element => {
 		if (result === "") {result = result + element; return;}
 		element = element.replace(/"/g, "")
@@ -167,6 +178,7 @@ function expectParser(expected){
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
 		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
 		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
+		//if (expected.hasOwnProperty('x')) return `new Location(${expected.x}, ${expected.y})`
 		return expected
 	}
 }
