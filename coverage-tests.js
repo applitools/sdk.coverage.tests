@@ -1078,7 +1078,6 @@ test('should not send dom', {
 
 test('should send dom and location when check window', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1092,7 +1091,6 @@ test('should send dom and location when check window', {
 
 test('should send dom and location when check window fully', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1108,7 +1106,6 @@ test('should send dom and location when check window fully', {
 
 test('should send dom and location when check frame', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1122,7 +1119,6 @@ test('should send dom and location when check frame', {
 
 test('should send dom and location when check frame fully', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1138,7 +1134,6 @@ test('should send dom and location when check frame fully', {
 
 test('should send dom and location when check region by selector', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1152,7 +1147,6 @@ test('should send dom and location when check region by selector', {
 
 test('should send dom and location when check region by selector fully', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1168,7 +1162,6 @@ test('should send dom and location when check region by selector fully', {
 
 test('should send dom and location when check region by selector in frame', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1182,7 +1175,6 @@ test('should send dom and location when check region by selector in frame', {
 
 test('should send dom and location when check region by selector with custom scroll root', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1197,7 +1189,6 @@ test('should send dom and location when check region by selector with custom scr
 
 test('should send dom and location when check region by selector fully with custom scroll root', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1215,7 +1206,6 @@ test('should send dom and location when check region by selector fully with cust
 // TODO remove this test once OCR is released on every sdk
 test('should send dom of version 9', {
   page: 'Default',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST},
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({})
@@ -1268,7 +1258,7 @@ test('should find regions by visual locator', {
 
 test('should extract text from regions', {
   page: 'StickyHeader',
-  config: {serverUrl: 'https://testeyesapi.applitools.com/', apiKey: process.env.APPLITOOLS_API_KEY_TEST, stitchMode: 'CSS'},
+  config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const element = driver.findElement({type: 'css', selector: '.page h1'}).ref('element')
@@ -1282,7 +1272,7 @@ test('should extract text from regions', {
     eyes.close(false)
     assert.equal(texts[0], 'This is the navigation bar')
     assert.equal(texts[1], 'Lorem Ipsum')
-    assert.equal(texts[2], 'Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc ullamcorper\nnisl id porta mollis. Aliquam odio tortor, gravida nec accumsan id,\nsollicitudin id est. Vivamus at lacinia leo. Aliquam pharetra metus quis\ntellus eleifend consectetur. Donec sagittis venenatis fermentum.\nPraesent fermentum dignissim')
+    assert.equal(texts[2], 'Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc ullamcorper\nnisl id porta mollis. Aliquam odio tortor, gravida nec accumsan id,\nsollicitudin id est. Vivamus at lacinia leo. Aliquam pharetra metus quis\ntellus eleifend consectetur. Donec sagittis venenatis fermentum.\nPraesent fermentum dignissim iaculis.')
   },
 })
 
