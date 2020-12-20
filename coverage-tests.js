@@ -1203,6 +1203,67 @@ test('should send dom and location when check region by selector fully with cust
   }
 })
 
+test('should send dom and location when check window VG', {
+  page: 'Default',
+  vg: true,
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check()
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll');
+   }
+})
+
+test('should send dom and location when check window fully VG', {
+  page: 'Default',
+  vg: true,
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll');
+  }
+})
+
+test('should send dom and location when check region by selector VG', {
+  page: 'Default',
+  vg: true,
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: '#centered'})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll');
+  }
+})
+
+test('should send dom and location when check region by selector fully VG', {
+  page: 'Default',
+  vg: true,
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll');
+  }
+})
+
+
 // TODO remove this test once OCR is released on every sdk
 test('should send dom of version 9', {
   page: 'Default',
