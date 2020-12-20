@@ -145,7 +145,7 @@ function parseAssertActual(actual){
 			else element = "[\"" + element + "\"]"
 			result = result + element
 		})
-		return result + `.ToString()`
+		return result
 	}
 	elements.forEach(element => {
 		if (result === "") {result = result + element; return;}
