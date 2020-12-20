@@ -1086,6 +1086,8 @@ test('should send dom and location when check window', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll')
   }
 })
 
@@ -1114,6 +1116,8 @@ test('should send dom and location when check frame', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 506})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll')
   }
 })
 
@@ -1142,6 +1146,8 @@ test('should send dom and location when check region by selector', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll')
   }
 })
 
@@ -1170,6 +1176,8 @@ test('should send dom and location when check region by selector in frame', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 192})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll')
   }
 })
 
@@ -1184,6 +1192,8 @@ test('should send dom and location when check region by selector with custom scr
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.doesNotContain(dom, 'data-applitools-scroll')
   }
 })
 
@@ -1214,7 +1224,7 @@ test('should send dom and location when check window VG', {
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
     const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll');
+    assert.doesNotContain(dom, 'data-applitools-scroll')
    }
 })
 
@@ -1229,7 +1239,7 @@ test('should send dom and location when check window fully VG', {
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll');
+    assert.doesNotContain(dom, 'data-applitools-scroll')
   }
 })
 
@@ -1243,8 +1253,8 @@ test('should send dom and location when check region by selector VG', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll');
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.childNodes[1].childNodes[19].attributes['data-applitools-scroll'], 'true')
   }
 })
 
@@ -1258,8 +1268,8 @@ test('should send dom and location when check region by selector fully VG', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll');
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.childNodes[1].childNodes[3].attributes['data-applitools-scroll'], 'true')
   }
 })
 
