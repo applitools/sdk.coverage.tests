@@ -351,6 +351,10 @@ module.exports = function (tracker, test) {
 			let mess = message ? message : null
 			addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
 		},
+		doesNotContain(actual, expected, message){
+			let mess = message ? message : null
+			addCommand(dot_net`StringAssert.DoesNotContain(${expected}, ${actual}, ${mess});`)
+		},
 
 		instanceOf(object, className, message) {
 			let classNm = `${className}`
@@ -411,7 +415,11 @@ module.exports = function (tracker, test) {
 		},
 		getDom(result, domId) {
 			let id = parseAssertActual(domId.ref())
-			return addCommand(dot_net`getDom(${result}, ` + id + `);`)
+			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'String'})
+		},
+		getDomString(result, domId) {
+			let id = parseAssertActual(domId.ref())
+			return addCommand(dot_net`getDomString(${result}, ` + id + `);`).type({type: 'String'})
 		},
 	}
 
