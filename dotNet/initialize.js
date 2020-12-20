@@ -411,7 +411,7 @@ module.exports = function (tracker, test) {
 		},
 		getDom(result, domId) {
 			let id = parseAssertActual(domId.ref())
-			return addCommand(dot_net`getDom(${result}, ` + id + `);`)
+			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'String'})
 		},
 	}
 
