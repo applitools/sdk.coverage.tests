@@ -250,21 +250,29 @@ namespace Applitools.Generated.Selenium.Tests
         {
             Assert.IsTrue(actualVersion == expectedVersion, "Actual Version '" + actualVersion.ToString() + "' don't equal to Expected Version '" + expectedVersion.ToString() + "'");
         }
-
-        protected void compareProcedure(Boolean actual, Boolean expected, string type = null)
+        protected void compareProcedure(bool actual, bool expected, string type = null)
         {
             Assert.AreEqual(expected, actual);
         }
 
-        protected void compareProcedure(String actual, String expected, string type = null)
+        protected void compareProcedure(JToken actual, bool expected, string type = null)
         {
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, (bool)actual);
+        }
+        protected void compareProcedure(JToken actual, string expected, string type = null)
+        {
+            Assert.AreEqual(expected, (string)actual);
         }
 
         protected JObject getDom(TestResults results, string domId)
         {
-            string dom = TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);
+            string dom = getDomString(results, domId);
             return JObject.Parse(dom);
+        }
+
+        protected string getDomString(TestResults results, string domId)
+        {
+            return TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);
         }
 
         public static T RetryCreateWebDriver<T>(Func<T> func, int times = 3) where T : class, IWebDriver
