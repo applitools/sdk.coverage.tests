@@ -256,6 +256,11 @@ namespace Applitools.Generated.Selenium.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        protected void compareProcedure(String actual, String expected, string type = null)
+        {
+            Assert.AreEqual(expected, actual);
+        }
+
         protected JObject getDom(TestResults results, string domId)
         {
             string dom = TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);

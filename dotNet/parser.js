@@ -138,14 +138,14 @@ function parseAssertActual(actual){
 	let result = ""
 	if (elements[0] === "dom") {
 			elements.forEach(element => {
-			if (result === "") {result = "(bool)" + element; return;}
+			if (result === "") {result = "(String)" + element; return;}
 			element = element.replace(/"/g, "")
 			element = element.replace(/]/g, "")
 			if (Number(element)) element = "[" + element + "]"
 			else element = "[\"" + element + "\"]"
 			result = result + element
 		})
-		return result
+		return result + `.ToString()`
 	}
 	elements.forEach(element => {
 		if (result === "") {result = result + element; return;}
@@ -179,7 +179,7 @@ function expectParser(expected){
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
 		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
 		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
-		//if (expected.hasOwnProperty('x')) return `new Location(${expected.x}, ${expected.y})`
+		expected = "\"" + expected + "\""
 		return expected
 	}
 }
