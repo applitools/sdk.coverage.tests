@@ -1191,6 +1191,7 @@ test('should send dom and location when check region by selector', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
     const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
     assert.equal(activeFrames.length, 0)
     const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
