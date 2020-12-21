@@ -1,0 +1,28 @@
+// {{name}}
+{{#each output.hooks.deps}}
+{{this}}
+{{/each}}
+
+describe{{#if skip}}.skip{{/if}}('Coverage Tests', () => {
+  {{#each output.hooks.vars}}
+  {{this}}
+  {{/each}}
+
+  beforeEach(async () => {
+    {{#each output.hooks.beforeEach}}
+    {{this}}
+    {{/each}}
+  })
+
+  afterEach(async () => {
+    {{#each output.hooks.afterEach}}
+    {{this}}
+    {{/each}}
+  })
+
+  it('{{name}}{{#if tags}} ({{#each tags}}{{this}}{{/each}}){{/if}}', async () => {
+    {{#each output.commands}}
+    {{this}}
+    {{/each}}
+  })
+})
