@@ -1078,36 +1078,57 @@ test('should not send dom', {
 
 test('should send dom and location when check window', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     eyes.check()
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 0)
   }
 })
 
 test('should send dom and location when check window fully', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-scroll", "true")')
     eyes.check({isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.attributes['data-applitools-scroll'], 'true')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
   }
 })
 
 test('should send dom and location when check frame', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1116,28 +1137,52 @@ test('should send dom and location when check frame', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 506})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 0)
   }
 })
 
 test('should send dom and location when check frame fully', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    eyes.check({frames: ['[name="frame1"]'], isFully: true})
+    const frameElement = driver.findElement('[name="frame1"]')
+    driver.executeScript(
+      'arguments[0].setAttribute("data-applitools-expected-frame", "true");' +
+      'arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-scroll", "true");',
+      frameElement,
+    )
+    eyes.check({frames: [frameElement], isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.attributes['data-applitools-scroll'], 'true')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
   }
 })
 
 test('should send dom and location when check region by selector', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1146,43 +1191,71 @@ test('should send dom and location when check region by selector', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 0)
   }
 })
 
 test('should send dom and location when check region by selector fully', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    eyes.check({region: '#overflowing-div', isFully: true})
+    const scrollableElement = driver.findElement('#overflowing-div')
+    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true")', scrollableElement)
+    eyes.check({region: scrollableElement, isFully: true})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.childNodes[1].childNodes[3].attributes['data-applitools-scroll'], 'true')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
   }
 })
 
 test('should send dom and location when check region by selector in frame', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    eyes.check({frames: ['[name="frame1"]'], region: '[name="frame1-1"]'})
+    const frameElement = driver.findElement('[name="frame1"]')
+    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-frame", "true")', frameElement)
+    eyes.check({frames: [frameElement], region: '[name="frame1-1"]'})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 192})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 0)
   }
 })
 
 test('should send dom and location when check region by selector with custom scroll root', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
@@ -1192,90 +1265,43 @@ test('should send dom and location when check region by selector with custom scr
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 0)
   }
 })
 
 test('should send dom and location when check region by selector fully with custom scroll root', {
   page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     driver.click('#centered')
-    eyes.check({region: '#modal-content', isFully: true, scrollRootElement: '#modal1'})
+    const scrollRootElement = driver.findElement('#modal1')
+    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true")', scrollRootElement)
+    eyes.check({region: '#modal-content', isFully: true, scrollRootElement})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.childNodes[1].childNodes[33].attributes['data-applitools-scroll'], 'true')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame')
+    assert.equal(activeFrames.length, 0)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
   }
 })
-
-test('should send dom and location when check window VG', {
-  page: 'Default',
-  vg: true,
-  test({driver, eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check()
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
-   }
-})
-
-test('should send dom and location when check window fully VG', {
-  page: 'Default',
-  vg: true,
-  test({driver, eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({isFully: true})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDomString(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.doesNotContain(dom, 'data-applitools-scroll')
-  }
-})
-
-test('should send dom and location when check region by selector VG', {
-  page: 'Default',
-  vg: true,
-  test({driver, eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({region: '#centered'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.childNodes[1].childNodes[19].attributes['data-applitools-scroll'], 'true')
-  }
-})
-
-test('should send dom and location when check region by selector fully VG', {
-  page: 'Default',
-  vg: true,
-  test({driver, eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({region: '#overflowing-div', isFully: true})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.childNodes[1].childNodes[3].attributes['data-applitools-scroll'], 'true')
-  }
-})
-
 
 // TODO remove this test once OCR is released on every sdk
-test('should send dom of version 9', {
+test('should send dom of version 10', {
   page: 'Default',
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1284,7 +1310,7 @@ test('should send dom of version 9', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.scriptVersion, '9.0.0')
+    assert.equal(dom.scriptVersion, '10.0.0')
   }
 })
 
