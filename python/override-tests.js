@@ -81,12 +81,11 @@ module.exports = {
     'check frame in frame fully with vg': {skip: true},						//diffs
     'check frame fully with scroll stitching': {skip: true},					//diffs
     'check frame fully with vg': {skip: true},							//diffs
-    'should send image location when check window': {skip: true},				//assertion fails
-    'should send image location when check frame': {skip: true},				//assertion fails
-    'should send image location when check region by selector': {skip: true},			//assertion fails
-    'should send image location when check region by selector fully': {skip: true},		//assertion fails
-    'should send image location when check region by selector in frame': {skip: true},		//assertion fails
-    'should send image location when check region by selector with custom scroll root': {skip: true},	//assertion fails
-    'should send image location when check region by selector after scroll': {skip: true},		//assertion fails
-    'should send image location when check region by selector fully after scroll': {skip: true},	//assertion fails
+    'should send dom and location when check window': {skip: true},				//assertion fails
+    'should send dom and location when check frame': {skip: true},				//assertion fails
+    'should send dom and location when check region by selector': {skip: true},			//assertion fails
+    'should send dom and location when check region by selector fully': {skip: true},		//assertion fails
+    'should send dom and location when check region by selector in frame': {skip: true},	//assertion fails
+    'should send dom and location when check region by selector with custom scroll root': {skip: true},			//assertion fails
+    'should send dom and location when check region by selector fully with custom scroll root': {skip: true},		//assertion fails
 }

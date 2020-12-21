@@ -5,7 +5,6 @@ const {capitalizeFirstLetter} = require('./util')
 function directString(String) {
     return {
         isRef: true,
-	//ref: () => String
         ref: () => {
 	if ((String !== undefined) && (((typeof String) === 'string') || (JSON.stringify(String).includes('true')) || (JSON.stringify(String).includes('false')))) {		
 		if (String.includes('true')) String = String.replace('true','True')
@@ -41,9 +40,9 @@ module.exports = function (tracker, test) {
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
-        return `${target}${key.startsWith('get') ?
-            `.${key.slice(3).toLowerCase()}` :
-            `[${type.name === 'Array' ? key : `"${key}"`}]`}`
+	if (key.startsWith('get')) return `${target}.${key.slice(3).toLowerCase()}`
+	if (((type !== undefined) && (type.name === 'Array')) || (Number(key))) return `${target}[${key}]`
+	else return `${target}["${key}"]`
     })
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
     addSyntax('return', ({value}) => `return ${value}`)
@@ -295,6 +294,7 @@ def app():
     const assert = {
         equal(actual, expected, message) {
             if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())
+	    if (((typeof expected) === 'string') && (expected === 'true')) return addCommand(python`assert ${actual} == ${expected}, ${message}`)
 	    return addCommand(python`assert ${actual} == ${directString(JSON.stringify(expected))}, ${message}`)
         },
         notEqual(actual, expected, message) {
@@ -361,6 +361,9 @@ def app():
                 },
             })
         },
+	getDom(result, domId) {
+		return addCommand(python`get_dom(${result}, ${domId})`)
+	},
     }
 
     return {driver, eyes, assert, helpers}
