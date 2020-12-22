@@ -1080,7 +1080,7 @@ test('should send dom and location when check window', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1102,7 +1102,7 @@ test('should send dom and location when check window fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1127,7 +1127,7 @@ test('should send dom and location when check frame', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1149,7 +1149,7 @@ test('should send dom and location when check frame fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1181,7 +1181,7 @@ test('should send dom and location when check region by selector', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1203,7 +1203,7 @@ test('should send dom and location when check region by selector fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1229,7 +1229,7 @@ test('should send dom and location when check region by selector in frame', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1255,7 +1255,7 @@ test('should send dom and location when check region by selector with custom scr
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1278,7 +1278,7 @@ test('should send dom and location when check region by selector fully with cust
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1304,6 +1304,7 @@ test('should send dom and location when check region by selector fully with cust
 // TODO remove this test once OCR is released on every sdk
 test('should send dom of version 10', {
   page: 'Default',
+  skipEmit: true,
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({})
