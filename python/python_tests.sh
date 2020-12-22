@@ -14,6 +14,11 @@ if [ $? -ne 0 ]; then
     RESULT=1
     echo "npm run python:run:parallel have failed"
 fi
+npm run python:move:report
+if [ $? -ne 0 ]; then
+    RESULT=1
+    echo "npm run python:move:report"
+fi
 npm run python:report
 if [ $? -ne 0 ]; then
     RESULT=1

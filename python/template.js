@@ -8,7 +8,7 @@ ${output.hooks.vars.join('\n')}
 ${output.hooks.beforeEach.join('\n')}
 
 ${skip ? '@pytest.mark.skip("generated")' : '' }
-def ${key}_test(driver, eyes, configuration):
+def ${key}(driver, eyes, configuration):
     ${output.commands.join('\n    ')}
 `
 }
