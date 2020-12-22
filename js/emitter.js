@@ -219,7 +219,7 @@ module.exports = function(tracker, test) {
     },
     getDom(result, domId) {
       return addCommand(js`await getDom(${result}, ${domId})`).methods({
-        getNodesByAttribute: (dom, name) => addCommand(js`getNodesByAttribute(${dom}, ${name})`)
+        getNodesByAttribute: (dom, name) => addCommand(js`${dom}.getNodesByAttribute(${name})`)
       })
     },
   }
