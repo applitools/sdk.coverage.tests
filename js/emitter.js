@@ -17,8 +17,6 @@ function js(chunks, ...values) {
 
 function serialize(data) {
   if (data && data.isRef) {
-    console.log('data.ref')
-    console.log(data.ref)
     return data.ref()
   } else if (Array.isArray(data)) {
     return `[${data.map(serialize).join(', ')}]`
@@ -203,10 +201,10 @@ module.exports = function(tracker, test) {
         )`
       } else {
         command = js`await assert.rejects(
-            async () => {${func}},
-            undefined,
-            ${message},
-          )`
+          async () => {${func}},
+          undefined,
+          ${message},
+        )`
       }
       addCommand(command)
     },
@@ -220,10 +218,9 @@ module.exports = function(tracker, test) {
       return addCommand(js`await getTestInfo(${result})`)
     },
     getDom(result, domId) {
-      return addCommand(js`await getDom(${result}, ${domId})`)
-        .methods({
-          getNodesByAttribute: (dom, name) => addCommand(js`getNodesByAttribute(${dom}, ${name})`)
-        })
+      return addCommand(js`await getDom(${result}, ${domId})`).methods({
+        getNodesByAttribute: (dom, name) => addCommand(js`getNodesByAttribute(${dom}, ${name})`)
+      })
     },
   }
 

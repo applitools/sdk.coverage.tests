@@ -1,28 +1,28 @@
 // {{name}}
-{{#each output.hooks.deps}}
-{{this}}
+{{#each output.hooks.deps as |dep|}}
+{{dep}}
 {{/each}}
 
 describe{{#if skip}}.skip{{/if}}('Coverage Tests', () => {
-  {{#each output.hooks.vars}}
-  {{this}}
+  {{#each output.hooks.vars as |var|}}
+  {{var}}
   {{/each}}
 
   beforeEach(async () => {
-    {{#each output.hooks.beforeEach}}
-    {{this}}
+    {{#each output.hooks.beforeEach as |command|}}
+    {{command}}
     {{/each}}
   })
 
   afterEach(async () => {
-    {{#each output.hooks.afterEach}}
-    {{this}}
+    {{#each output.hooks.afterEach as |command|}}
+    {{command}}
     {{/each}}
   })
 
-  it('{{name}}{{#if tags}} ({{#each tags}}{{this}}{{/each}}){{/if}}', async () => {
-    {{#each output.commands}}
-    {{this}}
+  it('{{name}}{{#tags tags}}@{{this}}{{/tags}}', async () => {
+    {{#each output.commands as |command|}}
+    {{command}}
     {{/each}}
   })
 })
