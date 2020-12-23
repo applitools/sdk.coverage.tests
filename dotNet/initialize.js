@@ -145,6 +145,10 @@ module.exports = function (tracker, test) {
 			addCommand(dot_net`driver.Navigate().GoToUrl(${url});`)
 		},
 		executeScript(script, ...args) {
+			if (args[0] !== undefined) {
+				if (openPerformed) return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script}, ${args[0]});`)
+				else return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script}, ${args[0]});`)
+			}
 			if (openPerformed) return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script});`)
 			else return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script});`)
 		},
