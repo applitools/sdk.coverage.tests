@@ -277,7 +277,7 @@ namespace Applitools.Generated.Selenium.Tests
 
         protected IList<JToken> getNodesByAttribute(JObject dom, string attributeName)
         {
-            return dom.SelectTokens("$..attributes").Where(a => a.SelectToken(attributeName) != null).ToList();
+            return dom.SelectTokens($"$..[?(@.attributes['{attributeName}'])]").ToList();
         }
 
         public static T RetryCreateWebDriver<T>(Func<T> func, int times = 3) where T : class, IWebDriver
