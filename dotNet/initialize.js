@@ -50,12 +50,22 @@ function argumentCheck(actual, ifUndefined) {
 }
 
 module.exports = function (tracker, test) {
-	const { addSyntax, addCommand, addHook, withScope } = tracker
+	const { addSyntax, addCommand, addHook, withScope, addType } = tracker
 
 	let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
 	let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
 	let openPerformed = false
+	
+	
+	addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
+	addType('JsonNode', {
+	  getter: ({target, key}) => `${target}[${key}]`,
+		schema: {
+		attributes: { type: 'JsonNode', schema: 'JsonNode' },
+		length: {type: 'Number', rename: 'Count', getter: ({target, key}) => `${target}.${key}`}
+  }
+	})
 
 	addSyntax('return', ({ value }) => `return ${value}`)
 
@@ -85,7 +95,7 @@ module.exports = function (tracker, test) {
 	addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 
 	addSyntax('var', ({ name, value, type }) => {
-		if ((type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
+		if ((type !== null) && (type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
 			return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
 		}
 		return `var ${name} = ${value}`
@@ -135,6 +145,10 @@ module.exports = function (tracker, test) {
 			addCommand(dot_net`driver.Navigate().GoToUrl(${url});`)
 		},
 		executeScript(script, ...args) {
+			if (args[0] !== undefined) {
+				if (openPerformed) return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script}, ${args[0]});`)
+				else return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script}, ${args[0]});`)
+			}
 			if (openPerformed) return addCommand(dot_net`((IJavaScriptExecutor)webDriver).ExecuteScript(${script});`)
 			else return addCommand(dot_net`((IJavaScriptExecutor)driver).ExecuteScript(${script});`)
 		},
@@ -346,14 +360,11 @@ module.exports = function (tracker, test) {
 
 			let act
 			if (actual.isRef) act = parseAssertActual(actual.ref())
-			else act = `${actual}`
+			else {act = `${actual}`
+			console.log("actual = " + actual)}
 
 			let mess = message ? message : null
 			addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
-		},
-		doesNotContain(actual, expected, message){
-			let mess = message ? message : null
-			addCommand(dot_net`StringAssert.DoesNotContain(${expected}, ${actual}, ${mess});`)
 		},
 
 		instanceOf(object, className, message) {
@@ -415,11 +426,9 @@ module.exports = function (tracker, test) {
 		},
 		getDom(result, domId) {
 			let id = parseAssertActual(domId.ref())
-			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'String'})
-		},
-		getDomString(result, domId) {
-			let id = parseAssertActual(domId.ref())
-			return addCommand(dot_net`getDomString(${result}, ` + id + `);`).type({type: 'String'})
+			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'JsonNode'}).methods({
+        getNodesByAttribute: (dom, name) => addCommand(dot_net`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
+      })
 		},
 	}
 

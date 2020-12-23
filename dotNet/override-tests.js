@@ -39,4 +39,6 @@ module.exports = {
 	// can be quick fixed
 	'check region by native selector': {skip: true}, //To fit in existing baseline for C# should have test name "Appium_Android_CheckRegion"
 	'check frame in frame fully with vg': {skip: true},  //baseline NEW. Need compare with JS tests, maybe add baseline.
+	'should send dom and location when check region by selector fully with custom scroll root': {skipEmit: true},   //test not implemented yet. 
+	'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},   //test not implemented yet. 
  }
