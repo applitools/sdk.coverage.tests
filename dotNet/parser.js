@@ -138,10 +138,11 @@ function parseAssertActual(actual){
 	let result = ""
 	if ((elements[0] === "dom") || ((elements.length > 2) && ((elements[0] === "scrollingElements") || (elements[0] === "activeFrames"))))  {
 			elements.forEach(element => {
-			if (result === "") {result = "(String)" + element; return;}
+			if (result === "") {result = element; return;}
 			element = element.replace(/"/g, "")
 			element = element.replace(/]/g, "")
-			if (Number(element)) element = "[" + element + "]"
+			if (element === "attributes") return
+			if (!isNaN(Number(element))) element = "[" + element + "]"
 			else element = "[\"" + element + "\"]"
 			result = result + element
 		})
