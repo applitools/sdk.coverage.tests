@@ -141,7 +141,6 @@ function parseAssertActual(actual){
 			if (result === "") {result = element; return;}
 			element = element.replace(/"/g, "")
 			element = element.replace(/]/g, "")
-			if (element === "attributes") return
 			if (!isNaN(Number(element))) element = "[" + element + "]"
 			else element = "[\"" + element + "\"]"
 			result = result + element
