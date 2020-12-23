@@ -17,6 +17,7 @@ using System.Web;
 using System.Collections.Specialized;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Applitools.Generated.Selenium.Tests
 {
@@ -106,7 +107,6 @@ namespace Applitools.Generated.Selenium.Tests
                     throw new Exception("Unknown browser type");
             }
         }
-
 
         private void setDriverOptions(ref SafariOptions driverOptions, string PlatformName, string BrowserVersion)
         {
@@ -264,15 +264,20 @@ namespace Applitools.Generated.Selenium.Tests
             Assert.AreEqual(expected, (string)actual);
         }
 
+        protected string getDomString(TestResults results, string domId)
+        {
+            return TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);
+        }
+
         protected JObject getDom(TestResults results, string domId)
         {
             string dom = getDomString(results, domId);
             return JObject.Parse(dom);
         }
 
-        protected string getDomString(TestResults results, string domId)
+        protected IList<JToken> getNodesByAttribute(JObject dom, string attributeName)
         {
-            return TestUtils.GetDom(Environment.GetEnvironmentVariable("APPLITOOLS_API_KEY_READ"), results, domId);
+            return dom.SelectTokens("$..attributes").Where(a => a.SelectToken(attributeName) != null).ToList();
         }
 
         public static T RetryCreateWebDriver<T>(Func<T> func, int times = 3) where T : class, IWebDriver
