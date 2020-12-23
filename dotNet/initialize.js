@@ -50,7 +50,7 @@ function argumentCheck(actual, ifUndefined) {
 }
 
 module.exports = function (tracker, test) {
-	const { addSyntax, addCommand, addHook, withScope } = tracker
+	const { addSyntax, addCommand, addHook, withScope, addType } = tracker
 
 	let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
 	let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
@@ -58,6 +58,14 @@ module.exports = function (tracker, test) {
 	let openPerformed = false
 
 	addSyntax('return', ({ value }) => `return ${value}`)
+	addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
+		addType('JsonNode', {
+			getter: ({target, key}) => `${target}[${key}]`,
+			schema: {
+			attributes: { type: 'JsonNode', schema: 'JsonNode' },
+			length: {type: 'Number', rename: 'Count', getter: ({target, key}) => `${target}.${key}`}
+		}
+	})
 
 	addHook('deps', `using NUnit.Framework;`)
 	if (mobile) {
@@ -85,7 +93,7 @@ module.exports = function (tracker, test) {
 	addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 
 	addSyntax('var', ({ name, value, type }) => {
-		if ((type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
+		if ((type !== null) && (type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
 			return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
 		}
 		return `var ${name} = ${value}`
@@ -415,7 +423,9 @@ module.exports = function (tracker, test) {
 		},
 		getDom(result, domId) {
 			let id = parseAssertActual(domId.ref())
-			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'String'})
+			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'JsonNode'}).methods({
+        getNodesByAttribute: (dom, name) => addCommand(dot_net`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
+      })
 		},
 		getDomString(result, domId) {
 			let id = parseAssertActual(domId.ref())
