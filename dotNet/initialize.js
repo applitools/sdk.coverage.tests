@@ -56,16 +56,18 @@ module.exports = function (tracker, test) {
 	let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
 	let openPerformed = false
+	
+	
+	addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
+	addType('JsonNode', {
+	  getter: ({target, key}) => `${target}[${key}]`,
+		schema: {
+		attributes: { type: 'JsonNode', schema: 'JsonNode' },
+		length: {type: 'Number', rename: 'Count', getter: ({target, key}) => `${target}.${key}`}
+  }
+	})
 
 	addSyntax('return', ({ value }) => `return ${value}`)
-	addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
-		addType('JsonNode', {
-			getter: ({target, key}) => `${target}[${key}]`,
-			schema: {
-			attributes: { type: 'JsonNode', schema: 'JsonNode' },
-			length: {type: 'Number', rename: 'Count', getter: ({target, key}) => `${target}.${key}`}
-		}
-	})
 
 	addHook('deps', `using NUnit.Framework;`)
 	if (mobile) {
@@ -354,14 +356,11 @@ module.exports = function (tracker, test) {
 
 			let act
 			if (actual.isRef) act = parseAssertActual(actual.ref())
-			else act = `${actual}`
+			else {act = `${actual}`
+			console.log("actual = " + actual)}
 
 			let mess = message ? message : null
 			addCommand(dot_net`compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
-		},
-		doesNotContain(actual, expected, message){
-			let mess = message ? message : null
-			addCommand(dot_net`StringAssert.DoesNotContain(${expected}, ${actual}, ${mess});`)
 		},
 
 		instanceOf(object, className, message) {
@@ -426,10 +425,6 @@ module.exports = function (tracker, test) {
 			return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'JsonNode'}).methods({
         getNodesByAttribute: (dom, name) => addCommand(dot_net`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
       })
-		},
-		getDomString(result, domId) {
-			let id = parseAssertActual(domId.ref())
-			return addCommand(dot_net`getDomString(${result}, ` + id + `);`).type({type: 'String'})
 		},
 	}
 

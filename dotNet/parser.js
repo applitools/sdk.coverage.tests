@@ -136,9 +136,9 @@ function findElementBySelectorType(selector, type){
 function parseAssertActual(actual){
 	let elements = actual.includes('[')? actual.split('[') : actual.split('.');
 	let result = ""
-	if (elements[0] === "dom") {
+	if ((elements[0] === "dom") || ((elements.length > 2) && ((elements[0] === "scrollingElements") || (elements[0] === "activeFrames"))))  {
 			elements.forEach(element => {
-			if (result === "") { result = element; return; }
+			if (result === "") {result = "(String)" + element; return;}
 			element = element.replace(/"/g, "")
 			element = element.replace(/]/g, "")
 			if (Number(element)) element = "[" + element + "]"
@@ -179,9 +179,8 @@ function expectParser(expected){
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
 		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
 		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
-		//if (expected.hasOwnProperty('x')) return `new Location(${expected.x}, ${expected.y})`
-		if (expected.toLowerCase() === 'true' || expected.toLowerCase() === 'false' || Number(expected)) return expected
-		return '"'+expected+'"'
+		expected = "\"" + expected + "\""
+		return expected
 	}
 }
 
