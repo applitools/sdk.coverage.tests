@@ -1,6 +1,16 @@
 /* eslint-disable */
 const viewportSize = {width: 700, height: 460}
-
+const TYPE = {
+  CSS: `css`, // in the selenium api it's 'css selector'
+  CLASSNAME: 'class name',
+  ID: 'id',
+  XPATH: 'xpath',
+  NAME: 'name',
+  ACCESSIBILITY_ID: 'accessibility id',
+  ANDROID_UI_AUTOMATOR: '-android uiautomator',
+  IOS_PREDICATE: '-ios predicate string',
+  IOS_CLASS_CHAIN: '-ios class chain',
+}
 config({
   pages: {
     Default: 'https://applitools.github.io/demo/TestPages/FramesTestPage/',
@@ -28,6 +38,8 @@ config({
     HelloWorldDiff: 'https://applitools.com/helloworld?diff1',
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
+    Demo: 'https://demo.applitools.com',
+    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html'
   },
 })
 
@@ -71,8 +83,8 @@ test('check window after manual scroll', {
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowAfterScroll_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowAfterScroll_VG'}},
 
-    'on safari 11': {env: {browser: 'safari-11', legacy: true}},
-    'on safari 12': {env: {browser: 'safari-12', legacy: true}}
+    'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver']},
+    'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver']}
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -313,7 +325,7 @@ test('check frame after manual switch to frame', {
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
     driver.executeScript('document.documentElement.scrollTop = 350')
-    const frame = driver.findElement('[name="frame1"]')
+    const frame = driver.findElement('[name="frame1"]').ref("frame")
     driver.switchToFrame(frame)
     eyes.check({frames: ['frame1-1']})
     eyes.check()
@@ -513,7 +525,7 @@ test('check scrollable modal region by selector fully', {
   },
 })
 
-/*test('check region by native selector', {
+test('check region by native selector', {
   features: ['native-selectors'],
   env: {
     device: 'Samsung Galaxy S8',
@@ -525,7 +537,7 @@ test('check scrollable modal region by selector fully', {
     eyes.check({region: 'android.widget.Button'})
     eyes.close()
   },
-})*/
+})
 
 test('check hovered region by element', {
   page: 'StickyHeaderWithRegions',
@@ -1007,6 +1019,21 @@ test('should send accessibility regions by selector', {
   }
 })
 
+test('should send region by selector in padded page', {
+  page: 'PaddedBody',
+  config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
+    eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+      info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
+      {left: 0, top: 81, width: 1084, height: 679}
+    )
+  }
+})
+
 test('should send ignore displacements', {
   page: 'Default',
   variants: {
@@ -1037,18 +1064,6 @@ test('should send dom', {
   }
 })
 
-test('should send dom when check region', {
-  page: 'DomCapture',
-  config: {baselineName: 'Test SendDom'},
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Test SendDom', viewportSize: {width: 1000, height: 700}})
-    eyes.check({region: '#scroll1'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-  }
-})
-
 test('should not send dom', {
   page: 'HelloWorld',
   config: {baselineName: 'Test NOT SendDom'},
@@ -1061,18 +1076,261 @@ test('should not send dom', {
   }
 })
 
-test('should send correct region coordinates in target region with css stitching fully', {
-  page: 'PaddedBody',
-  config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
-    eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
+test('should send dom and location when check window', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    eyes.check()
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(
-      info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 0, top: 81, width: 1084, height: 679}
-    )
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 0)
+  }
+})
+
+test('should send dom and location when check window fully', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-scroll", "true");')
+    eyes.check({isFully: true})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+  }
+})
+
+test('should send dom and location when check frame', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    eyes.check({frames: ['[name="frame1"]']})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 506})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 0)
+  }
+})
+
+test('should send dom and location when check frame fully', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
+    driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-frame", "true");', frameElement)
+    driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-scroll", "true");', frameElement)
+    eyes.check({frames: [frameElement], isFully: true})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+  }
+})
+
+test('should send dom and location when check region by selector', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    eyes.check({region: '#centered'})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 933})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 0)
+  }
+})
+
+test('should send dom and location when check region by selector fully', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    const scrollableElement = driver.findElement('#overflowing-div').ref("scrollableElement")
+    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollableElement)
+    eyes.check({region: scrollableElement, isFully: true})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 83})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+  }
+})
+
+test('should send dom and location when check region by selector in frame', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
+    driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-frame", "true");', frameElement)
+    eyes.check({frames: [frameElement], region: '[name="frame1-1"]'})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 192})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 0)
+  }
+})
+
+test('should send dom and location when check region by selector with custom scroll root', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.click('#centered')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    eyes.check({region: '#modal-content', scrollRootElement: '#modal1'})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 0)
+  }
+})
+
+test('should send dom and location when check region by selector fully with custom scroll root', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true, skipEmit: true},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    driver.executeScript('window.scrollTo(0, 350)')
+    driver.click('#centered')
+    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
+    const scrollRootElement = driver.findElement('#modal1').ref('scrollRootElement')
+    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollRootElement)
+    eyes.check({region: '#modal-content', isFully: true, scrollRootElement})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
+    assert.equal(activeFrames.length, 1)
+    assert.equal(activeFrames[0].attributes['data-applitools-active-frame'], 'true')
+    assert.equal(activeFrames[0].attributes['data-applitools-expected-frame'], 'true')
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    assert.equal(scrollingElements.length, 1)
+    assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+  }
+})
+
+// TODO remove this test once OCR is released on every sdk
+test('should send dom of version 10', {
+  page: 'Default',
+  skipEmit: true,
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({})
+    const result = eyes.close(false).ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    assert.equal(dom.scriptVersion, '10.0.0')
   }
 })
 
@@ -1096,7 +1354,7 @@ test('should hide and restore scrollbars', {
   },
 })
 
-/*test('should find regions by visual locator', {
+test('should find regions by visual locator', {
   page: 'Default',
   variants: {
     '': {vg: false, config: {baselineName: 'TestVisualLocators'}},
@@ -1113,7 +1371,27 @@ test('should hide and restore scrollbars', {
       applitools_title: [{left: 3, top: 19, width: 158, height: 38}],
     })
   },
-})*/
+})
+
+test('should extract text from regions', {
+  page: 'StickyHeader',
+  config: {stitchMode: 'CSS'},
+  test({driver, eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    const element = driver.findElement({type: 'css', selector: '.page h1'}).ref('element')
+    const texts = eyes.extractText([
+      {target: {left: 38, top: 38, width: 213, height: 23}, hint: 'This is the navigation bar'},
+      {target: element},
+      {target: '.page p:nth-of-type(3)'}
+    ])
+      .type('List<String>')
+      .ref('texts')
+    eyes.close(false)
+    assert.equal(texts[0], 'This is the navigation bar')
+    assert.equal(texts[1], 'Lorem Ipsum')
+    assert.equal(texts[2], 'Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc ullamcorper\nnisl id porta mollis. Aliquam odio tortor, gravida nec accumsan id,\nsollicitudin id est. Vivamus at lacinia leo. Aliquam pharetra metus quis\ntellus eleifend consectetur. Donec sagittis venenatis fermentum.\nPraesent fermentum dignissim iaculis.')
+  },
+})
 
 test('should return actual viewport size', {
   env: {browser: 'chrome', headless: false},
@@ -1165,7 +1443,7 @@ test('should fail check of stale element', {
   test({driver, eyes, assert}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img')
+    const element = driver.findElement('#inner-img').ref("element")
     driver.click('#invalidate-button')
     assert.throws(
       () => void eyes.check({region: element}),
@@ -1181,14 +1459,14 @@ test('should handle check of stale element if selector is preserved', {
   test({driver, eyes}) {
     driver.visit('http://localhost:5000/TestPages/RefreshDomPage/auto-refresh')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img')
+    const element = driver.findElement('#inner-img').ref("element")
     driver.click('#refresh-button')
     eyes.check({region: element})
     eyes.close()
   },
 })
 
-/*test('should handle check of stale element in frame if selector is preserved', {
+test('should handle check of stale element in frame if selector is preserved', {
   skip: true,
   features: ['webdriver'],
   test({driver, eyes}) {
@@ -1196,14 +1474,14 @@ test('should handle check of stale element if selector is preserved', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
     const frameElement = driver.findElement('[name="frame"]').ref('frameElement')
     driver.switchToFrame(frameElement)
-    const element = driver.findElement('#inner-img')
+    const element = driver.findElement('#inner-img').ref("element")
     driver.click('#refresh-button')
     driver.switchToFrame(null)
 
     eyes.check({frames: [frameElement], region: element})
     eyes.close()
   },
-})*/
+})
 
 test('should abort if not closed', {
   variants: {
@@ -1292,60 +1570,171 @@ test('should render special characters', {
   }
 })
 
+test('check region fully after scroll non scrollable element', {
+  page: 'Simple',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_VG'}},
+  },
+  test({driver, eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - check non scrollable element', viewportSize})
+    driver.executeScript('window.scrollBy(0, 500)')
+    eyes.check({
+      region: '#overflowing-div',
+      isFully: true,
+    })
+    eyes.close()
+  }
+})
+
+test('check region fully when body is greater and non scrollable', {
+  page: 'Demo',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_VG'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({
+      isFully: true,
+    })
+    eyes.close()
+  }
+})
+
+test('check region in frame hidden under top bar fully', {
+  page: 'PageWithFrameHiddenByBar',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent_Scroll'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({frames: ['[name="frame1"]'], region: '#div1', isFully: true})
+    eyes.close()
+  }
+})
+
+test('check window fully with html scrollRootElement after scroll', {
+  page: 'Simple',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll_Scroll'}},
+  },
+  test({driver, eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    driver.executeScript('window.scrollBy(0, 100)')
+    eyes.check({
+      scrollRootElement: 'html',
+      isFully: true
+    })
+    eyes.close()
+  }
+})
+
+test('appium android check window', {
+  skipEmit: true,
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  config: {baselineName: 'Appium_Android_CheckWindow'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({ignoreRegions: [{type: TYPE.CLASSNAME, selector: 'android.widget.Button'}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 136, top: 237, width: 90, height: 48},
+    )
+  },
+})
+
+test('appium android check region with ignore region', {
+  skipEmit: true,
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  config: {baselineName: 'Appium_Android_CheckRegionWithIgnoreRegion'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image_container'},ignoreRegions: [{type: TYPE.ANDROID_UI_AUTOMATOR, selector: 'new UiSelector().textContains("You successfully clicked the button!")'}, {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image'}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 53, top: 0, width: 254, height: 22},
+    )
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[1],
+        {left: 0, top: 21, width: 360, height: 234},
+    )
+  },
+})
+
+test('appium android check region', {
+  skipEmit: true,
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  config: {baselineName: 'Appium_Android_CheckRegion'},
+  features: ['native-selectors'],
+  test: ({eyes}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.CLASSNAME, selector: 'android.widget.Button'}})
+    eyes.close()
+  },
+})
+
+test('appium iOS check window', {
+  skipEmit: true,
+  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  config: {baselineName: 'Appium_iOS_CheckWindow'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({ignoreRegions: [{type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 155, top: 258, width: 65, height: 30},
+    )
+  },
+})
+
+test('appium iOS check region with ignore region', {
+  skipEmit: true,
+  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.ACCESSIBILITY_ID, selector: 'BottomContainer'},ignoreRegions: [{type: TYPE.ACCESSIBILITY_ID, selector: 'BottomLabel'}, {type: TYPE.ACCESSIBILITY_ID, selector: 'BottomImage'}]})
+    const result = eyes.close().ref('result')
+    const info = helpers.getTestInfo(result).ref('info')
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[0],
+        {left: 0, top: 0, width: 343, height: 21},
+    )
+    assert.equal(
+        info.actualAppOutput[0].imageMatchSettings.ignore[1],
+        {left: 115, top: 35, width: 113, height: 65},
+    )
+  },
+})
+
+test('appium iOS check region', {
+  skipEmit: true,
+  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  config: {baselineName: 'Appium_iOS_CheckRegion'},
+  features: ['native-selectors'],
+  test: ({eyes}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}})
+    eyes.close()
+  },
+})
 // #endregion
-
-// test('CheckRegionBySelector_Image', {
-//   page: 'Default',
-//   variants: {
-//     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckRegion2'}},
-//     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegion2_Scroll'}},
-//     'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckRegion2_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
-//     eyes.check({region: '#overflowing-div-image'})
-//     eyes.close()
-//   },
-// })
-
-// test('CheckWindowFully_Simple_Html', {
-//   page: 'Simple',
-//   variants: {
-//     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow_Simple_Html'}},
-//     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Simple_Html_Scroll'}},
-//     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_Simple_Html_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Scroll Root Element', viewportSize})
-//     eyes.check({scrollRootElement: 'html', isFully: true})
-//     eyes.close()
-//   },
-// })
-
-// test('CheckWindow_IgnoreRegionBySelector_Centered', {
-//   page: 'Default',
-//   variants: {
-//     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowWithIgnoreBySelector_Centered_Fluent'}},
-//     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowWithIgnoreBySelector_Centered_Fluent_Scroll'}},
-//     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Centered_Fluent_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-//     eyes.check({ignoreRegions: ['#centered']})
-//     eyes.close()
-//   },
-// })
-
-// test('CheckWindow_IgnoreRegionBySelector_Stretched', {
-//   page: 'Default',
-//   variants: {
-//     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowWithIgnoreBySelector_Stretched_Fluent'}},
-//     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowWithIgnoreBySelector_Stretched_Fluent_Scroll'}},
-//     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Stretched_Fluent_VG'}},
-//   },
-//   test({eyes}) {
-//     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-//     eyes.check({ignoreRegions: ['#stretched']})
-//     eyes.close()
-//   },
-// })
