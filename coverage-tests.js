@@ -1080,13 +1080,13 @@ test('should send dom and location when check window', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
-    eyes.check()
+    eyes.check({hooks: {beforeCaptureScreenshot: 'window.scrollTo(0, 350)'}})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 350})
@@ -1105,7 +1105,7 @@ test('should send dom and location when check window fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1133,7 +1133,7 @@ test('should send dom and location when check frame', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true, skipEmit: true}, // TODO the way we take screenshot of the frame produce different result
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1158,7 +1158,7 @@ test('should send dom and location when check frame fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1187,7 +1187,7 @@ test('should send dom and location when check region by selector', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1212,7 +1212,7 @@ test('should send dom and location when check region by selector fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1241,7 +1241,7 @@ test('should send dom and location when check region by selector in frame', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1265,9 +1265,10 @@ test('should send dom and location when check region by selector in frame', {
 
 test('should send dom and location when check region by selector with custom scroll root', {
   page: 'Default',
+  env: {browser: 'chrome', args: ['hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1277,7 +1278,7 @@ test('should send dom and location when check region by selector with custom scr
     eyes.check({region: '#modal-content', scrollRootElement: '#modal1'})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+    assert.equal(info.actualAppOutput[0].image.location, {x: 112, y: 38})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
     const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
@@ -1291,9 +1292,10 @@ test('should send dom and location when check region by selector with custom scr
 
 test('should send dom and location when check region by selector fully with custom scroll root', {
   page: 'Default',
+  env: {browser: 'chrome', args: ['hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true},
+    'with vg': {vg: true, skipEmit: true}, // TODO grid marks a different block with `applitools-scroll`
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1305,7 +1307,7 @@ test('should send dom and location when check region by selector fully with cust
     eyes.check({region: '#modal-content', isFully: true, scrollRootElement})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 104, y: 38})
+    assert.equal(info.actualAppOutput[0].image.location, {x: 112, y: 38})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
     const activeFrames = dom.getNodesByAttribute('data-applitools-active-frame').ref('activeFrames')
@@ -1322,7 +1324,6 @@ test('should send dom and location when check region by selector fully with cust
 // TODO remove this test once OCR is released on every sdk
 test('should send dom of version 10', {
   page: 'Default',
-  skipEmit: true,
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({})
