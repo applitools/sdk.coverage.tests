@@ -325,7 +325,7 @@ test('check frame after manual switch to frame', {
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
     driver.executeScript('document.documentElement.scrollTop = 350')
-    const frame = driver.findElement('[name="frame1"]')
+    const frame = driver.findElement('[name="frame1"]').ref("frame")
     driver.switchToFrame(frame)
     eyes.check({frames: ['frame1-1']})
     eyes.check()
@@ -1163,7 +1163,7 @@ test('should send dom and location when check frame fully', {
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    const frameElement = driver.findElement('[name="frame1"]')
+    const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
     driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-frame", "true");', frameElement)
     driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-scroll", "true");', frameElement)
     eyes.check({frames: [frameElement], isFully: true})
@@ -1218,7 +1218,7 @@ test('should send dom and location when check region by selector fully', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
-    const scrollableElement = driver.findElement('#overflowing-div')
+    const scrollableElement = driver.findElement('#overflowing-div').ref("scrollableElement")
     driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollableElement)
     eyes.check({region: scrollableElement, isFully: true})
     const result = eyes.close(false).ref('result')
@@ -1246,7 +1246,7 @@ test('should send dom and location when check region by selector in frame', {
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    const frameElement = driver.findElement('[name="frame1"]')
+    const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
     driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-frame", "true");', frameElement)
     eyes.check({frames: [frameElement], region: '[name="frame1-1"]'})
     const result = eyes.close(false).ref('result')
@@ -1443,7 +1443,7 @@ test('should fail check of stale element', {
   test({driver, eyes, assert}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img')
+    const element = driver.findElement('#inner-img').ref("element")
     driver.click('#invalidate-button')
     assert.throws(
       () => void eyes.check({region: element}),
@@ -1459,7 +1459,7 @@ test('should handle check of stale element if selector is preserved', {
   test({driver, eyes}) {
     driver.visit('http://localhost:5000/TestPages/RefreshDomPage/auto-refresh')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img')
+    const element = driver.findElement('#inner-img').ref("element")
     driver.click('#refresh-button')
     eyes.check({region: element})
     eyes.close()
@@ -1474,7 +1474,7 @@ test('should handle check of stale element in frame if selector is preserved', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
     const frameElement = driver.findElement('[name="frame"]').ref('frameElement')
     driver.switchToFrame(frameElement)
-    const element = driver.findElement('#inner-img')
+    const element = driver.findElement('#inner-img').ref("element")
     driver.click('#refresh-button')
     driver.switchToFrame(null)
 
