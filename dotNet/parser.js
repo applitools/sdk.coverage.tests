@@ -26,7 +26,7 @@ function checkSettings(cs, mobile=false) {
 	if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`
 	if (cs.sendDom !== undefined) options += `.SendDom(${cs.sendDom})`
     if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
-    if(cs.isFully) options += '.Fully()'
+    if(cs.isFully) { options += '.Fully()' } else { options += '.Fully(false)' }
 	if (cs.name) options += `.WithName(${cs.name})`
     return target + element + options
 }
