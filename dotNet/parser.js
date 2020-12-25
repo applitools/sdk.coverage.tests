@@ -124,13 +124,9 @@ function serializeRegion(data) {
 }
 
 function findElementBySelectorType(selector, type){
-	switch (type) {
-		case 'css':
-            return `By.CssSelector(\"${selector}\")`
-			break;
-		default:
-			return `By.CssSelector(\"${selector}\")`
-	}
+	let fix_selector = selector
+	if (fix_selector.includes('"')) fix_selector = fix_selector.replace(/"/g, '\\"')
+	return selectors[type] + `(\"` + fix_selector + `\")`
 }
 
 function parseAssertActual(actual){
