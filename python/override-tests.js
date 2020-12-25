@@ -5,7 +5,7 @@ module.exports = {
     'check region by selector in frame multiple times with scroll stitching': {skip: true},	//problems in SDK to check multiple times
     'check region by selector in overflowed frame with scroll stitching': {skip: true},		//OutOfBoundsError: Region [Region(20, 708, 450 x 282, CONTEXT_RELATIVE)] is out of screenshot bounds [Region(0, 0, 700 x 460, SCREENSHOT_AS_IS)]
     'check region by selector in overflowed frame with vg': {skip: true},			//Unable to locate element: {"method":"css selector","selector":"img"}
-    'check frame after manual switch to frame with css stitching classic': {skip: true},	//Stale element, but with driver2 it works with diffs 
+    'check frame after manual switch to frame with css stitching classic': {skip: true},	//Stale element, but with driver2 it works with diffs
     'check frame after manual switch to frame with scroll stitching classic': {skip: true},	//Stale element, but with driver2 it works with diffs
     'check frame after manual switch to frame with vg': {skip: true},				//diffs
     'check frame after manual switch to frame with vg classic': {skip: true},			//diffs
@@ -54,7 +54,6 @@ module.exports = {
     'check region by selector in frame fully with vg': {skip: true},				//Unable to locate element '#inner-frame-div'
     'check region by selector in frame fully with scroll stitching classic': {skip: true},	//diffs
     'check region by selector in frame fully with scroll stitching': {skip: true},		//diffs
-    'check region fully after scroll non scrollable element with scroll stitching': {skip: true},	//diffs
     'check region by selector in overflowed frame fully with scroll stitching': {skip: true},	//diffs
     'check region by selector in overflowed frame fully with css stitching': {skip: true},	//diffs
     'check region fully after scroll non scrollable element with scroll stitching': {skip: true},	//diffs
@@ -73,19 +72,27 @@ module.exports = {
     'check region by coordinates in frame with scroll stitching': {skip: true},			//diffs
     'check region by coordinates in frame with css stitching': {skip: true},			//diffs
     'check region by coordinates in frame with vg': {skip: true},				//diffs
-    'check frame fully with scroll stitching': {skip: true},					//diffs
     'check frame fully with css stitching': {skip: true},					//diffs
-    'check frame fully with vg': {skip: true},							//diffs
     'check frame in frame fully with scroll stitching': {skip: true},				//diffs
     'check frame in frame fully with css stitching': {skip: true},				//diffs
     'check frame in frame fully with vg': {skip: true},						//diffs
     'check frame fully with scroll stitching': {skip: true},					//diffs
     'check frame fully with vg': {skip: true},							//diffs
-    'should send dom and location when check window': {skip: true},				//assertion fails
-    'should send dom and location when check frame': {skip: true},				//assertion fails
-    'should send dom and location when check region by selector': {skip: true},			//assertion fails
-    'should send dom and location when check region by selector fully': {skip: true},		//assertion fails
-    'should send dom and location when check region by selector in frame': {skip: true},	//assertion fails
-    'should send dom and location when check region by selector with custom scroll root': {skip: true},			//assertion fails
-    'should send dom and location when check region by selector fully with custom scroll root': {skip: true},		//assertion fails
+    'should send dom and location when check frame fully with vg': {skipEmit: true},
+    'should send dom and location when check frame fully': {skipEmit: true},
+    'should send dom and location when check frame': {skipEmit: true},
+    'should send dom and location when check region by selector fully with custom scroll root': {skipEmit: true},
+    'should send dom and location when check region by selector fully with vg': {skipEmit: true},
+    'should send dom and location when check region by selector fully': {skipEmit: true},
+    'should send dom and location when check region by selector in frame with vg': {skipEmit: true},
+    'should send dom and location when check region by selector in frame': {skipEmit: true},
+    'should send dom and location when check region by selector with custom scroll root with vg': {skipEmit: true},
+    'should send dom and location when check region by selector with custom scroll root': {skipEmit: true},
+    'should send dom and location when check region by selector with vg': {skipEmit: true},
+    'should send dom and location when check region by selector': {skipEmit: true},
+    'should send dom and location when check window fully with vg': {skipEmit: true},
+    'should send dom and location when check window fully': {skipEmit: true},
+    'should send dom and location when check window with vg': {skipEmit: true},
+    'should send dom and location when check window': {skipEmit: true},
+    'should send dom of version 10': {skipEmit: true},
 }
