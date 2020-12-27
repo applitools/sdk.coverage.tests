@@ -192,10 +192,11 @@ def app():
                 || (`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
             )
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
+            let scale_mobile_app = (mobile) ? 'eyes.configure.set_features(\"Scale mobile app\")\n    ' : ''
             let appNm = (appName) ? appName : test.config.appName
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
-    eyes.set_configuration(configuration)` + special_branch +
+    eyes.set_configuration(configuration)` + special_branch + scale_mobile_app +
                 `eyes.open(driver)`)
         },
         check(checkSettings) {
