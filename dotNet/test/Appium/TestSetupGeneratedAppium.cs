@@ -104,7 +104,7 @@ namespace Applitools.Appium.Tests
 
 				}
 			},
-			{ "iPhone XS Simulator", new Dictionary<string, object>
+			{ "iPhone XS", new Dictionary<string, object>
 				{
 					{ "browserName", ""},
 					{ "deviceName", "iPhone XS Simulator" },
