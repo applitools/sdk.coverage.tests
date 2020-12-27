@@ -60,7 +60,10 @@ def android_desired_capabilities(request, dev, app):
     desired_caps["platformName"] = "Android"
     desired_caps["clearSystemFiles"] = True
     desired_caps["noReset"] = True
+    desired_caps["automationName"] = "UiAutomator2"
     desired_caps["name"] = "AndroidNativeApp checkWindow"
+    desired_caps["deviceOrientation"] = "portrait"
+    desired_caps["appiumVersion"] = "1.13.0"
     return desired_caps
 
 
@@ -75,7 +78,10 @@ def ios_desired_capabilities(request, dev, app):
     desired_caps["platformName"] = "iOS"
     desired_caps["clearSystemFiles"] = True
     desired_caps["noReset"] = True
+    desired_caps["automationName"] = "XCUITest"
     desired_caps["name"] = "iOSNativeApp checkWindow"
+    desired_caps["deviceOrientation"] = "portrait"
+    desired_caps["appiumVersion"] = "1.13.0"
     return desired_caps
 
 
