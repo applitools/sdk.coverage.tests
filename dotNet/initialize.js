@@ -74,13 +74,12 @@ module.exports = function (tracker, test) {
 	addHook('deps', `using Applitools.Tests.Utils;`)
 	addHook('deps', `using Applitools.Generated.Utils;`)
 	addHook('deps', `using Applitools.Utils.Geometry;`)
+	addHook('deps', `using OpenQA.Selenium;`)
 	if (mobile) {
 		addHook('deps', `using Applitools.Appium.GenericUtils;`)
-		addHook('deps', `using OpenQA.Selenium;`)
 		addHook('deps', `using OpenQA.Selenium.Appium;`)
 	}
-	else {
-		addHook('deps', `using OpenQA.Selenium;`)
+	else {		
 		addHook('deps', `using Applitools.Selenium;`)
 		addHook('deps', `using OpenQA.Selenium.Interactions;`)
 		addHook('deps', `using OpenQA.Selenium.Remote;`)
@@ -207,30 +206,6 @@ module.exports = function (tracker, test) {
 				case "object":
 					if (element.type === undefined) addCommand(dot_net`${element}.Click();`)
 					else {
-						/*let selector
-						switch (element.type) {
-							case 'css':
-								selector = 'By.CssSelector'
-								break;
-							case 'id':
-								selector = 'By.Id'
-								break;
-							case 'class name':
-								selector = 'ClassName'
-								break;
-							case 'name':
-								selector = 'By.Name'
-								break;
-							case '-ios predicate string':
-							  selector = 'MobileBy.IosNSPredicate'
-							  break;
-							case '-ios class chain':
-							  selector = 'MobileBy.iOSClassChain'
-							  break;
-							default:
-								throw new Error(`Click - unimplemented type of selector ` + element.type + ` was used`)
-						}
-						addCommand(dot_net`` + drv + `.FindElement(` + selector + `(\"${element.selector}\")).Click();`)*/
 						addCommand(dot_net`` + drv + `.FindElement(${selectors[element.type]}(\"${element.selector}\")).Click();`)
 					}
 					break;
