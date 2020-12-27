@@ -79,7 +79,7 @@ module.exports = function (tracker, test) {
 		addHook('deps', `using Applitools.Appium.GenericUtils;`)
 		addHook('deps', `using OpenQA.Selenium.Appium;`)
 	}
-	else {		
+	else {
 		addHook('deps', `using Applitools.Selenium;`)
 		addHook('deps', `using OpenQA.Selenium.Interactions;`)
 		addHook('deps', `using OpenQA.Selenium.Remote;`)
