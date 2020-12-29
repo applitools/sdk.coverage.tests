@@ -41,4 +41,8 @@ module.exports = {
 	'check frame in frame fully with vg': {skip: true},  //baseline NEW. Need compare with JS tests, maybe add baseline.
 	'should send dom and location when check region by selector fully with custom scroll root': {skipEmit: true},   //test not implemented yet. 
 	'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},   //test not implemented yet. 
- }
+	// check many
+	'acme login with css stitching': {skip: true}, // original test tested fluent API's check many. This test doesn't.
+	'acme login with scroll stitching': {skip: true}, // original test tested fluent API's check many. This test doesn't.
+	'acme login with vg': {skip: true}, // original test tested fluent API's check many. This test doesn't.
+}
