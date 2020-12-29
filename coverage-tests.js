@@ -1080,7 +1080,7 @@ test('should send dom and location when check window', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
