@@ -18,7 +18,7 @@ ${output.hooks.deps.join('\n')}
     }
 
     [Test]
-    [Category("Generated")] ${skip ? '\n    [Ignore("generated")]' : ''}
+    [Category("Generated")] ${skip ? '\n    [Skip("generated")]' : ''}
     public void ${key}()
     {
         ${output.commands.join('\n        ')}
