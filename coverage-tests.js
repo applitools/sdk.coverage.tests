@@ -1497,7 +1497,7 @@ test('should abort if not closed', {
     'with vg': {vg: true},
   },
   test({driver, eyes}) {
-    driver.visit('data:text/html,<p>Test</p>')
+    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
     eyes.open({appName: 'Test Abort', viewportSize: {width: 1200, height: 800}})
     eyes.check()
     eyes.abort()
