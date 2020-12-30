@@ -1276,7 +1276,7 @@ test('should send dom and location when check region by selector with custom scr
     driver.click('#centered')
     driver.executeScript('document.documentElement.style.overflow="hidden";') // TODO this is due to differences between JS and non-JS SDK's. Since what's important in this test is not the image itself, nor can this be solved with branch baselines, we hard coded hide scrollbars on the HTML element in order to verify that the DOM and location are correct.
     driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
-    eyes.check({region: '#modal-content', scrollRootElement: '#modal1'})
+    eyes.check({region: '#modal-content', isFully: false, scrollRootElement: '#modal1'})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 112, y: 38})
@@ -1302,6 +1302,7 @@ test('should send dom and location when check region by selector fully with cust
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     driver.click('#centered')
+    driver.executeScript('document.documentElement.style.overflow="hidden";') // TODO this is due to differences between JS and non-JS SDK's. Since what's important in this test is not the image itself, nor can this be solved with branch baselines, we hard coded hide scrollbars on the HTML element in order to verify that the DOM and location are correct.
     driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
     const scrollRootElement = driver.findElement('#modal1').ref('scrollRootElement')
     driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollRootElement)
