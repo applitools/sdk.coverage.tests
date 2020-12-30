@@ -1306,7 +1306,7 @@ test('should send dom and location when check region by selector fully with cust
     driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-frame", "true");')
     const scrollRootElement = driver.findElement('#modal1').ref('scrollRootElement')
     driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollRootElement)
-    eyes.check({region: '#modal-content', isFully: true, scrollRootElement: '#modal1'})
+    eyes.check({region: '#modal-content', isFully: true, scrollRootElement})
     const result = eyes.close(false).ref('result')
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.location, {x: 112, y: 38})
