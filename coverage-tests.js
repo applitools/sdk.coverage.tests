@@ -1268,7 +1268,7 @@ test('should send dom and location when check region by selector with custom scr
   env: {browser: 'chrome', args: ['hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true, skipEmit: true}, // TODO grid doesn't return the correct location for this test
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
