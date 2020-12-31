@@ -33,7 +33,10 @@ module.exports = function (tracker, test) {
     addHook('deps', `from selenium import webdriver`)
     addHook('deps', `from selenium.webdriver.common.by import By`)
     addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
-    if (mobile) addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
+    if (mobile) {
+	addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
+	addHook('deps', `from applitools.core import Feature`)
+    }
     addHook('deps', `from python.test import *`)
     addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
@@ -192,7 +195,7 @@ def app():
                 || (`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
             )
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
-            let scale_mobile_app = (mobile) ? 'eyes.configure.set_features(\"Scale mobile app\")\n    ' : ''
+            let scale_mobile_app = (mobile)&&(test.name.includes('iOS')) ? 'eyes.configure.set_features(Feature.SCALE_MOBILE_APP)\n    ' : ''
             let appNm = (appName) ? appName : test.config.appName
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
