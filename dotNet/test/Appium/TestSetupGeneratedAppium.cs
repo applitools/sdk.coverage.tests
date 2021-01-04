@@ -6,11 +6,12 @@ using OpenQA.Selenium.Appium.iOS;
 using OpenQA.Selenium.Appium.Enums;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium;
+using Applitools.Appium;
 using Applitools.Generated.Selenium.Tests;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
-namespace Applitools.Appium.Tests
+namespace Applitools.Generated.Appium.Tests
 {
 	public abstract class TestSetupGeneratedAppium : ReportingTestSuiteGenerratedAppium
 	{

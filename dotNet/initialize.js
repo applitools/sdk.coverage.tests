@@ -76,6 +76,7 @@ module.exports = function (tracker, test) {
 	addHook('deps', `using Applitools.Utils.Geometry;`)
 	addHook('deps', `using OpenQA.Selenium;`)
 	if (mobile) {
+		addHook('deps', `using Applitools.Appium;`)
 		addHook('deps', `using Applitools.Appium.GenericUtils;`)
 		addHook('deps', `using OpenQA.Selenium.Appium;`)
 	}
@@ -87,7 +88,7 @@ module.exports = function (tracker, test) {
 		addHook('deps', `using System;`)
 	}
 
-	let namespace = mobile ? 'Applitools.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
+	let namespace = mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
 	let baseClass = mobile ? 'TestSetupGeneratedAppium' : 'TestSetupGenerated'
 	if (emulator) baseClass = 'TestSetupGeneratedMobileEmulation'
 
