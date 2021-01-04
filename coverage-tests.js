@@ -1326,7 +1326,7 @@ test('should send dom and location when check region by selector fully with cust
 })
 
 // TODO remove this test once OCR is released on every sdk
-test('should send dom of version 10', {
+test('should send dom of version 11', {
   page: 'Default',
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1335,7 +1335,7 @@ test('should send dom of version 10', {
     const info = helpers.getTestInfo(result).ref('info')
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
     const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    assert.equal(dom.scriptVersion, '10.0.0')
+    assert.equal(dom.scriptVersion, '11.0.0')
   }
 })
 
