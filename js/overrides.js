@@ -64,5 +64,4 @@ module.exports = {
     config: {branchName: 'javascript_mobile'},
   },
   'appium iOS check region': {skipEmit: false, config: {branchName: 'javascript_mobile'}},
-  'check window after manual scroll on safari 11': {skipEmit: true}, // TODO re enable this test once this is figured out in Sauce Labs
 }
