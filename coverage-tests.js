@@ -1080,24 +1080,23 @@ test('should send dom and location when check window', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true,skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    driver.executeScript('document.documentElement.setAttribute("data-applitools-target", "true");') // because we don't have dom.getNodesByTagName
+    driver.executeScript('document.documentElement.setAttribute("data-expected-target", "true");')
     eyes.check({hooks: {beforeCaptureScreenshot: 'window.scrollTo(0, 350)'}})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const htmlElement = dom.getNodesByAttribute('data-applitools-target').ref('htmlElement')
-    assert.equal(htmlElement.length, 1)
-    assert.equal(htmlElement[0].rect.top, 0)
-    assert.equal(htmlElement[0].rect.left, 0)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 0)
+    const targetElements = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(targetElements[0].rect.top, -350)
+    assert.equal(targetElements[0].rect.left, 0)
   }
 })
 
@@ -1105,27 +1104,23 @@ test('should send dom and location when check window fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true,skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)')
-    driver.executeScript('document.documentElement.setAttribute("data-applitools-target", "true");')
-    driver.executeScript('document.documentElement.setAttribute("data-applitools-expected-scroll", "true");')
+    driver.executeScript('document.documentElement.setAttribute("data-expected-scroll", "true");')
     eyes.check({isFully: true})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 0, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const htmlElement = dom.getNodesByAttribute('data-applitools-target').ref('htmlElement')
-    assert.equal(htmlElement.length, 1)
-    assert.equal(htmlElement[0].rect.top, 0)
-    assert.equal(htmlElement[0].rect.left, 0)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 1)
     assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
-    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-expected-scroll'], 'true')
+    assert.equal(scrollingElements[0].rect.left, 0)
+    assert.equal(scrollingElements[0].rect.top, 0)
   }
 })
 
@@ -1133,24 +1128,23 @@ test('should send dom and location when check frame', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true}, // TODO the way we take screenshot of the frame produce different result
+    'with vg': {vg: true,skipEmit: true, skipEmit: true}, // TODO the way we take screenshot of the frame produce different result
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)')
-    driver.executeScript(`document.querySelector('[name="frame1"]').setAttribute("data-applitools-target", "true");`)
-    eyes.check({frames: ['[name="frame1"]']})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const frameElement = driver.findElement('[name="frame1"]')
+    driver.executeScript(`arguments[0].setAttribute("data-expected-target", "true");`, frameElement)
+    eyes.check({frames: [frameElement]})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const frameElement = dom.getNodesByAttribute('data-applitools-target').ref('frameElement')
-    assert.equal(frameElement.length, 1)
-    assert.equal(frameElement[0].rect.top, 0)
-    assert.equal(frameElement[0].rect.left, 58)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 0)
+    const frameElements = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(frameElements[0].rect.left))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(frameElements[0].rect.top))
   }
 })
 
@@ -1158,30 +1152,28 @@ test('should send dom and location when check frame fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true,skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)')
-    const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
-    driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-expected-scroll", "true");', frameElement)
-    driver.executeScript(`arguments[0].setAttribute("data-applitools-target", "true");`, frameElement)
+    const frameElement = driver.findElement('[name="frame1"]')
+    driver.executeScript(`arguments[0].setAttribute("data-expected-frame", "true");`, frameElement)
+    driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-expected-scroll", "true");', frameElement)
     eyes.check({frames: [frameElement], isFully: true})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 58, y: 0})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(info.actualAppOutput[0].image.location, {x: 60, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const frameElementInDom = dom.getNodesByAttribute('data-applitools-target').ref('frameElementInDom')
-    assert.equal(frameElementInDom.length, 1)
-    assert.equal(frameElementInDom[0].rect.top, 0)
-    assert.equal(frameElementInDom[0].rect.left, 58)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 1)
     assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
-    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
-    assert.equal(scrollingElements[0].rect.top, 0)
-    assert.equal(scrollingElements[0].rect.left, 0)
+    assert.equal(scrollingElements[0].attributes['data-expected-scroll'], 'true')
+    assert.equal(helpers.math.round(scrollingElements[0].rect.left), 0)
+    assert.equal(helpers.math.round(scrollingElements[0].rect.top), 0)
+    const frameElementInDom = dom.getNodesByAttribute('data-expected-frame')
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(frameElementInDom[0].rect.left + 2))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(frameElementInDom[0].rect.top + 2))
   }
 })
 
@@ -1189,24 +1181,23 @@ test('should send dom and location when check region by selector', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true,skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)')
-    driver.executeScript('document.querySelector("#centered").setAttribute("data-applitools-target", "true");')
-    eyes.check({region: '#centered'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const element = driver.findElement('#centered')
+    driver.executeScript('arguments[0].setAttribute("data-expected-target", "true");', element)
+    eyes.check({region: element})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 122, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const targetElement = dom.getNodesByAttribute('data-applitools-target').ref('targetElement')
-    assert.equal(targetElement.length, 1)
-    assert.equal(targetElement[0].rect.top, 0)
-    assert.equal(targetElement[0].rect.left, 122)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 0)
+    const targetElement = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(targetElement[0].rect.left))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(targetElement[0].rect.top))
   }
 })
 
@@ -1214,28 +1205,27 @@ test('should send dom and location when check region by selector fully', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true,skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
-    const scrollableElement = driver.findElement('#overflowing-div').ref("scrollableElement")
-    driver.executeScript('arguments[0].setAttribute("data-applitools-target", "true");', scrollableElement)
-    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollableElement)
+    const scrollableElement = driver.findElement('#overflowing-div')
+    driver.executeScript('arguments[0].setAttribute("data-expected-target", "true");', scrollableElement)
+    driver.executeScript('arguments[0].setAttribute("data-expected-scroll", "true");', scrollableElement)
     eyes.check({region: scrollableElement, isFully: true})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 10, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const targetElement = dom.getNodesByAttribute('data-applitools-target').ref('targetElement')
-    assert.equal(targetElement.length, 1)
-    assert.equal(targetElement[0].rect.top, -2) // not 0 because of 2px border
-    assert.equal(targetElement[0].rect.left, 8) // not 10 because of 2px border
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const targetElement = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(targetElement[0].rect.left + 2))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(targetElement[0].rect.top + 2))
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 1)
     assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
-    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-expected-scroll'], 'true')
   }
 })
 
@@ -1243,33 +1233,25 @@ test('should send dom and location when check region by selector in frame', {
   page: 'Default',
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
+    'with vg': {vg: true,skipEmit: true},
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)')
-    const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
+    const frameElement = driver.findElement('[name="frame1"]')
     driver.executeScript('arguments[0].setAttribute("data-applitools-frame", "true");', frameElement)
-    driver.executeScript(`arguments[0].contentDocument.querySelector('[name="frame1-1"]').setAttribute("data-applitools-target", "true");`, frameElement)
+    driver.executeScript(`arguments[0].contentDocument.querySelector('[name="frame1-1"]').setAttribute("data-expected-target", "true");`, frameElement)
     eyes.check({frames: [frameElement], region: '[name="frame1-1"]'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
-    assert.equal(info.actualAppOutput[0].image.location, {x: 106, y: 0})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(info.actualAppOutput[0].image.location, {x: 108, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-
-    // TODO use addition to verify that "data-applitools-target" and "data-applitools-frame" together make the frame "frame1-1" at {106,0}
-    // const frameElementInDom = dom.getNodesByAttribute('data-applitools-frame').ref('frameElementInDom')
-    // assert.equal(frameElementInDom.length, 1)
-    // assert.equal(frameElementInDom[0].rect.top, -2)
-    // assert.equal(frameElementInDom[0].rect.left, 58)
-    // const targetElement = dom.getNodesByAttribute('data-applitools-target').ref('targetElement')
-    // assert.equal(targetElement.length, 1)
-    // assert.equal(targetElement[0].rect.top, 0)
-    // assert.equal(targetElement[0].rect.left, 58)
-    
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 0)
+    const frameElementInDom = dom.getNodesByAttribute('data-applitools-frame')
+    const targetElement = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(frameElementInDom[0].rect.left + 2 + targetElement[0].rect.left))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(frameElementInDom[0].rect.top + 2 + targetElement[0].rect.top))
   }
 })
 
@@ -1278,26 +1260,27 @@ test('should send dom and location when check region by selector with custom scr
   env: {browser: 'chrome', args: ['hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true}, // TODO grid doesn't return the correct location for this test
+    'with vg': {vg: true,skipEmit: true, skipEmit: true}, // TODO grid doesn't return the correct location for this test
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)') // not really needed
     driver.click('#centered')
-    driver.executeScript('document.documentElement.style.overflow="hidden";') // TODO this is due to differences between JS and non-JS SDK's. Since what's important in this test is not the image itself, nor can this be solved with branch baselines, we hard coded hide scrollbars on the HTML element in order to verify that the DOM and location are correct.
-    driver.executeScript('document.querySelector("#modal-content").setAttribute("data-applitools-target", "true");')
-    eyes.check({region: '#modal-content', isFully: false, scrollRootElement: '#modal1'})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    // TODO this is due to differences between JS and non-JS SDK's. Since what's important in this test is not the image itself, nor can this be solved with branch baselines, we hard coded hide scrollbars on the HTML element in order to verify that the DOM and location are correct.
+    // TODO this happens because non-JS emitters are ignore env args
+    driver.executeScript('document.documentElement.style.overflow="hidden";')
+    const element = driver.findElement('#modal-content')
+    driver.executeScript('arguments[0].setAttribute("data-expected-target", "true");', element)
+    eyes.check({region: element, isFully: false, scrollRootElement: '#modal1'})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 112, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const targetElement = dom.getNodesByAttribute('data-applitools-target').ref('targetElement')
-    assert.equal(targetElement.length, 1)
-    assert.equal(targetElement[0].rect.top, 0)
-    assert.equal(targetElement[0].rect.left, 112)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 0)
+    const targetElement = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(targetElement[0].rect.left))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(targetElement[0].rect.top))
   }
 })
 
@@ -1306,30 +1289,34 @@ test('should send dom and location when check region by selector fully with cust
   env: {browser: 'chrome', args: ['hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true, skipEmit: true}, // TODO grid marks a different block with `applitools-scroll`
+    'with vg': {vg: true,skipEmit: true, skipEmit: true}, // TODO grid marks a different block with `applitools-scroll`
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    driver.executeScript('window.scrollTo(0, 350)') // not really needed
     driver.click('#centered')
-    driver.executeScript('document.documentElement.style.overflow="hidden";') // TODO this is due to differences between JS and non-JS SDK's. Since what's important in this test is not the image itself, nor can this be solved with branch baselines, we hard coded hide scrollbars on the HTML element in order to verify that the DOM and location are correct.
-    driver.executeScript('document.querySelector("#modal-content").setAttribute("data-applitools-target", "true");')
-    const scrollRootElement = driver.findElement('#modal1').ref('scrollRootElement')
-    driver.executeScript('arguments[0].setAttribute("data-applitools-expected-scroll", "true");', scrollRootElement)
-    eyes.check({region: '#modal-content', isFully: true, scrollRootElement})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    // TODO this is due to differences between JS and non-JS SDK's. Since what's important in this test is not the image itself, nor can this be solved with branch baselines, we hard coded hide scrollbars on the HTML element in order to verify that the DOM and location are correct.
+    // TODO this happens because non-JS emitters are ignore env args
+    driver.executeScript('document.documentElement.style.overflow="hidden";')
+    const element = driver.findElement('#modal-content')
+    driver.executeScript('arguments[0].setAttribute("data-expected-target", "true");', element)
+    const scrollRootElement = driver.findElement('#modal1')
+    driver.executeScript('arguments[0].setAttribute("data-expected-scroll", "true");', scrollRootElement)
+    eyes.check({region: element, isFully: true, scrollRootElement})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.location, {x: 112, y: 0})
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
-    const targetElement = dom.getNodesByAttribute('data-applitools-target').ref('targetElement')
-    assert.equal(targetElement.length, 1)
-    assert.equal(targetElement[0].rect.top, 0)
-    assert.equal(targetElement[0].rect.left, 112)
-    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll').ref('scrollingElements')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const scrollingElements = dom.getNodesByAttribute('data-applitools-scroll')
     assert.equal(scrollingElements.length, 1)
     assert.equal(scrollingElements[0].attributes['data-applitools-scroll'], 'true')
-    assert.equal(scrollingElements[0].attributes['data-applitools-expected-scroll'], 'true')
+    assert.equal(scrollingElements[0].attributes['data-expected-scroll'], 'true')
+    assert.equal(helpers.math.round(scrollingElements[0].rect.left), 0)
+    assert.equal(helpers.math.round(scrollingElements[0].rect.top), 0)
+    const targetElement = dom.getNodesByAttribute('data-expected-target')
+    assert.equal(targetElement.length, 1)
+    assert.equal(info.actualAppOutput[0].image.location.x, helpers.math.round(targetElement[0].rect.left))
+    assert.equal(info.actualAppOutput[0].image.location.y, helpers.math.round(targetElement[0].rect.top))
   }
 })
 

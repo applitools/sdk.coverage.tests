@@ -222,6 +222,11 @@ module.exports = function(tracker, test) {
         getNodesByAttribute: (dom, name) => addCommand(js`${dom}.getNodesByAttribute(${name})`)
       })
     },
+    math: {
+      round(number) {
+        return addCommand(js`Math.round(${number}) || 0`)
+      },
+    }
   }
 
   return {driver, eyes, assert, helpers}
