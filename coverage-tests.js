@@ -1249,7 +1249,7 @@ test('should send dom and location when check region by selector in frame', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     driver.executeScript('window.scrollTo(0, 350)')
     const frameElement = driver.findElement('[name="frame1"]').ref("frameElement")
-    driver.executeScript('arguments[0].contentDocument.documentElement.setAttribute("data-applitools-frame", "true");', frameElement)
+    driver.executeScript('arguments[0].setAttribute("data-applitools-frame", "true");', frameElement)
     driver.executeScript(`arguments[0].contentDocument.querySelector('[name="frame1-1"]').setAttribute("data-applitools-target", "true");`, frameElement)
     eyes.check({frames: [frameElement], region: '[name="frame1-1"]'})
     const result = eyes.close(false).ref('result')
