@@ -3,7 +3,7 @@
 {{dep}}
 {{/each}}
 
-describe{{#if skip}}.skip{{/if}}('Coverage Tests', () => {
+describe{{#if skip}}.skip{{/if}}('Coverage Tests - {{key}}', () => {
   {{#each output.hooks.vars as |var|}}
   {{var}}
   {{/each}}
