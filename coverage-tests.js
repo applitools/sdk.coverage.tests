@@ -325,7 +325,7 @@ test('check frame after manual switch to frame', {
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
     driver.executeScript('document.documentElement.scrollTop = 350')
-    const frame = driver.findElement('[name="frame1"]').ref("frame")
+    const frame = driver.findElement('[name="frame1"]')
     driver.switchToFrame(frame)
     eyes.check({frames: ['frame1-1']})
     eyes.check()
@@ -548,7 +548,7 @@ test('check hovered region by element', {
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    const input = driver.findElement('#input').ref('input')
+    const input = driver.findElement('#input')
     driver.scrollIntoView(input)
     driver.hover(input)
     eyes.check({region: input})
@@ -792,13 +792,13 @@ test('should send ignore region by coordinates', {
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    driver.type(driver.findElement('input').ref('input'), 'My Input')
+    driver.type(driver.findElement('input'), 'My Input')
     eyes.check({
       ignoreRegions: [{left: 50, top: 50, width: 100, height: 100}],
       isFully: true,
     })
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 50, top: 50, width: 100, height: 100},
@@ -816,8 +816,8 @@ test('should send ignore region by selector', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({ignoreRegions: ['#overflowing-div']})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 8, top: 81, width: 304, height: 184},
@@ -835,8 +835,8 @@ test('should send ignore regions by selector', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({ignoreRegions: ['.ignore'], isFully: true})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedIgnoreRegions = [
       {left: 10, top: 286, width: 800, height: 500},
@@ -862,8 +862,8 @@ test('should send ignore region by coordinates in target region', {
       region: '#overflowing-div',
       ignoreRegions: [{left: 50, top: 50, width: 100, height: 100}],
     })
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].imageMatchSettings.ignore[0], {left: 50, top: 50, width: 100, height: 100})
   },
 })
@@ -878,8 +878,8 @@ test('should send ignore region by the same selector as target region', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({region: '#overflowing-div-image', ignoreRegions: ['#overflowing-div-image']})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 0, top: 0, width: 304, height: 184},
@@ -915,8 +915,8 @@ test('should send floating region by coordinates', {
         {region: {left: 10, top: 10, width: 20, height: 20}, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
       ],
     })
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 10, top: 10, width: 20, height: 20, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
@@ -944,8 +944,8 @@ test('should send floating region by selector', {
         },
       ],
     })
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 8, top: 81, width: 304, height: 184, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
@@ -976,8 +976,8 @@ test('should send floating region by coordinates in frame', {
       matchLevel: 'Layout',
       isFully: true,
     })
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 200, top: 200, width: 150, height: 150, maxUpOffset: 25, maxDownOffset: 25, maxLeftOffset: 25, maxRightOffset: 25}
@@ -1002,9 +1002,8 @@ test('should send accessibility regions by selector', {
     eyes.check({
       accessibilityRegions: [{region: '.ignore', type: 'LargeText'}]
     })
-    const result = eyes.close().ref('results')
-
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     assert.equal(imageMatchSettings.accessibilitySettings.level, 'AAA')
     assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
@@ -1025,8 +1024,8 @@ test('should send region by selector in padded page', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
     eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
       {left: 0, top: 81, width: 1084, height: 679}
@@ -1043,8 +1042,8 @@ test('should send ignore displacements', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({isFully: true, ignoreDisplacements: true})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].imageMatchSettings.ignoreDisplacements, true)
   },
 })
@@ -1058,8 +1057,8 @@ test('should send dom', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes SDK', viewportSize})
     eyes.check()
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
@@ -1070,8 +1069,8 @@ test('should not send dom', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Test NOT SendDom', viewportSize: {width: 1000, height: 700}})
     eyes.check({sendDom: false})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.hasDom, false)
   }
 })
@@ -1303,10 +1302,10 @@ test('should send dom of version 11', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({})
-    const result = eyes.close(false).ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId).ref('dom')
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
     assert.equal(dom.scriptVersion, '11.0.0')
   }
 })
@@ -1339,10 +1338,7 @@ test('should find regions by visual locator', {
   },
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
-    const regionsMap = eyes
-      .locate({locatorNames: ['applitools_title']})
-      .type('Map<String, List<Region>>')
-      .ref('regionsMap')
+    const regionsMap = eyes.locate({locatorNames: ['applitools_title']})
     eyes.close(false)
     assert.equal(regionsMap, {
       applitools_title: [{left: 3, top: 19, width: 158, height: 38}],
@@ -1355,14 +1351,12 @@ test('should extract text from regions', {
   config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    const element = driver.findElement({type: 'css', selector: '.page h1'}).ref('element')
+    const element = driver.findElement({type: 'css', selector: '.page h1'})
     const texts = eyes.extractText([
       {target: {left: 38, top: 38, width: 213, height: 23}, hint: 'This is the navigation bar'},
       {target: element},
       {target: '.page p:nth-of-type(3)'}
     ])
-      .type('List<String>')
-      .ref('texts')
     eyes.close(false)
     assert.equal(texts[0], 'This is the navigation bar')
     assert.equal(texts[1], 'Lorem Ipsum')
@@ -1382,13 +1376,10 @@ test('should return actual viewport size', {
       appName: 'Eyes Selenium SDK - Fluent API',
       viewportSize: {width: 5000, height: 5000},
     })
-    const cachedViewportSize = eyes.getViewportSize().ref('cachedViewportSize')
-    const expectedViewportSize = driver
-      .executeScript('return {height: window.innerHeight, width: window.innerWidth}')
-      .type('Map<String, Number>')
-      .ref('expectedViewportSize')
-    assert.equal(cachedViewportSize.getWidth().type('Number'), expectedViewportSize.width)
-    assert.equal(cachedViewportSize.getHeight().type('Number'), expectedViewportSize.height)
+    const cachedViewportSize = eyes.getViewportSize()
+    const expectedViewportSize = driver.executeScript('return {height: window.innerHeight, width: window.innerWidth}').type('Map<String, Number>')
+    assert.equal(cachedViewportSize.getWidth(), expectedViewportSize.width)
+    assert.equal(cachedViewportSize.getHeight(), expectedViewportSize.height)
     eyes.close(false)
   },
 })
@@ -1401,10 +1392,7 @@ test('should set viewport size', {
   test({driver, eyes, assert}) {
     const expectedViewportSize = {width: 600, height: 600}
     eyes.constructor.setViewportSize(expectedViewportSize)
-    const actualViewportSize = driver
-      .executeScript('return {width: window.innerWidth, height: window.innerHeight}')
-      .type('Map<String, Number>')
-      .ref('actualViewportSize')
+    const actualViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}').type('Map<String, Number>')
     assert.equal(actualViewportSize, expectedViewportSize)
   },
 })
@@ -1425,7 +1413,7 @@ test('should fail check of stale element', {
   test({driver, eyes, assert}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img').ref("element")
+    const element = driver.findElement('#inner-img')
     driver.click('#invalidate-button')
     assert.throws(
       () => void eyes.check({region: element}),
@@ -1441,7 +1429,7 @@ test('should handle check of stale element if selector is preserved', {
   test({driver, eyes}) {
     driver.visit('http://localhost:5000/TestPages/RefreshDomPage/auto-refresh')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img').ref("element")
+    const element = driver.findElement('#inner-img')
     driver.click('#refresh-button')
     eyes.check({region: element})
     eyes.close()
@@ -1454,9 +1442,9 @@ test('should handle check of stale element in frame if selector is preserved', {
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage/iframe')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const frameElement = driver.findElement('[name="frame"]').ref('frameElement')
+    const frameElement = driver.findElement('[name="frame"]')
     driver.switchToFrame(frameElement)
-    const element = driver.findElement('#inner-img').ref("element")
+    const element = driver.findElement('#inner-img')
     driver.click('#refresh-button')
     driver.switchToFrame(null)
 
@@ -1519,7 +1507,7 @@ test('should return test results from close', {
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({region: '#random_wrapper'})
-    const result = eyes.close(false).ref('result')
+    const result = eyes.close(false)
     assert.instanceOf(result, 'TestResults')
   }
 })
@@ -1533,8 +1521,8 @@ test('acme login', {
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - ACME', viewportSize: {width: 1024, height: 768}})
-    driver.type(driver.findElement('#username').ref('username'), 'adamC')
-    driver.type(driver.findElement('#password').ref('password'), 'MySecret123?')
+    driver.type(driver.findElement('#username'), 'adamC')
+    driver.type(driver.findElement('#password'), 'MySecret123?')
     eyes.check({region: '#username'})
     eyes.check({region: '#password'})
     eyes.close()
@@ -1624,8 +1612,8 @@ test('appium android check window', {
     driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({ignoreRegions: [{type: TYPE.CLASSNAME, selector: 'android.widget.Button'}]})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
         {left: 136, top: 237, width: 90, height: 48},
@@ -1641,8 +1629,8 @@ test('appium android check region with ignore region', {
     driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({region: {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image_container'},ignoreRegions: [{type: TYPE.ANDROID_UI_AUTOMATOR, selector: 'new UiSelector().textContains("You successfully clicked the button!")'}, {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image'}]})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
         {left: 53, top: 0, width: 254, height: 22},
@@ -1673,8 +1661,8 @@ test('appium iOS check window', {
     driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({ignoreRegions: [{type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}]})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
         {left: 155, top: 258, width: 65, height: 30},
@@ -1690,8 +1678,8 @@ test('appium iOS check region with ignore region', {
     driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({region: {type: TYPE.ACCESSIBILITY_ID, selector: 'BottomContainer'},ignoreRegions: [{type: TYPE.ACCESSIBILITY_ID, selector: 'BottomLabel'}, {type: TYPE.ACCESSIBILITY_ID, selector: 'BottomImage'}]})
-    const result = eyes.close().ref('result')
-    const info = helpers.getTestInfo(result).ref('info')
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
         {left: 0, top: 0, width: 343, height: 21},

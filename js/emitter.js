@@ -83,10 +83,10 @@ module.exports = function(tracker, test) {
       addCommand(js`await spec.mainContext(driver)`)
     },
     findElement(selector) {
-      return addCommand(js`await spec.findElement(driver, ${selector})`).type('Element')
+      return addExpression(js`await spec.findElement(driver, ${selector})`)
     },
     findElements(selector) {
-      return addCommand(js`await spec.findElements(driver, ${selector})`).type('Array<Element>')
+      return addExpression(js`await spec.findElements(driver, ${selector})`)
     },
     click(element) {
       addCommand(js`await spec.click(driver, ${element})`)
