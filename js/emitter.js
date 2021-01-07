@@ -31,7 +31,7 @@ function serialize(data) {
 }
 
 module.exports = function(tracker, test) {
-  const {addSyntax, addCommand, addHook, withScope} = tracker
+  const {addSyntax, addCommand, addExpression, addHook, withScope} = tracker
 
   addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
   addSyntax('getter', ({target, key}) => `${target}['${key}']`)
@@ -83,10 +83,10 @@ module.exports = function(tracker, test) {
       addCommand(js`await spec.mainContext(driver)`)
     },
     findElement(selector) {
-      return addCommand(js`await spec.findElement(driver, ${selector})`).type('Element')
+      return addExpression(js`await spec.findElement(driver, ${selector})`)
     },
     findElements(selector) {
-      return addCommand(js`await spec.findElements(driver, ${selector})`).type('Array<Element>')
+      return addExpression(js`await spec.findElements(driver, ${selector})`)
     },
     click(element) {
       addCommand(js`await spec.click(driver, ${element})`)
@@ -219,9 +219,14 @@ module.exports = function(tracker, test) {
     },
     getDom(result, domId) {
       return addCommand(js`await getDom(${result}, ${domId})`).methods({
-        getNodesByAttribute: (dom, name) => addCommand(js`${dom}.getNodesByAttribute(${name})`)
+        getNodesByAttribute: (dom, name) => addExpression(js`${dom}.getNodesByAttribute(${name})`)
       })
     },
+    math: {
+      round(number) {
+        return addExpression(js`(Math.round(${number}) || 0)`)
+      },
+    }
   }
 
   return {driver, eyes, assert, helpers}
