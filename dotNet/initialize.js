@@ -417,6 +417,11 @@ module.exports = function (tracker, test) {
         getNodesByAttribute: (dom, name) => addCommand(dot_net`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
       })
 		},
+		math: {
+			round(number) {
+        return addCommand(dot_net`(int)Math.Round((decimal)${number});`)
+      },
+		}
 	}
 
 	return { driver, eyes, assert, helpers }
