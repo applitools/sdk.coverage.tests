@@ -419,12 +419,24 @@ module.exports = function (tracker, test) {
 		},
 		math: {
 			round(number) {
-        return addCommand(dot_net`(int)Math.Round((decimal)${number});`)
+		if (number.isRef)
+			return addCommand(dot_net`(int)Math.Round(` + castPolynomTerms("decimal", number.ref()) + `);`)
+		else
+			return addCommand(dot_net`(int)Math.Round((decimal)${number});`)
       },
 		}
 	}
 
 	return { driver, eyes, assert, helpers }
+}
+
+function castPolynomTerms(castTo, polinom, index=0) {
+	let castPolynom = ""
+	let terms = polinom.split("+")
+	terms.forEach(term => {
+		castPolynom = castPolynom + "(" + castTo + ")" + term.trimStart() + " + "
+	})
+	return castPolynom.substr(0, castPolynom.length - 3)
 }
 
 function getVal(val) {
