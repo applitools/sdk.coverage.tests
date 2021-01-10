@@ -1086,7 +1086,7 @@ test('should send dom and location when check window', {
     const scrollLocation = {x: 0, y: 350}
     driver.executeScript(`window.scrollTo(${scrollLocation.x}, ${scrollLocation.y})`)
     driver.executeScript('document.documentElement.setAttribute("data-expected-target", "true");')
-    eyes.check({hooks: {beforeCaptureScreenshot: `window.scrollTo(${scrollLocation.x}, ${scrollLocation.y})`}})
+    eyes.check({isFully: false, hooks: {beforeCaptureScreenshot: `window.scrollTo(${scrollLocation.x}, ${scrollLocation.y})`}})
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
@@ -1175,7 +1175,7 @@ test('should send dom and location when check region by selector', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const element = driver.findElement('#centered')
     driver.executeScript('arguments[0].setAttribute("data-expected-target", "true");', element)
-    eyes.check({region: element})
+    eyes.check({region: element, isFully: false})
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.hasDom, true)
