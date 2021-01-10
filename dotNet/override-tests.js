@@ -64,4 +64,8 @@ module.exports = {
 	// 'should send dom and location when check region by selector fully with custom scroll root': { skipEmit: true },
 	// 'should send dom and location when check region by selector fully with custom scroll root with vg': { skipEmit: true },
 	// 'should send dom of version 11': { skipEmit: true },
+	'check coerce long image with css stitching': { skipEmit: false },
+	'check coerce long image with scroll stitching': { skipEmit: false },
+	'check coerce large image with css stitching': { skipEmit: false },
+	'check coerce large image with scroll stitching': { skipEmit: false },
 }
