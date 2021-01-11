@@ -19,6 +19,8 @@ config({
     Wix: 'https://applitools.github.io/demo/TestPages/WixLikeTestPage/index.html',
     ScrollableBody: 'https://applitools.github.io/demo/TestPages/SimpleTestPage/scrollablebody.html',
     Simple: 'https://applitools.github.io/demo/TestPages/SimpleTestPage/index.html',
+    Long: 'https://applitools.github.io/demo/TestPages/SimpleTestPage/?long',
+    Large: 'https://applitools.github.io/demo/TestPages/SimpleTestPage/?large',
     FixedRegion: 'http://applitools.github.io/demo/TestPages/fixed-position',
     Modals: 'https://applitools.github.io/demo/TestPages/ModalsPage/index.html',
     HorizontalScroll: 'https://applitools.github.io/demo/TestPages/horizontal-scroll.html',
@@ -1604,19 +1606,32 @@ test('check window fully with html scrollRootElement after scroll', {
   }
 })
 
-test('check window fully with html scrollRootElement after scroll when fail to scroll', {
-  page: 'Default',
+test('check limit to maximum image size for long page', {
+  skipEmit: true,
+  page: 'Long',
   variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScrollWhenFailToScroll'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScrollWhenFailToScroll_Scroll'}},
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckCoerceLongImage'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckCoerceLongImage_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckCoerceLongImage_VG'}},
   },
-  test({driver, eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    driver.executeScript('window.scrollBy(0, 200)')
-    eyes.check({
-      scrollRootElement: 'html',
-      isFully: true
-    })
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Test Big Pages', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
+    eyes.close()
+  },
+})
+
+test('check limit to maximum image size for large page', {
+  skipEmit: true,
+  page: 'Large',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckCoerceLargeImage'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckCoerceLargeImage_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckCoerceLargeImage_VG'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Test Big Pages', viewportSize})
+    eyes.check({region: '#overflowing-div', isFully: true})
     eyes.close()
   },
 })
