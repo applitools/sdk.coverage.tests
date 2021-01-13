@@ -39,7 +39,8 @@ config({
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
     Demo: 'https://demo.applitools.com',
-    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html'
+    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
+    OCR: 'https://applitools.github.io/demo/TestPages/OCRPage'
   },
 })
 
@@ -1366,6 +1367,19 @@ ullamcorper nisl id porta mollis. Aliquam odio tortor, gravida nec
 accumsan id, sollicitudin id est. Vivamus at lacinia leo. Aliquam
 pharetra metus quis tellus eleifend consectetur. Donec sagittis
 venenatis fermentum. Praesent fermentum dignissim iaculis.`)
+  },
+})
+
+test('should extract text regions from image', {
+  page: 'OCR',
+  config: {stitchMode: 'CSS'},
+  test({driver, eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    const regions = eyes.extractTextRegions({
+      isFully: true,
+      patterns: ['\\.']
+    })
+    eyes.close(false)
   },
 })
 
