@@ -350,8 +350,8 @@ module.exports = function (tracker, test) {
 			else {act = `${actual}`
 			console.log("actual = " + actual)}
 
-			let mess = message ? message : null
-			addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
+			let mess = message ? message : undefined
+			addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `);`)
 		},
 
 		instanceOf(object, className, message) {
