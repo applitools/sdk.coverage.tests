@@ -344,7 +344,7 @@ module.exports = function (tracker, test) {
 			console.log("in expected")
 			if ((objectToString.call(expected) === "[object Object]") ||
 				(objectToString.call(expected) === "[object String]")) {console.log("[object String]"); expect = expectParser(expected)}
-			if (objectToString.call(expected) === "[object Function]") {console.log("[object Function]"); expect = expected.ref()}
+			if ((objectToString.call(expected) === "[object Function]") || (expected.isRef)) {console.log("[object Function]"); expect = expected.ref()}
 
 			let act
 			if (actual.isRef) act = parseAssertActual(actual.ref())
