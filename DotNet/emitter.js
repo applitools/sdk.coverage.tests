@@ -342,7 +342,7 @@ module.exports = function (tracker, test) {
 			let objectToString = Object.prototype.toString;
 			let expect = expected
 			if ((expected.isRef) || (objectToString.call(expected) === "[object Function]")) expect = expected.ref()
-			if ((objectToString.call(expected) === "[object Object]") ||
+			else if ((objectToString.call(expected) === "[object Object]") ||
 				(objectToString.call(expected) === "[object String]")) expect = expectParser(expected)
 
 			let act
