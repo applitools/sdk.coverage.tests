@@ -342,8 +342,8 @@ module.exports = function (tracker, test) {
 			let objectToString = Object.prototype.toString;
 			let expect = expected
 			if ((objectToString.call(expected) === "[object Object]") ||
-				(objectToString.call(expected) === "[object String]")) expect = expectParser(expected)
-			if (objectToString.call(expected) === "[object Function]") expect = expected.ref()
+				(objectToString.call(expected) === "[object String]")) {console.log("[object String]"); expect = expectParser(expected)}
+			if (objectToString.call(expected) === "[object Function]") {console.log("[object Function]"); expect = expected.ref()}
 
 			let act
 			if (actual.isRef) act = parseAssertActual(actual.ref())
