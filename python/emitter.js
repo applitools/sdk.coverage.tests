@@ -37,7 +37,7 @@ module.exports = function (tracker, test) {
 	addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
 	addHook('deps', `from applitools.core import Feature`)
     }
-    addHook('deps', `from python.test import *`)
+    addHook('deps', `from test import *`)
     addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
 
