@@ -160,5 +160,9 @@ module.exports = {
     'check window after manual scroll on safari 11': {skip: true},
 
     // Undefined method 'state' for nil:NilClass
-    'should not check if disabled': {skip: true}
+    'should not check if disabled': {skip: true},
+
+    // A bug in the full page algorithm to fix
+    'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skip: true},
+    'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skip: true},
 }

@@ -1604,6 +1604,23 @@ test('check window fully with html scrollRootElement after scroll', {
   }
 })
 
+test('check window fully with html scrollRootElement after scroll when fail to scroll', {
+  page: 'Demo',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScrollWhenFailToScroll'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScrollWhenFailToScroll_Scroll'}},
+  },
+  test({driver, eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    driver.executeScript('window.scrollBy(0, 200)')
+    eyes.check({
+      scrollRootElement: 'html',
+      isFully: true
+    })
+    eyes.close()
+  },
+})
+
 test('appium android check window', {
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckWindow'},
