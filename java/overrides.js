@@ -22,8 +22,6 @@ module.exports = {
     'check window after manual scroll on safari 11': {skip: true}, //diffs
     'check window after manual scroll on safari 12': {skip: true}, // diffs
     'check window on page with sticky header with vg': {skip: true}, // diffs
-    'check window fully with html scrollRootElement after scroll with css stitching': {skip: true}, // diffs
-    'check window fully with html scrollRootElement after scroll with scroll stitching': {skip: true}, // diffs
     // region
     'check region by selector in frame fully with vg': {skip: true}, // stale element reference
     'check region by selector in frame fully with vg classic': {skip: true}, // stale element reference
@@ -42,6 +40,7 @@ module.exports = {
     'check regions by coordinates in overflowed frame with css stitching': {skip: true}, // com.applitools.eyes.OutOfBoundsException: Region [(0, 15000) 385x5000, SCREENSHOT_AS_IS] is out of screenshot bounds [(0, 0) 385x15000, SCREENSHOT_AS_IS]
     'check regions by coordinates in overflowed frame with scroll stitching': {skip: true}, // com.applitools.eyes.OutOfBoundsException: Region [(0, 15000) 385x5000, SCREENSHOT_AS_IS] is out of screenshot bounds [(0, 0) 385x15000, SCREENSHOT_AS_IS]
     'check regions by coordinates in overflowed frame with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"#modal3 iframe"}
+    'check region in frame hidden under top bar fully with css stitching': {skip: true}, // Bad test
     // frame
     'check frame with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"[name="frame1"]"}
     'check frame with vg classic': {skip: true}, // stale element reference:
