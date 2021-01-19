@@ -366,7 +366,7 @@ module.exports = function (tracker, test) {
 			let command
 			let funct = `${func}`.replace(/;/g, "")
 			if (check) {
-				command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>());`
+				command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>().Or.InstanceOf<EyesException>().With.InnerException.With.InstanceOf<${insert(check())}>());`
 			}
 			else {
 				command = dot_net`Assert.That(() => {${func}}, Throws.Exception);`
