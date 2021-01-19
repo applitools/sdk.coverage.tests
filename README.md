@@ -9,7 +9,7 @@ A repo to sync all sdks to the same tests
 
 3. There is a folder for each language which should contain the emitter, template, and overrides for that language. Example: https://github.com/applitools/sdk.coverage.tests/tree/master/js
 
-4. In the specific SDK repo, there should be a `coverage-tests` folder with `package.json` that has the dependency of the cli, `@applitools/sdk-coverage-tests`, and a configuration for specifying where to take the code emitting files from. See example here: `//TODO add Java or C# folder url`
+4. In the specific SDK repo, there should be a `coverage-tests` folder with `package.json` that has the dependency of the `@applitools/sdk-coverage-tests` (A.K.A. *the CLI*), and a configuration for specifying where to take the code emitting files from. See example from the Java SDK: https://github.com/applitools/eyes.sdk.java3/tree/develop/coverage-tests
 ## Workflow
 
 All SDK's should generate tests from `coverage-tests.js` on the `master` branch.
