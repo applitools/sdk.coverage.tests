@@ -22,8 +22,6 @@ module.exports = {
     'check window after manual scroll on safari 11': {skip: true}, //diffs
     'check window after manual scroll on safari 12': {skip: true}, // diffs
     'check window on page with sticky header with vg': {skip: true}, // diffs
-    'check window fully with html scrollRootElement after scroll with css stitching': {skip: true}, // diffs
-    'check window fully with html scrollRootElement after scroll with scroll stitching': {skip: true}, // diffs
     // region
     'check region by selector in frame fully with vg': {skip: true}, // stale element reference
     'check region by selector in frame fully with vg classic': {skip: true}, // stale element reference
