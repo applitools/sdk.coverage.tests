@@ -1607,7 +1607,6 @@ test('check window fully with html scrollRootElement after scroll', {
 })
 
 test('check limit to maximum image size for long page', {
-  skipEmit: true,
   page: 'Long',
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckCoerceLongImage'}},
@@ -1622,7 +1621,6 @@ test('check limit to maximum image size for long page', {
 })
 
 test('check limit to maximum image size for large page', {
-  skipEmit: true,
   page: 'Large',
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckCoerceLargeImage'}},
