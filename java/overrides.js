@@ -9,7 +9,6 @@ module.exports = {
     // General
     'should hide and restore scrollbars with vg': {skip: true}, // java.lang.IllegalArgumentException: checkTasks == 0
     'should send floating region by coordinates in frame with vg': {skip: true}, // stale element reference
-    'should send ignore region by the same selector as target region with scroll stitching': {skip: true}, // Region has different position [(0, 0) 304x184, SCREENSHOT_AS_IS] but found [(0, 284) 304x184, SCREENSHOT_AS_IS]
     'should send dom on edge legacy': {skip: true}, // java.lang.IllegalArgumentException: width < 0 , in Eyes.open
     'should set viewport size on edge legacy': {skip: true}, // java.lang.IllegalArgumentException: width < 0
     // window
