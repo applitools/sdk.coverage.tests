@@ -1238,7 +1238,7 @@ test('should send dom and location when check region by selector in frame', {
 
 test('should send dom and location when check region by selector with custom scroll root', {
   page: 'Default',
-  env: {browser: 'chrome', args: ['hide-scrollbars']},
+  env: {browser: 'chrome', args: ['--hide-scrollbars']},
   variants: {
     '': {vg: false},
     'with vg': {vg: true}
@@ -1266,7 +1266,7 @@ test('should send dom and location when check region by selector with custom scr
 
 test('should send dom and location when check region by selector fully with custom scroll root', {
   page: 'Default',
-  env: {browser: 'chrome', args: ['hide-scrollbars']},
+  env: {browser: 'chrome', args: ['--hide-scrollbars']},
   variants: {
     '': {vg: false},
     'with vg': {vg: true,skipEmit: true, skipEmit: true}, // TODO grid marks a different block with `applitools-scroll`
