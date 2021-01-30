@@ -165,4 +165,6 @@ module.exports = {
     // A bug in the full page algorithm to fix
     'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skip: true},
     'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skip: true},
+    'adopted styleSheets on chrome': {skipEmit: true},
+	'adopted styleSheets on firefox': {skipEmit: true},
 }

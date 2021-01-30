@@ -39,7 +39,8 @@ config({
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
     Demo: 'https://demo.applitools.com',
-    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html'
+    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
+    AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
   },
 })
 
@@ -1717,5 +1718,40 @@ test('appium iOS check region', {
     eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}})
     eyes.close()
   },
+})
+
+test('adopted styleSheets on chrome', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 640, height: 480},
+    ],
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({fully: false})
+    eyes.close()
+  }
+})
+
+test('adopted styleSheets on firefox', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'firefox', width: 640, height: 480},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({fully: false})
+    assert.throws(() => eyes.close())
+    // TODO assert test is aborted
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({fully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
+    eyes.check({fully: false, visualGridOptions: {polyfillAdoptedStyleSheets: false}})
+    eyes.close()
+  }
 })
 // #endregion
