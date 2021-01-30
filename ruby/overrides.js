@@ -165,4 +165,5 @@ module.exports = {
     // A bug in the full page algorithm to fix
     'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skip: true},
     'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skip: true},
+    'should not fail if scroll root is stale on android': {skipEmit: true},
 }
