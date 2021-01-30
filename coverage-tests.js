@@ -600,6 +600,7 @@ test('check region by selector in frame fully', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckRegionInFrame_VG'}},
+    'on firefox legacy': {config: {baselineName: 'TestCheckRegionInFrame_Scroll'}, env: {browser: 'firefox-48', legacy: true}}
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -1398,6 +1399,10 @@ test('should set viewport size', {
 })
 
 test('should not fail if scroll root is stale', {
+  variants: {
+    '': {env: {browser: 'chrome'}},
+    'on android': {env: {browser: 'chrome', device: 'Android 8.0 Chrome Emulator'}},
+  },
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
