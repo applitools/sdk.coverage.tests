@@ -1399,10 +1399,6 @@ test('should set viewport size', {
 })
 
 test('should not fail if scroll root is stale', {
-  variants: {
-    '': {env: {browser: 'chrome'}},
-    'on android': {env: {browser: 'chrome', device: 'Android 8.0 Chrome Emulator'}},
-  },
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
