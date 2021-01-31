@@ -507,7 +507,7 @@ function setUpBrowsers(test, addHook) {
 		}
 	}
 	else addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
-	addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
+	addHook('beforeEach', dot_net`    initEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
 }
 
 //module.exports = makeSpecEmitter
