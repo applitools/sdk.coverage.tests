@@ -1314,7 +1314,8 @@ test('should send custom batch properties', {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
     const result = eyes.close();
     const info = helpers.getBatchInfo(result); 
-    assert.equal(info.properties, {custom_prop: 'custom_prop'})
+    assert.equal(info.properties.length, 1)
+    assert.equal(info.properties[0], {name: 'custom_prop', value: 'custom value'})
   },
 })
 
