@@ -28,6 +28,7 @@ module.exports = {
 	'should send accessibility regions by selector with scroll stitching': { skip: true },   //actual region AccessibilityRegionByRectangle (10, 286) 285x165 - LargeText not found in expected regions list. - It's other regions in original specific test TestAccessibilityRegions for CSS and Scroll
 	'should send ignore regions by selector with css stitching': { skip: true },   //actual Region region (10, 286) 285x165 not found in expected regions list.   It's other regions in original specific test TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent for CSS and Scroll
 	'should send ignore regions by selector with scroll stitching': { skip: true },   //actual Region region (10, 286) 285x165 not found in expected regions list.   It's other regions in original specific test TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent for CSS and Scroll
+	'check region in frame hidden under top bar fully with css stitching': {skip: true}, // Bad test
 	//frame
 	'check frame after manual switch to frame with vg classic': { skip: true },   //diff
 	'check frame fully with css stitching': { skip: true },   //diff
