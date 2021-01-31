@@ -481,7 +481,7 @@ function setUpWithEmulators(test, addHook) {
 function setUpBrowsers(test, addHook) {
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false) ? false : true
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true) ? true : false
-	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? true : false
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? false : true // localeCompare returns 0 when the strings are equal
 	if (("env" in test) && ("browser" in test.env)) {
 		switch (test.env.browser) {
 			case 'ie-11':
@@ -507,7 +507,7 @@ function setUpBrowsers(test, addHook) {
 		}
 	}
 	else addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
-	addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
+	addHook('beforeEach', dot_net`    initEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
 }
 
 //module.exports = makeSpecEmitter
