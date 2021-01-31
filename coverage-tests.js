@@ -1305,9 +1305,7 @@ test('should send custom batch properties', {
   page: 'Default',
   config: {
     batch: {
-      properties: {
-        custom_prop: 'custom value'
-      }
+      properties: [{name: 'custom_prop', value: 'custom value'}]
     }
   },
   test({eyes, assert, helpers}) {
