@@ -1304,8 +1304,10 @@ test('should send dom and location when check region by selector fully with cust
 test('should send custom batch properties', {
   page: 'Default',
   config: {
-    properties: {
-      custom_prop: 'custom value'
+    batch: {
+      properties: {
+        custom_prop: 'custom value'
+      }
     }
   },
   test({eyes, assert, helpers}) {
