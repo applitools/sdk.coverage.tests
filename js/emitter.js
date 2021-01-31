@@ -42,7 +42,7 @@ module.exports = function(tracker, test) {
   addHook('deps', `const path = require('path')`)
   addHook('deps', `const assert = require('assert')`)
   addHook('deps', `const spec = require(path.resolve(cwd, 'src/spec-driver'))`)
-  addHook('deps', `const {testSetup, getTestInfo, getDom} = require('@applitools/sdk-shared')`)
+  addHook('deps', `const {testSetup, getTestInfo, getBatchInfo, getDom} = require('@applitools/sdk-shared')`)
 
   addHook('vars', `let driver, destroyDriver, eyes`)
 
@@ -216,6 +216,9 @@ module.exports = function(tracker, test) {
     },
     getTestInfo(result) {
       return addCommand(js`await getTestInfo(${result})`)
+    },
+    getBatchInfo(result) {
+      return addCommand(js`await getBatchInfo(${result})`)
     },
     getDom(result, domId) {
       return addCommand(js`await getDom(${result}, ${domId})`).methods({
