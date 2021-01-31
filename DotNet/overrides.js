@@ -47,7 +47,7 @@ module.exports = {
 	'acme login with vg': { skip: true }, // original test tested fluent API's check many. This test doesn't.
 	// location
 	// 'should send dom and location when check window': { skipEmit: true },
-	// 'should send dom and location when check window with vg': { skipEmit: true },
+	'should send dom and location when check window with vg': { skipEmit: true },
 	// 'should send dom and location when check window fully': { skipEmit: true },
 	// 'should send dom and location when check window fully with vg': { skipEmit: true },
 	// 'should send dom and location when check frame': { skipEmit: true },
