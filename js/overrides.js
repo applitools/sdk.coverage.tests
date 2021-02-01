@@ -64,4 +64,5 @@ module.exports = {
     config: {branchName: 'javascript_mobile'},
   },
   'appium iOS check region': {skipEmit: false, config: {branchName: 'javascript_mobile'}},
+  'check region by selector in frame fully on firefox legacy': { skip: true },
 }
