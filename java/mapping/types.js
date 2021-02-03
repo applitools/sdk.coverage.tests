@@ -117,5 +117,14 @@ const types = {
             }).join(', ')
         },
     },
+    "TextRegion": {
+        get: simpleGetter
+    },
+    "BatchInfo": {
+        get: simpleGetter
+    },
+    "StartInfo": {
+      get: simpleGetter  
+    }
 }
 module.exports = types
