@@ -90,8 +90,6 @@ module.exports = function (tracker, test) {
   addHook('deps', `import java.util.*;`)
   addHook('deps', `import com.applitools.eyes.locators.VisualLocatorSettings;`)
   addHook('deps', 'import com.fasterxml.jackson.databind.JsonNode;');
-  //addHook('deps', 'import com.applitools.eyes.locators.TextRegionSettings;');
-  //addHook('deps', 'import com.applitools.eyes.locators.TextRegion;');
 
   addSyntax('var', variable)
   addSyntax('getter', getter)
