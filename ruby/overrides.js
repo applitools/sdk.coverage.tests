@@ -167,4 +167,5 @@ module.exports = {
     'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skip: true},
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+    'should send custom batch properties': {skipEmit: true}
 }

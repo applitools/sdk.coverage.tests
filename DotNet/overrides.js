@@ -65,6 +65,10 @@ module.exports = {
   'should send dom and location when check region by selector fully with custom scroll root': { skipEmit: true }, // test is wrong!
 	'should send dom and location when check region by selector fully with custom scroll root with vg': { skipEmit: true }, // test is wrong!
 	// 'should send dom of version 11': { skipEmit: true },
+<<<<<<< HEAD
 	'should not fail if scroll root is stale on android': {skipEmit: true},
 	'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+=======
+	'should send custom batch properties': {skipEmit: true}
+>>>>>>> 3bf27b7 (fix: skipEmit for other languages)
 }
