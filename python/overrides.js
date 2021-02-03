@@ -101,9 +101,14 @@ module.exports = {
     'appium iOS check region with ignore region': {skip: true},					//assertion for ignored region fails
     'appium iOS check region': {skip: true},							//wrong  scale
 <<<<<<< HEAD
+<<<<<<< HEAD
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
 =======
     'should send custom batch properties': {skipEmit: true}
 >>>>>>> 3bf27b7 (fix: skipEmit for other languages)
+=======
+    'should not fail if scroll root is stale on android': {skipEmit: true},
+    'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+>>>>>>> refs/heads/master
 }
