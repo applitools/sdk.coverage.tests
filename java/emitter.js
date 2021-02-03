@@ -90,6 +90,8 @@ module.exports = function (tracker, test) {
   addHook('deps', `import java.util.*;`)
   addHook('deps', `import com.applitools.eyes.locators.VisualLocatorSettings;`)
   addHook('deps', 'import com.fasterxml.jackson.databind.JsonNode;');
+  //addHook('deps', 'import com.applitools.eyes.locators.TextRegionSettings;');
+  //addHook('deps', 'import com.applitools.eyes.locators.TextRegion;');
 
   addSyntax('var', variable)
   addSyntax('getter', getter)
@@ -99,7 +101,7 @@ module.exports = function (tracker, test) {
   addHook('beforeEach', java`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
   addHook('beforeEach', java`buildDriver(${JSON.stringify(test.env) || emptyValue()});`)
   addHook('beforeEach', java`System.out.println(getClass().getName());`)
-  const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints'];
+  const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
   Object.keys(test.config).filter(property => !specific.includes(property))
       .forEach(property => addHook('beforeEach', java`set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
   if(test.config.browsersInfo) {
@@ -116,6 +118,11 @@ module.exports = function (tracker, test) {
   if (test.config.layoutBreakpoints) {
     addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
   }
+  if (test.config.batch) {
+	  addHook('beforeEach', `setBatch(new HashMap[] {\n    ${test.config.batch.properties.map(val => {
+	    return {value:val, type: 'Map', generic: [{name: 'String'}, {name: 'String'}]}
+	  }).map(property => java`${property}`).join(',\n    ')}});`)
+	}
 
   addHook('afterEach', java`driver.quit();`)
   addHook('afterEach', java`eyes.abort();`)
@@ -248,6 +255,24 @@ module.exports = function (tracker, test) {
     },
     locate(visualLocator) {
       return addCommand(java`eyes.locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
+    },
+    extractTextRegions({patterns, ignoreCase, firstOnly, language}) {
+      const commands = []
+      commands.push(java`eyes.extractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
+      if (ignoreCase) commands.push(java`.ignoreCase(${ignoreCase})`)
+      if (firstOnly) commands.push(java`.firstOnly(${firstOnly})`)
+      if (language) commands.push(java`.language(${language})`)
+      commands.push(java`);`)
+      return addCommand([commands.join('')]).type({
+      	type: 'Map<String, List<TextRegion>>',
+      	items: {
+      		type: 'List<TextRegion>',
+      		items: {
+      			type: 'TextRegion',
+      			schema: { text: { type: 'String'}}
+      		}
+      	}
+      })
     }
   }
 
@@ -306,6 +331,28 @@ module.exports = function (tracker, test) {
                 imageMatchSettings: imageMatchSettings,
               }},
           },
+          startInfo: {
+          	type: 'StartInfo',
+          	schema: {
+          		batchInfo: {
+          			type: 'BatchInfo',
+          			schema: {
+      					properties: {
+        					type: 'List<Map<String, String>>',
+        					schema: {
+          						length: {rename: 'size'}
+          					},
+          					items: {
+          						type: 'Map<String, String>',
+          						items: {
+            						type: 'String'
+          						}
+        					}
+        				},
+      				}
+      			}
+          	}
+          }
         },
       })
     },
