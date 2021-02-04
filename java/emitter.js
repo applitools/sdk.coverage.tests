@@ -117,7 +117,7 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
   }
   if (test.config.batch) {
-	  addHook('beforeEach', `setBatch(new HashMap[] {\n    ${test.config.batch.properties.map(val => {
+	  addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
 	    return {value:val, type: 'Map', generic: [{name: 'String'}, {name: 'String'}]}
 	  }).map(property => java`${property}`).join(',\n    ')}});`)
 	}
