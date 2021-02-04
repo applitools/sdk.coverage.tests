@@ -67,4 +67,5 @@ module.exports = {
 	// 'should send dom of version 11': { skipEmit: true },
 	'should not fail if scroll root is stale on android': {skipEmit: true},
 	'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+	'should send custom batch properties': {skipEmit: true}
 }

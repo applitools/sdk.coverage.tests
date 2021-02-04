@@ -1301,6 +1301,22 @@ test('should send dom and location when check region by selector fully with cust
 
 // #region OTHERS
 
+test('should send custom batch properties', {
+  page: 'Default',
+  config: {
+    batch: {
+      properties: [{name: 'custom_prop', value: 'custom value'}]
+    }
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
+    const result = eyes.close();
+    const info = helpers.getTestInfo(result); 
+    assert.equal(info.startInfo.batchInfo.properties.length, 1)
+    assert.equal(info.startInfo.batchInfo.properties[0], {name: 'custom_prop', value: 'custom value'})
+  },
+})
+
 test('should hide and restore scrollbars', {
   page: 'Default',
   variants: {

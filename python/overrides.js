@@ -102,4 +102,5 @@ module.exports = {
     'appium iOS check region': {skip: true},							//wrong  scale
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+    'should send custom batch properties': {skipEmit: true}
 }
