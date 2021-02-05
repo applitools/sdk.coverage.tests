@@ -1270,7 +1270,7 @@ test('should send dom and location when check region by selector fully with cust
   env: {browser: 'chrome', args: ['--hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true,skipEmit: true, skipEmit: true}, // TODO grid marks a different block with `applitools-scroll`
+    'with vg': {vg: true, skip: true}, // TODO grid marks a different block with `applitools-scroll`
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
