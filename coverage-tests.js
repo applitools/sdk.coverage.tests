@@ -1302,7 +1302,6 @@ test('should send dom and location when check region by selector fully with cust
 // #region OTHERS
 
 test('should send custom batch properties', {
-  skip: true,
   page: 'Default',
   config: {
     batch: {
