@@ -89,7 +89,10 @@ module.exports = function (tracker, test) {
   addHook('deps', `import org.testng.Assert;`)
   addHook('deps', `import java.util.*;`)
   addHook('deps', `import com.applitools.eyes.locators.VisualLocatorSettings;`)
-  addHook('deps', 'import com.fasterxml.jackson.databind.JsonNode;');
+  addHook('deps', 'import com.fasterxml.jackson.databind.JsonNode;')
+  addHook('deps', 'import com.applitools.eyes.locators.OcrRegion;')
+  addHook('deps', 'import com.applitools.eyes.locators.TextRegion;')
+  addHook('deps', 'import com.applitools.eyes.locators.TextRegionSettings;')
 
   addSyntax('var', variable)
   addSyntax('getter', getter)
@@ -253,6 +256,40 @@ module.exports = function (tracker, test) {
     },
     locate(visualLocator) {
       return addCommand(java`eyes.locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
+    },
+    extractText(ocrRegions) {
+    	const commands = []
+    	commands.push(java`eyes.extractText(`)
+    	for (const index in ocrRegions) {
+    		commands.push(java`new OcrRegion(`)
+    		const region = ocrRegions[index]
+    		if (typeof(region.target) === "string") {
+    			commands.push(java`By.cssSelector(${region.target}))`)
+    		} else if (typeof(region.target) === "object") {
+    			commands.push(java`new Region(${region.target.left}, ${region.target.top}, ${region.target.width}, ${region.target.height}))`)
+    		} else {
+    			commands.push(java`${region.target})`)
+    		}
+
+    		if (region.hint) {
+    			commands.push(java`.hint(${region.hint})`)
+    		}
+    		if (region.minMatch) {
+    			commands.push(java`.minMatch(${region.minMatch})`)
+    		}
+    		if (region.language) {
+    			commands.push(java`.language(${region.language})`)
+    		}
+    		commands.push(java`, `)
+    	}
+    	commands.pop()
+    	commands.push(java`);`)
+    	return addCommand([commands.join('')]).type({
+    		type: 'List<String>',
+    		items: {
+    			type: 'String'
+    		}
+    	});
     },
     extractTextRegions({patterns, ignoreCase, firstOnly, language}) {
       const commands = []
