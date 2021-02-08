@@ -4,7 +4,6 @@ module.exports = {
     'should return test results from close with passed vg test': {skipEmit: true}, //   cause
     'should return test results from close with failed classic test': {skipEmit: true}, // tests
     'should return test results from close with failed vg test': {skipEmit: true}, // JS specific
-    'should extract text from regions': {skipEmit: true}, // Not implemented yet
     'should handle check of stale element in frame if selector is preserved': {skipEmit: true}, // Not implemented yet
     // General
     'should hide and restore scrollbars with vg': {skip: true}, // java.lang.IllegalArgumentException: checkTasks == 0
