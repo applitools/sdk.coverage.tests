@@ -38,7 +38,6 @@ config({
     HelloWorldDiff: 'https://applitools.com/helloworld?diff1',
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
-    Demo: 'https://demo.applitools.com',
     PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
     OCR: 'https://applitools.github.io/demo/TestPages/OCRPage'
   },
@@ -1555,22 +1554,6 @@ test('check region fully after scroll non scrollable element', {
     driver.executeScript('window.scrollBy(0, 500)')
     eyes.check({
       region: '#overflowing-div',
-      isFully: true,
-    })
-    eyes.close()
-  }
-})
-
-test('check region fully when body is greater and non scrollable', {
-  page: 'Demo',
-  variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_VG'}},
-  },
-  test({eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({
       isFully: true,
     })
     eyes.close()
