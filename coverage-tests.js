@@ -39,7 +39,8 @@ config({
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
     Demo: 'https://demo.applitools.com',
-    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html'
+    PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
+    OCR: 'https://applitools.github.io/demo/TestPages/OCRPage'
   },
 })
 
@@ -1350,25 +1351,20 @@ test('should find regions by visual locator', {
 })
 
 test('should extract text from regions', {
-  page: 'StickyHeader',
+  page: 'OCR',
   config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    const element = driver.findElement({type: 'css', selector: '.page h1'})
+    const element = driver.findElement({type: 'css', selector: 'body > h2'})
     const texts = eyes.extractText([
-      {target: {left: 38, top: 38, width: 213, height: 23}, hint: 'This is the navigation bar'},
+      {target: {left: 8, top: 21, width: 400, height: 37}, hint: 'Header1: Hello world!'},
       {target: element},
-      {target: '.page p:nth-of-type(3)'}
+      {target: 'body > p'}
     ])
     eyes.close(false)
-    assert.equal(texts[0], 'This is the navigation bar')
-    assert.equal(texts[1], 'Lorem Ipsum')
-    assert.equal(texts[2],
-`Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc
-ullamcorper nisl id porta mollis. Aliquam odio tortor, gravida nec
-accumsan id, sollicitudin id est. Vivamus at lacinia leo. Aliquam
-pharetra metus quis tellus eleifend consectetur. Donec sagittis
-venenatis fermentum. Praesent fermentum dignissim iaculis.`)
+    assert.equal(texts[0], 'Header1: Hello world!')
+    assert.equal(texts[1], 'Header2: He110 w0rld!!')
+    assert.equal(texts[2], `Incididunt minim ad occaecat mollit sint elit ipsum.\nConsectetur eiusmod sint officia labore elit nostrud`)
   },
 })
 
