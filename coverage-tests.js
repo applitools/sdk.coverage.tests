@@ -1355,16 +1355,16 @@ test('should extract text from regions', {
   config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    const element = driver.findElement({type: 'css', selector: 'body > h3'})
+    const element = driver.findElement({type: 'css', selector: 'body > h2'})
     const texts = eyes.extractText([
       {target: {left: 8, top: 21, width: 400, height: 37}, hint: 'Header1: Hello world!'},
       {target: element},
-      {target: 'body > ol > li:nth-child(1)'}
+      {target: 'body > p'}
     ])
     eyes.close(false)
     assert.equal(texts[0], 'Header1: Hello world!')
-    assert.equal(texts[1], 'Header3: HLE1lQ w@rld!!')
-    assert.equal(texts[2], `One`)
+    assert.equal(texts[1], 'Header2: He110 w0rld!!')
+    assert.equal(texts[2], `Incididunt minim ad occaecat mollit sint elit ipsum.\nConsectetur eiusmod sint officia labore elit nostrud`)
   },
 })
 
