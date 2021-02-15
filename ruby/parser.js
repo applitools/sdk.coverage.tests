@@ -161,7 +161,7 @@ function serialize(value) {
     } else if (typeof value === 'undefined' || value === null) {
         stringified = 'nil'
     } else if (typeof value === 'string') {
-        stringified = `'${value}'`
+        stringified = `'${value.replace(/'/g, '\\\'')}'`
     } else if (isSelector(value)) {
         stringified = selectors[value.type](value.selector)
     } else if (typeof value === 'object') {
@@ -203,7 +203,7 @@ function variable({name, value}) {
 function getter({target, key, type}) {
     let get;
     if (type && type.name === 'Array') {
-        get = `[${key}]`
+        get = key === 'length' ? `.length` : `[${key}]`
     } else {
         get = key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `[${serialize(key)}]`
     }

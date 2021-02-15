@@ -4,7 +4,7 @@ const {wrapSelector} = require('./util')
 
 
 module.exports = function (tracker, test) {
-  const {addSyntax, addCommand, addHook} = tracker
+  const {addSyntax, addCommand, addHook, addExpression} = tracker
   if (test.meta.native) {
     addHook('deps', `require 'appium_helper'`)
     test.key += '_Native'
@@ -200,6 +200,11 @@ module.exports = function (tracker, test) {
   }
 
   const helpers = {
+    math: {
+      round(number){
+        return addExpression(ruby`${number}.round`)
+      }
+    },
     getTestInfo(result) {
       return addCommand(ruby`get_test_info(${result})`).type({
         type: 'TestInfo',
@@ -233,7 +238,13 @@ module.exports = function (tracker, test) {
       })
     },
     getDom(results, domId) {
-      return addCommand(ruby`get_dom(${results}, ${domId})`).ref('dom')
+      return addCommand(ruby`get_dom(${results}, ${domId})`).ref('dom').methods({
+        getNodesByAttribute: (dom, name) => addExpression(ruby`get_nodes_by_attribute(${dom}, ${name})`).type({
+          type: 'Array',
+          schema: {length: 'Number'},
+          items: {type: 'JsonNode', recursive: true}
+        })
+      })
     }
   }
 
