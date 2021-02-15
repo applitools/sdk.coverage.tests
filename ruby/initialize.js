@@ -54,7 +54,7 @@ module.exports = function (tracker, test) {
       return addCommand(ruby`@driver.get_url`)
     },
     executeScript(script, ...args) {
-      let command = construct`@driver.execute_script(${JSON.stringify(script)}`
+      let command = construct`@driver.execute_script(${script}`
       args.forEach(val => command.extra`, ${val}`)
       command.add`)`
       return addCommand(command.build(''))
