@@ -161,7 +161,6 @@ function serialize(value) {
     } else if (typeof value === 'undefined' || value === null) {
         stringified = 'nil'
     } else if (typeof value === 'string') {
-        console.log(value)
         stringified = `'${value.replace(/'/g, '\\\'')}'`
     } else if (isSelector(value)) {
         stringified = selectors[value.type](value.selector)
