@@ -115,23 +115,23 @@ module.exports = function (tracker, test) {
 	}
 
 
-	if ("branchName" in test.config) addHook('beforeEach', dot_net`    eyes.BranchName = ${test.config.branchName};`)
-	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`    eyes.ParentBranchName = ${test.config.parentBranchName};`)
-	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`    eyes.HideScrollbars = ${test.config.hideScrollbars};`)
-	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`    eyes.IsDisabled = ${test.config.isDisabled};`)
+	if ("branchName" in test.config) addHook('beforeEach', dot_net`eyes.BranchName = ${test.config.branchName};`)
+	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
+	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
+	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`eyes.IsDisabled = ${test.config.isDisabled};`)
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)) {
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-		addHook('beforeEach', dot_net`    AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
+		addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
         Applitools.Selenium.Configuration configuration = eyes.GetConfiguration();
         configuration.SetAccessibilityValidation(settings);
         eyes.SetConfiguration(configuration);`)
 	}
 
-	addHook('afterEach', dot_net`    webDriver.Quit();`)
-	addHook('afterEach', dot_net`    driver.Quit();`)
-	addHook('afterEach', dot_net`    eyes.AbortIfNotClosed();`)
-	addHook('afterEach', dot_net`    runner.GetAllTestResults();`)
+	addHook('afterEach', dot_net`webDriver.Quit();`)
+	addHook('afterEach', dot_net`driver.Quit();`)
+	addHook('afterEach', dot_net`eyes.AbortIfNotClosed();`)
+	addHook('afterEach', dot_net`runner.GetAllTestResults();`)
 
 
 
