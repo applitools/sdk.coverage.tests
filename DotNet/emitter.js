@@ -455,22 +455,22 @@ function insert(value) {
 }
 
 function setUpMobileNative(test, addHook) {
-	addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
-	addHook('beforeEach', dot_net`    initEyes(false, false);`)
+	addHook('beforeEach', dot_net`initDriver(${test.env.device}, ${test.env.app});`)
+	addHook('beforeEach', dot_net`initEyes(false, false);`)
 }
 
 function setUpWithEmulators(test, addHook) {
 	if (test.env.device === 'Android 8.0 Chrome Emulator') {
-		addHook('beforeEach', dot_net`     SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
+		addHook('beforeEach', dot_net`SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
 		switch (test.config.baselineName) {
 			case 'Android Emulator 8.0 Portrait mobile fully':
-				addHook('beforeEach', dot_net`    initEyes("mobile", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Portrait);`)
 				break;
 			case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
-				addHook('beforeEach', dot_net`    initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
 				break;
 			case 'Android Emulator 8.0 Portrait desktop fully':
-				addHook('beforeEach', dot_net`    initEyes("desktop", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("desktop", ScreenOrientation.Portrait);`)
 				break;
 			default:
 				throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
@@ -486,29 +486,29 @@ function setUpBrowsers(test, addHook) {
 	if (("env" in test) && ("browser" in test.env)) {
 		switch (test.env.browser) {
 			case 'ie-11':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.IE);`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.IE);`)
 				break;
 			case 'edge-18':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Edge);`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Edge);`)
 				break;
 			case 'firefox':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox, headless: ${headless});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Firefox, headless: ${headless});`)
 				break;
 			case 'safari-11':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
 				break;
 			case 'safari-12':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
 				break;
 			case 'chrome':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless});`)
 				break;
 			default:
 				throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
 		}
 	}
-	else addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
-	addHook('beforeEach', dot_net`    initEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
+	else addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless});`)
+	addHook('beforeEach', dot_net`initEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
 }
 
 //module.exports = makeSpecEmitter
