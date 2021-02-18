@@ -1356,14 +1356,14 @@ test('should extract text from regions', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const element = driver.findElement({type: 'css', selector: 'body > h2'})
     const texts = eyes.extractText([
-      {target: {left: 8, top: 21, width: 400, height: 37}, hint: 'Header1: Hello world!'},
+      {target: 'body > h1'},
       {target: element},
-      {target: 'body > p'}
+      {target: {left: 10, top: 405, width: 210, height: 22}, hint: 'imagination be your guide'},
     ])
     eyes.close(false)
-    assert.equal(texts[0], 'Header1: Hello world!')
-    assert.equal(texts[1], 'Header2: He110 w0rld!!')
-    assert.equal(texts[2], `Incididunt minim ad occaecat mollit sint elit ipsum.\nConsectetur eiusmod sint officia labore elit nostrud`)
+    assert.equal(texts[0], 'Header 1: Hello world!')
+    assert.equal(texts[1], 'Header 2: He110 w0rld!')
+    assert.equal(texts[2], 'imagination be your guide.')
   },
 })
 
