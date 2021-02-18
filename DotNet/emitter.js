@@ -7,6 +7,8 @@ const { variable } = require('./parser')
 const { takeSelector } = require('./parser')
 const util = require('util')
 const selectors = require('./mapping/selectors')
+const { execSync } = require('child_process')
+const gitCommand = "git rev-parse HEAD"
 let counter = 0
 
 function dot_net(chunks, ...values) {
@@ -69,6 +71,8 @@ module.exports = function (tracker, test) {
 	})
 
 	addSyntax('return', ({ value }) => `return ${value}`)
+
+	if (counter === 0) {console.log("commit hash = " + execSync(gitCommand).toString().trim()); counter++;}
 
 	addHook('deps', `using NUnit.Framework;`)
 	addHook('deps', `using Applitools.Tests.Utils;`)
