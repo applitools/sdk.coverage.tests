@@ -1304,9 +1304,7 @@ test('should send dom and location when check region by selector fully with cust
 test('should send custom batch properties', {
   page: 'Default',
   config: {
-    batch: {
-      properties: [{name: 'custom_prop', value: 'custom value'}]
-    }
+    batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom_prop', value: 'custom value'}]}
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
