@@ -1,6 +1,6 @@
-const iosDeviceName = require('./iosDeviceName')
-const deviceName = require('./deviceName')
-const {capitalizeFirstLetter} = require('../util')
+//const iosDeviceName = require('./iosDeviceName')
+//const deviceName = require('./deviceName')
+//const {capitalizeFirstLetter} = require('../util')
 const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
 const types = {
     "Map": {
@@ -12,25 +12,24 @@ const types = {
             return `new HashMap<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
     {{ ${Object.keys(value).map(key => `put(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
         },
-        get: (target, key) => `${target}.get("${key}")`,
+        get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
         name: (type) => {
             const key = type.generic[0].name
             const genericKey = type.generic[0]
             const value = type.generic[1].name
             const genericValue = type.generic[1]
-            return `Map<${types[key].name(genericKey)},${types[value].name(genericValue)}>`
+            return `Dictionary<${types[key].name(genericKey)},${types[value].name(genericValue)}>`
         },
     },
-    "List": {
+    /*"List": {
         constructor: (value, generic) => {
             const param = generic[0]
             const paramType = types[param.name]
             return `new ArrayList<${paramType.name(param)}>()
             {{ ${value.map(region => `add(${paramType.constructor(region)});`).join(' ')} }}`
         },
-        name: (type) => `List<${type.generic[0].name}>`,
-        get: (target, key) => Number.isInteger(Number(key)) ? `${target}.get(${key})` : `${target}.${key}()`
+        name: (type) => `List<${type.generic[0].name}>`
     },
     "RectangleSize": {
         constructor: (value) => `new RectangleSize(${value.width}, ${value.height})`,
@@ -41,16 +40,11 @@ const types = {
         get: simpleGetter,
         name: () => 'SessionResults',
     },
-    "JsonNode": {
-        get: (target, key) => `${target}.get(${Number.isInteger(Number(key)) ? key : `"${key}"`})`,
-        name: () => 'JsonNode'
-    },
     "TestResults": {
         name: () => 'TestResults',
     },
     "Element": {
         name: () => 'WebElement',
-        get: simpleGetter,
     },
     "Region": {
         name: () => 'Region',
@@ -105,9 +99,6 @@ const types = {
     "AccessibilityGuidelinesVersion":{
         constructor: (value) => `AccessibilityGuidelinesVersion.${value}`
     },
-    "Location": {
-        constructor: (value) => `new Location(${value.x}, ${value.y})`
-    },
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
@@ -116,15 +107,6 @@ const types = {
                 else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
             }).join(', ')
         },
-    },
-    "TextRegion": {
-        get: simpleGetter
-    },
-    "BatchInfo": {
-        get: simpleGetter
-    },
-    "StartInfo": {
-      get: simpleGetter  
-    }
+    },*/
 }
 module.exports = types
