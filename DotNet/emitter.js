@@ -7,6 +7,9 @@ const { variable } = require('./parser')
 const { takeSelector } = require('./parser')
 const util = require('util')
 const selectors = require('./mapping/selectors')
+const { execSync } = require('child_process')
+const sdk_coverage_tests_repo_webURL = "https://github.com/applitools/sdk.coverage.tests.git"
+const sdk_coverage_tests_repo_branch = "master"
 let counter = 0
 
 function dot_net(chunks, ...values) {
@@ -50,6 +53,17 @@ function argumentCheck(actual, ifUndefined) {
 	return (typeof actual === 'undefined') ? ifUndefined : actual
 }
 
+function printCommitHash(webURL, branch) {
+	let currentRepoRemotes = execSync("git remote -v")
+	if (currentRepoRemotes.includes('sdk_coverage_tests_repo')) execSync("git remote remove sdk_coverage_tests_repo")
+	execSync("git remote add sdk_coverage_tests_repo " + webURL)
+	execSync("git fetch --quiet --all")
+	console.log("sdk.coverage.tests repo - last commit data:")
+	console.log("************************************************")
+	console.log(execSync("git log -n 1 sdk_coverage_tests_repo/" + branch).toString().trim())
+	console.log("************************************************")
+}
+
 module.exports = function (tracker, test) {
 	const { addSyntax, addCommand, addHook, withScope, addType } = tracker
 
@@ -69,6 +83,8 @@ module.exports = function (tracker, test) {
 	})
 
 	addSyntax('return', ({ value }) => `return ${value}`)
+
+	if (counter === 0) {printCommitHash(sdk_coverage_tests_repo_webURL, sdk_coverage_tests_repo_branch); counter++;}
 
 	addHook('deps', `using NUnit.Framework;`)
 	addHook('deps', `using Applitools.Tests.Utils;`)
@@ -115,22 +131,23 @@ module.exports = function (tracker, test) {
 	}
 
 
-	if ("branchName" in test.config) addHook('beforeEach', dot_net`    eyes.BranchName = ${test.config.branchName};`)
-	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`    eyes.ParentBranchName = ${test.config.parentBranchName};`)
-	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`    eyes.HideScrollbars = ${test.config.hideScrollbars};`)
-	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`    eyes.IsDisabled = ${test.config.isDisabled};`)
+	if ("branchName" in test.config) addHook('beforeEach', dot_net`eyes.BranchName = ${test.config.branchName};`)
+	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
+	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
+	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`eyes.IsDisabled = ${test.config.isDisabled};`)
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)) {
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-		addHook('beforeEach', dot_net`    AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
+		addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
         Applitools.Selenium.Configuration configuration = eyes.GetConfiguration();
         configuration.SetAccessibilityValidation(settings);
         eyes.SetConfiguration(configuration);`)
 	}
 
-	addHook('afterEach', dot_net`    webDriver.Quit();`)
-	addHook('afterEach', dot_net`    driver.Quit();`)
-	addHook('afterEach', dot_net`    eyes.AbortIfNotClosed();`)
+	addHook('afterEach', dot_net`webDriver.Quit();`)
+	addHook('afterEach', dot_net`driver.Quit();`)
+	addHook('afterEach', dot_net`eyes.AbortIfNotClosed();`)
+	addHook('afterEach', dot_net`runner?.GetAllTestResults(false);`)
 
 
 
@@ -454,22 +471,22 @@ function insert(value) {
 }
 
 function setUpMobileNative(test, addHook) {
-	addHook('beforeEach', dot_net`    initDriver(${test.env.device}, ${test.env.app});`)
-	addHook('beforeEach', dot_net`    initEyes(false, false);`)
+	addHook('beforeEach', dot_net`initDriver(${test.env.device}, ${test.env.app});`)
+	addHook('beforeEach', dot_net`initEyes(false, false);`)
 }
 
 function setUpWithEmulators(test, addHook) {
 	if (test.env.device === 'Android 8.0 Chrome Emulator') {
-		addHook('beforeEach', dot_net`     SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
+		addHook('beforeEach', dot_net`SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
 		switch (test.config.baselineName) {
 			case 'Android Emulator 8.0 Portrait mobile fully':
-				addHook('beforeEach', dot_net`    initEyes("mobile", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Portrait);`)
 				break;
 			case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
-				addHook('beforeEach', dot_net`    initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
 				break;
 			case 'Android Emulator 8.0 Portrait desktop fully':
-				addHook('beforeEach', dot_net`    initEyes("desktop", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("desktop", ScreenOrientation.Portrait);`)
 				break;
 			default:
 				throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
@@ -481,33 +498,33 @@ function setUpWithEmulators(test, addHook) {
 function setUpBrowsers(test, addHook) {
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false) ? false : true
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true) ? true : false
-	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? true : false
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? false : true // localeCompare returns 0 when the strings are equal
 	if (("env" in test) && ("browser" in test.env)) {
 		switch (test.env.browser) {
 			case 'ie-11':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.IE);`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.IE);`)
 				break;
 			case 'edge-18':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Edge);`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Edge);`)
 				break;
 			case 'firefox':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Firefox, headless: ${headless});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Firefox, headless: ${headless});`)
 				break;
 			case 'safari-11':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Safari11, legacy: ${legacy});`)
 				break;
 			case 'safari-12':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
 				break;
 			case 'chrome':
-				addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
+				addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless});`)
 				break;
 			default:
 				throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
 		}
 	}
-	else addHook('beforeEach', dot_net`    SetUpDriver(browserType.Chrome, headless: ${headless});`)
-	addHook('beforeEach', dot_net`    initEyes(${argumentCheck(test.vg, false)}, ${css});`)
+	else addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless});`)
+	addHook('beforeEach', dot_net`initEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
 }
 
 //module.exports = makeSpecEmitter

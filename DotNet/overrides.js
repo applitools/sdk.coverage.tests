@@ -4,8 +4,6 @@ module.exports = {
 	// window
 	'check window with layout breakpoints in config': { skip: true }, // layout breakpoints are not implemented
 	'check window with layout breakpoints': { skip: true }, // layout breakpoints are not implemented
-	'check window fully on page with sticky header with css stitching': { skip: true },   //diff
-	'check window fully on page with sticky header with scroll stitching': { skip: true },   //diff
 	'check window fully with fixed scroll root element': { skip: true },   //diff
 	'check window on page with sticky header with vg': { skip: true },   //diff
 	'should set viewport size': { skip: true },   //Actual region with Width=800 Height=600 don't equal to expected region with Width = 600 Height = 600
@@ -28,6 +26,7 @@ module.exports = {
 	'should send accessibility regions by selector with scroll stitching': { skip: true },   //actual region AccessibilityRegionByRectangle (10, 286) 285x165 - LargeText not found in expected regions list. - It's other regions in original specific test TestAccessibilityRegions for CSS and Scroll
 	'should send ignore regions by selector with css stitching': { skip: true },   //actual Region region (10, 286) 285x165 not found in expected regions list.   It's other regions in original specific test TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent for CSS and Scroll
 	'should send ignore regions by selector with scroll stitching': { skip: true },   //actual Region region (10, 286) 285x165 not found in expected regions list.   It's other regions in original specific test TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent for CSS and Scroll
+	'check region in frame hidden under top bar fully with css stitching': {skip: true}, // Bad test
 	//frame
 	'check frame after manual switch to frame with vg classic': { skip: true },   //diff
 	'check frame fully with css stitching': { skip: true },   //diff
@@ -47,7 +46,7 @@ module.exports = {
 	'acme login with vg': { skip: true }, // original test tested fluent API's check many. This test doesn't.
 	// location
 	// 'should send dom and location when check window': { skipEmit: true },
-	// 'should send dom and location when check window with vg': { skipEmit: true },
+	'should send dom and location when check window with vg': { skipEmit: true },
 	// 'should send dom and location when check window fully': { skipEmit: true },
 	// 'should send dom and location when check window fully with vg': { skipEmit: true },
 	// 'should send dom and location when check frame': { skipEmit: true },
@@ -61,9 +60,12 @@ module.exports = {
 	//'should send dom and location when check region by selector in frame': { skipEmit: true },
 	// 'should send dom and location when check region by selector with custom scroll root': { skipEmit: true },
 	// 'should send dom and location when check region by selector with custom scroll root with vg': { skipEmit: true },
-	// 'should send dom and location when check region by selector fully with custom scroll root': { skipEmit: true },
-	// 'should send dom and location when check region by selector fully with custom scroll root with vg': { skipEmit: true },
+  'should send dom and location when check region by selector fully with custom scroll root': { skipEmit: true }, // test is wrong!
+	'should send dom and location when check region by selector fully with custom scroll root with vg': { skipEmit: true }, // test is wrong!
 	// 'should send dom of version 11': { skipEmit: true },
+	'should not fail if scroll root is stale on android': {skipEmit: true},
+	'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+	'should send custom batch properties': {skipEmit: true},
 	'adopted styleSheets on chrome': {skipEmit: true},
 	'adopted styleSheets on firefox': {skipEmit: true},
 }

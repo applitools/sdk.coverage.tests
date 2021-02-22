@@ -38,8 +38,8 @@ config({
     HelloWorldDiff: 'https://applitools.com/helloworld?diff1',
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
-    Demo: 'https://demo.applitools.com',
     PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
+    OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
   },
 })
@@ -601,6 +601,7 @@ test('check region by selector in frame fully', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckRegionInFrame_VG'}},
+    'on firefox legacy': {config: {baselineName: 'TestCheckRegionInFrame_Scroll'}, env: {browser: 'firefox-48', legacy: true}}
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -1270,7 +1271,7 @@ test('should send dom and location when check region by selector fully with cust
   env: {browser: 'chrome', args: ['--hide-scrollbars']},
   variants: {
     '': {vg: false},
-    'with vg': {vg: true,skipEmit: true, skipEmit: true}, // TODO grid marks a different block with `applitools-scroll`
+    'with vg': {vg: true, skip: true}, // TODO grid marks a different block with `applitools-scroll`
   },
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -1297,23 +1298,23 @@ test('should send dom and location when check region by selector fully with cust
   }
 })
 
-// TODO remove this test once OCR is released on every sdk
-test('should send dom of version 11', {
-  page: 'Default',
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({})
-    const result = eyes.close(false)
-    const info = helpers.getTestInfo(result)
-    assert.equal(info.actualAppOutput[0].image.hasDom, true)
-    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
-    assert.equal(dom.scriptVersion, '11.0.0')
-  }
-})
-
 // #endregion
 
 // #region OTHERS
+
+test('should send custom batch properties', {
+  page: 'Default',
+  config: {
+    batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom_prop', value: 'custom value'}]}
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
+    const result = eyes.close();
+    const info = helpers.getTestInfo(result); 
+    assert.equal(info.startInfo.batchInfo.properties.length, 1)
+    assert.equal(info.startInfo.batchInfo.properties[0], {name: 'custom_prop', value: 'custom value'})
+  },
+})
 
 test('should hide and restore scrollbars', {
   page: 'Default',
@@ -1348,25 +1349,20 @@ test('should find regions by visual locator', {
 })
 
 test('should extract text from regions', {
-  page: 'StickyHeader',
+  page: 'OCR',
   config: {stitchMode: 'CSS'},
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    const element = driver.findElement({type: 'css', selector: '.page h1'})
+    const element = driver.findElement({type: 'css', selector: 'body > h2'})
     const texts = eyes.extractText([
-      {target: {left: 38, top: 38, width: 213, height: 23}, hint: 'This is the navigation bar'},
+      {target: 'body > h1'},
       {target: element},
-      {target: '.page p:nth-of-type(3)'}
+      {target: {left: 10, top: 405, width: 210, height: 22}, hint: 'imagination be your guide'},
     ])
     eyes.close(false)
-    assert.equal(texts[0], 'This is the navigation bar')
-    assert.equal(texts[1], 'Lorem Ipsum')
-    assert.equal(texts[2],
-`Donec aliquam ipsum sit amet tellus sagittis fringilla. Nunc
-ullamcorper nisl id porta mollis. Aliquam odio tortor, gravida nec
-accumsan id, sollicitudin id est. Vivamus at lacinia leo. Aliquam
-pharetra metus quis tellus eleifend consectetur. Donec sagittis
-venenatis fermentum. Praesent fermentum dignissim iaculis.`)
+    assert.equal(texts[0], 'Header 1: Hello world!')
+    assert.equal(texts[1], 'Header 2: He110 w0rld!')
+    assert.equal(texts[2], 'imagination be your guide.')
   },
 })
 
@@ -1399,6 +1395,10 @@ test('should set viewport size', {
 })
 
 test('should not fail if scroll root is stale', {
+  variants: {
+    '': {env: {browser: 'chrome'}},
+    'on android': {env: {browser: 'chrome', device: 'Android 8.0 Chrome Emulator'}},
+  },
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
@@ -1553,22 +1553,6 @@ test('check region fully after scroll non scrollable element', {
     driver.executeScript('window.scrollBy(0, 500)')
     eyes.check({
       region: '#overflowing-div',
-      isFully: true,
-    })
-    eyes.close()
-  }
-})
-
-test('check region fully when body is greater and non scrollable', {
-  page: 'Demo',
-  variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyWhenBodyIsGreaterAndNonScrollable_VG'}},
-  },
-  test({eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({
       isFully: true,
     })
     eyes.close()

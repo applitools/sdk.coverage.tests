@@ -16,7 +16,7 @@ function directString(String) {
 }
 
 module.exports = function (tracker, test) {
-    const {addSyntax, addCommand, addHook, withScope} = tracker
+    const {addSyntax, addCommand, addHook, withScope, addType} = tracker
 
     function findElementFunc(element) {
     if(element.isRef) return element
@@ -27,6 +27,16 @@ module.exports = function (tracker, test) {
     let emulator = ((("env" in test) && ("device" in test.env))&& !("features" in test))
     let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome')? true: false
     let openPerformed = false
+
+    addType('JsonNode', {
+         getter: ({target, key}) => {if (`${key}` !== "len") return `${target}[${key}]`
+					else return `${key}(${target})`},
+               schema: {
+               attributes: { type: 'JsonNode', schema: 'JsonNode' },
+               length: {type: 'Number', rename: 'len', getter: ({target, key}) => `${key}(${target})`}
+               }
+       })
+
 
     addHook('deps', `import pytest`)
     addHook('deps', `import selenium`)
@@ -44,7 +54,8 @@ module.exports = function (tracker, test) {
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
 	if (key.startsWith('get')) return `${target}.${key.slice(3).toLowerCase()}`
-	if (((type !== undefined) && (type.name === 'Array')) || (Number(key))) return `${target}[${key}]`
+	if ((type !== undefined) && (type !== null) && (type.name === 'JsonNode')) return `${target}[${key}]`
+	if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (Number(key))) return `${target}[${key}]`
 	else return `${target}["${key}"]`
     })
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
@@ -116,7 +127,7 @@ def app():
             return addCommand(python`driver.get(${url})`)
         },
         executeScript(script, ...args) {
-            if (args.length > 0) console.log('Need to Implement args for the execute script')
+            if (args.length > 0) return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
             return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
@@ -366,8 +377,14 @@ def app():
             })
         },
 	getDom(result, domId) {
-		return addCommand(python`get_dom(${result}, ${domId})`)
+		return addCommand(python`get_dom(${result}, ${domId})`).type({type: 'JsonNode'}).methods({
+        getNodesByAttribute: (dom, name) => addCommand(python`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})})
 	},
+        math: {
+                       round(number) {
+                               return addCommand(python`round(${number})`)
+                       },
+               }
     }
 
     return {driver, eyes, assert, helpers}
