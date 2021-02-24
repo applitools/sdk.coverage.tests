@@ -16,8 +16,6 @@ module.exports = {
 	'check regions by coordinates in overflowed frame with scroll stitching': { skip: true }, //Unable to locate element: {"method":"css selector","selector":"#modal3"}
 	'should find regions by visual locator': { skip: true }, //VisualLocators are not implemented in DotNet SDK
 	'should find regions by visual locator with vg': { skip: true }, //VisualLocators are not implemented in DotNet SDK
-	'check region by selector fully on page with sticky header with css stitching': { skip: true },   //diff
-	'check region by selector fully on page with sticky header with scroll stitching': { skip: true },   //diff
 	'check region by selector on page with sticky header with css stitching': { skip: true },   //diff
 	'check region by selector on page with sticky header with scroll stitching': { skip: true },   //diff
 	'check window after manual scroll with vg': { skip: true },   //diff
