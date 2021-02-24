@@ -39,7 +39,8 @@ config({
     SpecialCharacters: 'https://applitools.github.io/demo/TestPages/SpecialCharacters/index.html',
     PaddedBody: 'https://applitools.github.io/demo/TestPages/PaddedBody/index.html',
     PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
-    OCR: 'https://applitools.github.io/demo/TestPages/OCRPage'
+    OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
+    AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
   },
 })
 
@@ -1304,9 +1305,7 @@ test('should send dom and location when check region by selector fully with cust
 test('should send custom batch properties', {
   page: 'Default',
   config: {
-    batch: {
-      properties: [{name: 'custom_prop', value: 'custom value'}]
-    }
+    batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom_prop', value: 'custom value'}]}
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
@@ -1356,14 +1355,14 @@ test('should extract text from regions', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const element = driver.findElement({type: 'css', selector: 'body > h2'})
     const texts = eyes.extractText([
-      {target: {left: 8, top: 21, width: 400, height: 37}, hint: 'Header1: Hello world!'},
+      {target: 'body > h1'},
       {target: element},
-      {target: 'body > p'}
+      {target: {left: 10, top: 405, width: 210, height: 22}, hint: 'imagination be your guide'},
     ])
     eyes.close(false)
-    assert.equal(texts[0], 'Header1: Hello world!')
-    assert.equal(texts[1], 'Header2: He110 w0rld!!')
-    assert.equal(texts[2], `Incididunt minim ad occaecat mollit sint elit ipsum.\nConsectetur eiusmod sint officia labore elit nostrud`)
+    assert.equal(texts[0], 'Header 1: Hello world!')
+    assert.equal(texts[1], 'Header 2: He110 w0rld!')
+    assert.equal(texts[2], 'imagination be your guide.')
   },
 })
 
@@ -1703,5 +1702,40 @@ test('appium iOS check region', {
     eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}})
     eyes.close()
   },
+})
+
+test('adopted styleSheets on chrome', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 640, height: 480},
+    ],
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({fully: false})
+    eyes.close()
+  }
+})
+
+test('adopted styleSheets on firefox', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'firefox', width: 640, height: 480},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({fully: false})
+    assert.throws(() => eyes.close())
+    // TODO assert test is aborted
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({fully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
+    eyes.check({fully: false, visualGridOptions: {polyfillAdoptedStyleSheets: false}})
+    eyes.close()
+  }
 })
 // #endregion

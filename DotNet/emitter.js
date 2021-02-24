@@ -7,6 +7,9 @@ const { variable } = require('./parser')
 const { takeSelector } = require('./parser')
 const util = require('util')
 const selectors = require('./mapping/selectors')
+const { execSync } = require('child_process')
+const sdk_coverage_tests_repo_webURL = "https://github.com/applitools/sdk.coverage.tests.git"
+const sdk_coverage_tests_repo_branch = "master"
 let counter = 0
 
 function dot_net(chunks, ...values) {
@@ -50,6 +53,17 @@ function argumentCheck(actual, ifUndefined) {
 	return (typeof actual === 'undefined') ? ifUndefined : actual
 }
 
+function printCommitHash(webURL, branch) {
+	let currentRepoRemotes = execSync("git remote -v")
+	if (currentRepoRemotes.includes('sdk_coverage_tests_repo')) execSync("git remote remove sdk_coverage_tests_repo")
+	execSync("git remote add sdk_coverage_tests_repo " + webURL)
+	execSync("git fetch --quiet --all")
+	console.log("sdk.coverage.tests repo - last commit data:")
+	console.log("************************************************")
+	console.log(execSync("git log -n 1 sdk_coverage_tests_repo/" + branch).toString().trim())
+	console.log("************************************************")
+}
+
 module.exports = function (tracker, test) {
 	const { addSyntax, addCommand, addHook, withScope, addType } = tracker
 
@@ -69,6 +83,8 @@ module.exports = function (tracker, test) {
 	})
 
 	addSyntax('return', ({ value }) => `return ${value}`)
+
+	if (counter === 0) {printCommitHash(sdk_coverage_tests_repo_webURL, sdk_coverage_tests_repo_branch); counter++;}
 
 	addHook('deps', `using NUnit.Framework;`)
 	addHook('deps', `using Applitools.Tests.Utils;`)
