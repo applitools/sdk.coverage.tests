@@ -128,9 +128,9 @@ module.exports = function (tracker, test) {
         eyes.SetConfiguration(configuration);`)
 	}
 
-	addHook('afterEach', dot_net`webDriver.Quit();`)
-	addHook('afterEach', dot_net`driver.Quit();`)
-	addHook('afterEach', dot_net`eyes.AbortIfNotClosed();`)
+	addHook('afterEach', dot_net`webDriver?.Quit();`)
+	addHook('afterEach', dot_net`driver?.Quit();`)
+	addHook('afterEach', dot_net`eyes?.AbortIfNotClosed();`)
 	addHook('afterEach', dot_net`runner?.GetAllTestResults(false);`)
 
 

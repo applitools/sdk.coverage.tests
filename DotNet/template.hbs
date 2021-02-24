@@ -7,29 +7,29 @@
   {{var}}
   {{/each}}
 
-  [SetUp]
+    [SetUp]
     public void SetUpTest()
     {
-    	{{#each output.hooks.beforeEach as |command|}}
-    	{{command}}
-    	{{/each}}
+      {{#each output.hooks.beforeEach as |command|}}
+      {{command}}
+      {{/each}}
     }
     
     [TearDown]
     public void TearDownTest()
     {
-    	{{#each output.hooks.afterEach as |command|}}
-    	{{command}}
-    	{{/each}}
+      {{#each output.hooks.afterEach as |command|}}
+      {{command}}
+      {{/each}}
     }
 
     [Test]
     [Category("Generated")] {{#if skip}}[Skip("generated")]{{/if}}
     public void {{key}}()
     {
-        {{#each output.commands as |command|}}
-    	{{command}}
-    	{{/each}}
+      {{#each output.commands as |command|}}
+      {{command}}
+      {{/each}}
     }
   }
 }
