@@ -10,7 +10,6 @@ module.exports = {
     'appium iOS check region': {skipEmit: true},
 
     // Visual locator not implemented feature
-    'should send ignore displacements with vg': {skip: true}, // undefined method `api_session_url' for #<Array:0x00007fb94f0adbc8>
     'should find regions by visual locator': {skip: true},
     'should find regions by visual locator with vg': {skip: true},
 
