@@ -80,6 +80,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `import coverage.TestSetup;`)
     addHook('deps', `import com.applitools.eyes.selenium.*;`)
     addHook('deps', `import com.applitools.eyes.selenium.fluent.Target;`)
+    addHook('afterEach', `runner.getAllTestResults(false);`)
   }
   // Not specific
   addHook('deps', `import com.applitools.eyes.*;`)
