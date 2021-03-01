@@ -5,12 +5,6 @@ const {wrapSelector} = require('./util')
 
 module.exports = function (tracker, test) {
   const {addSyntax, addCommand, addHook} = tracker
-  if (test.meta.native) {
-    addHook('deps', `require 'appium_helper'`)
-    test.key += '_Native'
-  } else {
-    addHook('deps', `require 'selenium_helper'`)
-  }
   addSyntax('var', variable)
   addSyntax('getter', getter)
   addSyntax('call', call)
@@ -32,6 +26,14 @@ module.exports = function (tracker, test) {
 
   addHook('afterEach', `@driver.${test.meta.native ? 'driver_quit' : 'quit'}`)
   addHook('afterEach', `@eyes.abort`)
+
+  if (test.meta.native) {
+    addHook('deps', `require 'appium_helper'`)
+    test.key += '_Native'
+  } else {
+    addHook('deps', `require 'selenium_helper'`)
+    addHook('afterEach', `@runner.get_all_test_results(false)`)
+  }
 
   function frameSelector(frame){
     if(typeof frame === 'string' && !(/[#\[\]]/.test(frame))) {
