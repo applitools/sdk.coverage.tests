@@ -1,5 +1,6 @@
 module.exports = {
     'should extract text from regions': {skipEmit: true}, // Not implemented yet
+    'should extract text regions from image': {skipEmit: true}, // Not implemented yet
     // Appium test need a lot of fixes before run
     'check region by native selector': {skipEmit: true},
     'appium android check window': {skipEmit: true},
