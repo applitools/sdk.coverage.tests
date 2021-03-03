@@ -176,6 +176,9 @@ module.exports = function(tracker, test) {
     extractText(regions) {
       return addCommand(js`await eyes.extractText(${regions})`)
     },
+    extractTextRegions(settings) {
+      return addCommand(js`await eyes.extractTextRegions(${settings})`)
+    }
   }
 
   const assert = {
