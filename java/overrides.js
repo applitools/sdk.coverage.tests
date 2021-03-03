@@ -10,6 +10,7 @@ module.exports = {
     'should send floating region by coordinates in frame with vg': {skip: true}, // stale element reference
     'should send dom on edge legacy': {skip: true}, // java.lang.IllegalArgumentException: width < 0 , in Eyes.open
     'should set viewport size on edge legacy': {skip: true}, // java.lang.IllegalArgumentException: width < 0
+    'should extract text regions from image': {skip: true},
     // window
     'check window fully on android chrome emulator on desktop page': {skip: true}, // have diffs
     'check window fully on android chrome emulator on mobile page': {skip: true}, // have diffs

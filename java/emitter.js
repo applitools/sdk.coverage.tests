@@ -303,6 +303,9 @@ module.exports = function (tracker, test) {
       	type: 'Map<String, List<TextRegion>>',
       	items: {
       		type: 'List<TextRegion>',
+      		schema: {
+          		length: {rename: 'size'}
+          	},
       		items: {
       			type: 'TextRegion',
       			schema: { text: { type: 'String'}}
