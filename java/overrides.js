@@ -15,7 +15,7 @@ module.exports = {
     'check window fully on android chrome emulator on desktop page': {skip: true}, // have diffs
     'check window fully on android chrome emulator on mobile page': {skip: true}, // have diffs
     'check window fully on android chrome emulator on mobile page with horizontal scroll': {skip: true}, // have diffs
-    'check window fully with fixed scroll root element': {skip: true}, // have diffs
+    'check window fully with fixed scroll root element': {config: {branchName: 'current1'}}, // diffs if compare to common baseline
     'check window fully and frame in frame fully with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"[name="frame1"]"}
     'check window after manual scroll with vg': {skip: true}, // diffs
     'check window after manual scroll on safari 11': {skip: true}, //diffs
@@ -45,7 +45,7 @@ module.exports = {
     'check frame with css stitching classic': {skip: true}, // diffs
     'check frame in frame fully with vg': {skip: true}, //  Unable to locate element: {"method":"css selector","selector":"[name="frame1"]"}
     'check frame fully with vg': {skip: true}, //  stale element reference
-    'check frame fully with css stitching': {config: {branchName: 'current1'}}, // diffs if compare to common baseline
+    'check frame fully with css stitching': {skip: true}, // diffs
     'check frame after manual switch to frame with vg classic': {skip: true}, // java.lang.IllegalArgumentException: checkTasks == 0
     'appium android check window': {skip: true}, //wrong ignore region ticket 2396
     'appium android check region with ignore region': {skip: true}, //wrong ignore region region ticket 2396
