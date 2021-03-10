@@ -28,7 +28,7 @@ module.exports = {
     'check region by coordinates in frame with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"[name="frame1"]"}
     'check fixed region by selector with css stitching': {skip: true}, // diffs
     'check hovered region by element with scroll stitching': {skip: true}, // Diffs
-    'check hovered region by element with css stitching': {skip: true}, // Diffs
+    'check hovered region by element with css stitching': {config: {branchName: 'current1'}}, // diffs if compare to common baseline
     'check region by selector in overflowed frame fully with css stitching': {skip: true}, // diffs
     'check region by selector in overflowed frame fully with scroll stitching': {skip: true},// diffs
     'check region by selector in overflowed frame with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"[name="frame1"]"}
