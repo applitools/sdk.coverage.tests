@@ -12,7 +12,7 @@ module.exports = {
     'check frame after manual switch to frame with vg classic': {skip: true},			//diffs
     'check region by native selector': {skip: true},				                //Will be implement in separate task
     'check region by selector in frame in frame fully with scroll stitching': {skip: true},	//diffs
-    'check hovered region by element with css stitching': {config: {branchName: 'current_python'}}, // diffs if compare to common baseline
+    'check hovered region by element with css stitching': {config: {branchName: 'current_python', parentBranchName: 'current_python'}}, // diffs if compare to common baseline
     'check hovered region by element with scroll stitching': {skip: true},			//OutOfBoundsError: Region [Region(67, 0, 191 x 29, CONTEXT_RELATIVE)] is out of screenshot bounds [Region(0, 0, 685 x 460, SCREENSHOT_AS_IS)]
     'check region by selector in overflowed frame after manual scroll with css stitching': {skip: true},	//Stale element
     'check region by selector in overflowed frame after manual scroll with scroll stitching': {skip: true},	//Stale element
@@ -40,7 +40,7 @@ module.exports = {
     'check window with layout breakpoints in config': {skip: true},			//layout breakpoints are not implemented
     'check window on page with sticky header with vg': {skip: true},			//diffs
     'check window fully with custom scroll root with css stitching': {skip: true},	//diffs
-    'check window fully with fixed scroll root element': {config: {branchName: 'current_python'}}, // diffs if compare to common baseline
+    'check window fully with fixed scroll root element': {config: {branchName: 'current_python', parentBranchName: 'current_python'}}, // diffs if compare to common baseline
     'check scrollable modal region by selector fully with scroll stitching': {skip: true},	//diffs
     'check window fully and frame in frame fully with vg': {skip: true},		//diffs
     'check window fully on page with sticky header with scroll stitching': {skip: true},	//diffs
