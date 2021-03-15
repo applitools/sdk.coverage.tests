@@ -24,10 +24,8 @@ module.exports = {
 	'should send ignore regions by selector with scroll stitching': { skip: true },   //actual Region region (10, 286) 285x165 not found in expected regions list.   It's other regions in original specific test TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent for CSS and Scroll
 	'check region in frame hidden under top bar fully with css stitching': {skip: true}, // Bad test
 	//frame
-	'check frame after manual switch to frame with vg classic': { skip: true },   //diff
 	'check frame fully with css stitching': { skip: true },   //diff
 	'check frame fully with vg': { skip: true },   //diff
-	'check region by selector in overflowed frame after manual scroll with scroll stitching': { skip: true },   //diff
 	'check region by selector in overflowed frame fully with css stitching': { skip: true },   //diff
 	'check region by selector in overflowed frame fully with scroll stitching': { skip: true },   //diff
 	//unknown issue
