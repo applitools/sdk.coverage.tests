@@ -161,10 +161,16 @@ module.exports = function (tracker, test) {
 			addHook('beforeEach', dot_net`config.AddBrowsers(new DesktopBrowserInfo(${test.config.browsersInfo[0].width}, ${test.config.browsersInfo[0].height}, ` + browserType + `));`)
 		}
 		if ((test.config.browsersInfo[1]) && ("iosDeviceInfo" in test.config.browsersInfo[1])) {
-			addHook('beforeEach', dot_net`config.AddBrowsers(new IosDeviceInfo((IosDeviceName)Enum.Parse(typeof(IosDeviceName), ${test.config.browsersInfo[1].iosDeviceInfo.deviceName}, true)));`)
+			//addHook('beforeEach', dot_net`config.AddBrowsers(new IosDeviceInfo((IosDeviceName)Enum.Parse(typeof(IosDeviceName), ${test.config.browsersInfo[1].iosDeviceInfo.deviceName}, true)));`)
+			let iosDeviceName = ''
+			if (`${test.config.browsersInfo[1].iosDeviceInfo.deviceName}` === 'iPad (7th generation)') iosDeviceName = 'IosDeviceName.iPad_7'
+			addHook('beforeEach', dot_net`config.AddBrowsers(new IosDeviceInfo(` + iosDeviceName + `));`)
 		}
 		if ((test.config.browsersInfo[2]) && ("chromeEmulationInfo" in test.config.browsersInfo[2])) {
-			addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo((DeviceName)Enum.Parse(typeof(DeviceName), ${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}, true), Applitools.VisualGrid.ScreenOrientation.Portrait));`)
+			let devName = ''
+			if (`${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}` === 'Pixel 4 XL') devName = 'DeviceName.Pixel_4_XL'
+			//addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo((DeviceName)Enum.Parse(typeof(DeviceName), ${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}, true), Applitools.VisualGrid.ScreenOrientation.Portrait));`)
+			addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo(` + devName + `, Applitools.VisualGrid.ScreenOrientation.Portrait));`)
 		}
 		if ("layoutBreakpoints" in test.config) {
 			//let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
