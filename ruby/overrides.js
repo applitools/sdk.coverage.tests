@@ -36,7 +36,6 @@ module.exports = {
     'should send dom and location when check region by selector with custom scroll root': {skipEmit: true},
     'should send dom and location when check region by selector with custom scroll root with vg': {skipEmit: true},
     'should send dom and location when check region by selector fully with custom scroll root': {skipEmit: true},
-	'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},
     // Missing (Or I could find a scroll root option)
     'check region by selector in overflowed frame fully with css stitching': {skipEmit: true},
     'check region by selector in overflowed frame fully with scroll stitching': {skipEmit: true},
@@ -164,8 +163,8 @@ module.exports = {
     'should not check if disabled': {skip: true},
 
     // A bug in the full page algorithm to fix
-    'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skipEmit: true},
-    'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skipEmit: true},
+    'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skip: true},
+    'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skip: true},
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
     'should send custom batch properties': {skipEmit: true},
