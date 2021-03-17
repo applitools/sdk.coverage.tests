@@ -28,6 +28,7 @@ function checkSettings(cs, mobile = false) {
 	if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
 	if (cs.isFully === true) { options += '.Fully()' } else if (cs.isFully === false) { options += '.Fully(false)' }
 	if (cs.name) options += `.WithName(${cs.name})`
+	if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`
 	return target + element + options
 }
 
