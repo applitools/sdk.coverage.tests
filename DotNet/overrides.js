@@ -2,8 +2,8 @@ module.exports = {
 	// api
 	'should throw if no checkpoints before close' : { skip: true }, // where did this requirement come from?
 	// window
-	'check window with layout breakpoints in config': { skip: true }, // layout breakpoints are not implemented
-	'check window with layout breakpoints': { skip: true }, // layout breakpoints are not implemented
+	//'check window with layout breakpoints in config': { skip: true }, // layout breakpoints are not implemented
+	//'check window with layout breakpoints': { skip: true }, // layout breakpoints are not implemented
 	'check window fully with fixed scroll root element': { skip: true },   //diff
 	'check window on page with sticky header with vg': { skip: true },   //diff
 	'should set viewport size': { skip: true },   //Actual region with Width=800 Height=600 don't equal to expected region with Width = 600 Height = 600

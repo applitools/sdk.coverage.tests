@@ -103,6 +103,7 @@ module.exports = function (tracker, test) {
 		addHook('deps', `using System.Collections.Generic;`)
 		addHook('deps', `using System;`)
 	}
+	if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
 	let namespace = mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
 	let baseClass = mobile ? 'TestSetupGeneratedAppium' : 'TestSetupGenerated'
@@ -142,6 +143,35 @@ module.exports = function (tracker, test) {
         Applitools.Selenium.Configuration configuration = eyes.GetConfiguration();
         configuration.SetAccessibilityValidation(settings);
         eyes.SetConfiguration(configuration);`)
+	}
+	if ("browsersInfo" in test.config) {
+		addHook('beforeEach', dot_net`Applitools.Selenium.IConfiguration config = eyes.GetConfiguration();`)
+		if ("name" in test.config.browsersInfo[0]) {
+			let browserType = 'BrowserType.CHROME'
+			switch (`${test.config.browsersInfo[0].name}`) {
+				case 'chrome':
+					browserType = 'BrowserType.CHROME'
+					break;
+				case 'firefox':
+					browserType = 'BrowserType.FIREFOX'
+					break;
+				default:
+					throw Error(`Browser type ${test.config.browsersInfo[0].name} not implemented yet`)
+			}
+			addHook('beforeEach', dot_net`config.AddBrowsers(new DesktopBrowserInfo(${test.config.browsersInfo[0].width}, ${test.config.browsersInfo[0].height}, ` + browserType + `));`)
+		}
+		if ((test.config.browsersInfo[1]) && ("iosDeviceInfo" in test.config.browsersInfo[1])) {
+			addHook('beforeEach', dot_net`config.AddBrowsers(new IosDeviceInfo((IosDeviceName)Enum.Parse(typeof(IosDeviceName), ${test.config.browsersInfo[1].iosDeviceInfo.deviceName}, true)));`)
+		}
+		if ((test.config.browsersInfo[2]) && ("chromeEmulationInfo" in test.config.browsersInfo[2])) {
+			addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo((DeviceName)Enum.Parse(typeof(DeviceName), ${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}, true), Applitools.VisualGrid.ScreenOrientation.Portrait));`)
+		}
+		if ("layoutBreakpoints" in test.config) {
+			//let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
+			//let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
+			addHook('beforeEach', dot_net`config.SetLayoutBreakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]});`);
+		}
+		addHook('beforeEach', dot_net`eyes.SetConfiguration(config);`);
 	}
 
 	addHook('afterEach', dot_net`webDriver?.Quit();`)
