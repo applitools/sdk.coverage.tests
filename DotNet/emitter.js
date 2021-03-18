@@ -170,7 +170,7 @@ module.exports = function (tracker, test) {
 			let devName = ''
 			if (`${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}` === 'Pixel 4 XL') devName = 'DeviceName.Pixel_4_XL'
 			//addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo((DeviceName)Enum.Parse(typeof(DeviceName), ${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}, true), Applitools.VisualGrid.ScreenOrientation.Portrait));`)
-			addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo(` + devName + `, Applitools.VisualGrid.ScreenOrientation.Portrait));`)
+			addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo(` + devName + `));`)
 		}
 		if ("layoutBreakpoints" in test.config) {
 			//let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
