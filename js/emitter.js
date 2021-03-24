@@ -40,8 +40,14 @@ module.exports = function(tracker, test) {
 
   addHook('deps', `const cwd = process.cwd()`)
   addHook('deps', `const path = require('path')`)
+
+  // TODO remove once all packages use the same structure
+  addHook('deps', `const pkg = require(path.resolve(cwd, 'package.json'))`)
+  addHook('deps', `const mainDir = path.dirname(pkg.main || './index.js')`)
+  // ---
+
   addHook('deps', `const assert = require('assert')`)
-  addHook('deps', `const spec = require(path.resolve(cwd, 'src/spec-driver'))`)
+  addHook('deps', `const spec = require(path.resolve(cwd, mainDir, './src/spec-driver'))`)
   addHook('deps', `const {testSetup, getTestInfo, getDom} = require('@applitools/sdk-shared')`)
 
   addHook('vars', `let driver, destroyDriver, eyes`)
