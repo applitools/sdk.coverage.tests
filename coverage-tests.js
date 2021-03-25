@@ -123,6 +123,7 @@ test('check window with layout breakpoints', {
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({layoutBreakpoints: [500, 1000]})
+    eyes.check()
     eyes.close()
   }
 })
