@@ -122,9 +122,11 @@ test('check window with layout breakpoints', {
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
+    const expectedViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}')
     eyes.check({layoutBreakpoints: [500, 1000]})
-    eyes.check()
     eyes.close()
+    const actualViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}')
+    assert.equal(actualViewportSize, expectedViewportSize)
   }
 })
 
