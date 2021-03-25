@@ -74,4 +74,5 @@ module.exports = {
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
     'adopted styleSheets on chrome': {skipEmit: true},
 	'adopted styleSheets on firefox': {skipEmit: true},
+	'should send agentRunId with vg': {skipEmit: true},
 }

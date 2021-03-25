@@ -1319,6 +1319,27 @@ test('should send custom batch properties', {
   },
 })
 
+test('should send agentRunId', {
+  page: 'Default',
+  variants: {
+    'with vg': {vg: true}
+  },
+  config: {
+    browsersInfo: [{name: 'chrome', width: 400, height: 400}, {name: 'chrome', width: 500, height: 500}]
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
+    eyes.check({fully: false});
+    eyes.close(false)
+    const resultSummary = eyes.runner.getAllTestResults(false)
+    const containers = resultSummary.getAllResults()
+    const info1 = helpers.getTestInfo(containers[0].getTestResults());
+    const info2 = helpers.getTestInfo(containers[1].getTestResults()); 
+    assert.ok(info1.startInfo.agentRunId)
+    assert.equal(info1.startInfo.agentRunId, info2.startInfo.agentRunId)
+  },
+})
+
 test('should hide and restore scrollbars', {
   page: 'Default',
   variants: {
