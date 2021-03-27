@@ -38,17 +38,13 @@ module.exports = function(tracker, test) {
   addSyntax('call', ({target, args}) => `${target}(${js`...${args}`})`)
   addSyntax('return', ({value}) => `return ${value}`)
 
-  addHook('deps', `const cwd = process.cwd()`)
   addHook('deps', `const path = require('path')`)
-
-  // TODO remove once all packages use the same structure
-  addHook('deps', `const pkg = require(path.resolve(cwd, 'package.json'))`)
-  addHook('deps', `const mainDir = path.dirname(pkg.main || './index.js')`)
-  // ---
-
   addHook('deps', `const assert = require('assert')`)
-  addHook('deps', `const spec = require(path.resolve(cwd, mainDir, './src/spec-driver'))`)
   addHook('deps', `const {testSetup, getTestInfo, getDom} = require('@applitools/sdk-shared')`)
+  addHook('deps', `const cwd = process.cwd()`)
+  addHook('deps', `const pkg = require(path.resolve(cwd, 'package.json'))`)
+  addHook('deps', `const sdk = require(path.resolve(cwd, pkg.main))`)
+  addHook('deps', `const spec = require(path.resolve(cwd, path.dirname(pkg.main), './src/spec-driver'))`)
 
   addHook('vars', `let driver, destroyDriver, eyes`)
 
@@ -197,8 +193,8 @@ module.exports = function(tracker, test) {
     ok(value, message) {
       addCommand(js`assert.ok(${value}, ${message})`)
     },
-    instanceOf(object, className, message) {
-      addCommand(js`assert.ok(${object}.constructor.name === ${className}, ${message})`)
+    instanceOf(object, typeName, message) {
+      addCommand(js`assert.ok(${object} instanceof sdk[${typeName}], ${message})`)
     },
     throws(func, check, message) {
       let command
