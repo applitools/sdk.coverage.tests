@@ -716,8 +716,7 @@ test('check region by selector in frame multiple times', {
       frames: ['frame1'],
       floatingRegions: [{region: {left: 200, top: 200, width: 150, height: 150,}, maxUpOffset: 25, maxDownOffset: 25, maxLeftOffset: 25, maxRightOffset: 25}],
       isFully: true,
-      matchLevel: '
-      '
+      matchLevel: 'Layout'
     })
     eyes.close()
   }
