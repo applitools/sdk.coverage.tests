@@ -120,7 +120,7 @@ test('check window with layout breakpoints', {
       {chromeEmulationInfo: {deviceName: 'Pixel 4 XL'}},
     ],
   },
-  test({eyes, driver}) {
+  test({eyes, driver, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
     const expectedViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}')
     eyes.check({layoutBreakpoints: [500, 1000]})
@@ -716,7 +716,8 @@ test('check region by selector in frame multiple times', {
       frames: ['frame1'],
       floatingRegions: [{region: {left: 200, top: 200, width: 150, height: 150,}, maxUpOffset: 25, maxDownOffset: 25, maxLeftOffset: 25, maxRightOffset: 25}],
       isFully: true,
-      matchLevel: 'Layout'
+      matchLevel: '
+      '
     })
     eyes.close()
   }
