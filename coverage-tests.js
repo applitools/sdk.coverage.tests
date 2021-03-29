@@ -120,7 +120,7 @@ test('check window with layout breakpoints', {
       {chromeEmulationInfo: {deviceName: 'Pixel 4 XL'}},
     ],
   },
-  test({eyes}) {
+  test({eyes, driver}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
     const expectedViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}')
     eyes.check({layoutBreakpoints: [500, 1000]})
