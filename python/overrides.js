@@ -107,6 +107,4 @@ module.exports = {
 	'adopted styleSheets on firefox': {skipEmit: true},
     'variant id': {skipEmit: true},
 	'variant id with vg': {skipEmit: true},
-	'variant id from configuration': {skipEmit: true},
-	'variant id from configuration with vg': {skipEmit: true},
 }

@@ -1781,20 +1781,4 @@ test('variant id', {
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
   }
 })
-
-test('variant id from configuration', {
-  page: 'Default',
-  config: {variantId: 'variant-id'},
-  variants: {
-    '': {vg: false},
-    'with vg': {vg: true},
-  },
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({fully: false})
-    const result = eyes.close(false)
-    const info = helpers.getTestInfo(result)
-    assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
-  }
-})
 // #endregion
