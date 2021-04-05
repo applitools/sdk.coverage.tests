@@ -65,6 +65,7 @@ const types = {
     },
     "Array": {
         get: (target, key) => `${target}[${key}]`,
+        name: (arr) => `${arr.items.type}[]`,
     },
     "Boolean": {
         constructor: (value) => `${value}`,
@@ -124,7 +125,7 @@ const types = {
         get: simpleGetter
     },
     "StartInfo": {
-      get: simpleGetter  
+        get: simpleGetter
     }
 }
 module.exports = types
