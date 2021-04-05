@@ -73,7 +73,5 @@ module.exports = {
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
     'adopted styleSheets on chrome': {skipEmit: true},
-	'adopted styleSheets on firefox': {skipEmit: true},
-    'variant id': {skipEmit: true},
-	'variant id with vg': {skipEmit: true},
+	'adopted styleSheets on firefox': {skipEmit: true}
 }
