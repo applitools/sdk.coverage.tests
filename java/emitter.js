@@ -174,8 +174,15 @@ module.exports = function (tracker, test) {
     },
     runner: {
       getAllTestResults(throwEx) {
-        return addCommand(java`getRunner().getAllTestResults(${throwEx});`)
-      },
+        return addCommand(java`getRunner().getAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
+          getAllResults: (target) => addCommand(java`${target}.getAllResults();`).type({
+              type: 'Array',
+              items: {
+                type: 'TestResultContainer'
+              }
+            })
+        })
+      }
     },
     open({appName, testName, viewportSize}) {
       let command = []
@@ -350,6 +357,9 @@ module.exports = function (tracker, test) {
         });`
       }
       addCommand(command)
+    },
+    ok(arg, message) {
+      addCommand(java`Assert.assertNotNull(${arg}${extraParameter(message)});`)
     }
   }
 
@@ -368,6 +378,9 @@ module.exports = function (tracker, test) {
                   schema: {hasDom: 'Boolean', location: "Location"},
                 },
                 imageMatchSettings: imageMatchSettings,
+                knownVariantId: {
+                  type: 'String'
+                }
               }},
           },
           startInfo: {
@@ -386,10 +399,11 @@ module.exports = function (tracker, test) {
           						items: {
             						type: 'String'
           						}
-        					}
-        				},
-      				}
-      			}
+        					  }
+        				  },
+      				  }
+      			  },
+              agentRunId: 'String'
           	}
           }
         },

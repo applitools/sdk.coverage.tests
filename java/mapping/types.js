@@ -126,6 +126,14 @@ const types = {
     },
     "StartInfo": {
         get: simpleGetter
+    },
+    "TestResultsSummary": {
+        name: () => `TestResultsSummary`,
+        get: simpleGetter
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key)
     }
 }
 module.exports = types
