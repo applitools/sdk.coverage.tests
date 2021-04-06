@@ -1775,7 +1775,7 @@ test('variant id', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({fully: false, variantId: 'variant-id'})
+    eyes.check({fully: false, variationGroupId: 'variant-id'})
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
