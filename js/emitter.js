@@ -44,7 +44,7 @@ module.exports = function(tracker, test) {
   addHook('deps', `const {testSetup, getTestInfo, getDom} = require('@applitools/sdk-shared')`)
   addHook('deps', `const cwd = process.cwd()`)
   addHook('deps', `const sdk = require(cwd)`)
-  addHook('deps', `const spec = require(path.resolve(cwd, fs.existsSync('./dist') ? './dist' : './src', './src/spec-driver'))`)
+  addHook('deps', `const spec = require(path.resolve(cwd, fs.existsSync('./dist') ? './dist' : './src', './spec-driver'))`)
 
   addHook('vars', `let driver, destroyDriver, eyes`)
 
