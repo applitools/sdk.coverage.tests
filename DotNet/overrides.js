@@ -35,8 +35,6 @@ module.exports = {
 	// can be quick fixed
 	'check region by native selector': { skip: true }, //To fit in existing baseline for C# should have test name "Appium_Android_CheckRegion"
 	'check frame in frame fully with vg': { skip: true },  //baseline NEW. Need compare with JS tests, maybe add baseline.
-	// check many
-	'acme login with css stitching': { skip: true }, // original test tested fluent API's check many. This test doesn't.
 	// location
 	// 'should send dom and location when check window': { skipEmit: true },
 	'should send dom and location when check window with vg': { skipEmit: true },
