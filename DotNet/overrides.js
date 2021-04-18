@@ -4,7 +4,7 @@ module.exports = {
 	// window
 	//'check window with layout breakpoints in config': { skip: true }, // layout breakpoints are not implemented
 	//'check window with layout breakpoints': { skip: true }, // layout breakpoints are not implemented
-	'check window fully with fixed scroll root element': { skip: true },   //diff
+	'check window fully with fixed scroll root element': { config: {branchName: 'current1'}  },   //diffs if compare to common baseline
 	'check window on page with sticky header with vg': { skip: true },   //diff
 	'should set viewport size': { skip: true },   //Actual region with Width=800 Height=600 don't equal to expected region with Width = 600 Height = 600
 	'should set viewport size on edge legacy': { skip: true },   //Actual region with Width=1024 Height=695 don't equal to expected region with Width = 600 Height = 600
@@ -24,7 +24,7 @@ module.exports = {
 	'should send ignore regions by selector with scroll stitching': { skip: true },   //actual Region region (10, 286) 285x165 not found in expected regions list.   It's other regions in original specific test TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent for CSS and Scroll
 	//'check region in frame hidden under top bar fully with css stitching': {skip: true}, // Bad test
 	//frame
-	'check frame fully with css stitching': { config: {branchName: 'current_ruby'} },   //diff
+	'check frame fully with css stitching': { config: {branchName: 'current_ruby'} },   //diffs if compare to common baseline
 	'check frame fully with vg': { skip: true },   //diff
 	'check region by selector in overflowed frame fully with css stitching': { skip: true },   //diff
 	'check region by selector in overflowed frame fully with scroll stitching': { skip: true },   //diff
