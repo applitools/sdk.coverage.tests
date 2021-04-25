@@ -14,7 +14,6 @@ const TYPE = {
 config({
   pages: {
     Default: 'https://applitools.github.io/demo/TestPages/FramesTestPage/',
-    Acme: 'https://afternoon-savannah-68940.herokuapp.com/#',
     StickyHeader: 'https://applitools.github.io/demo/TestPages/PageWithHeader/index.html',
     Wix: 'https://applitools.github.io/demo/TestPages/WixLikeTestPage/index.html',
     ScrollableBody: 'https://applitools.github.io/demo/TestPages/SimpleTestPage/scrollablebody.html',
@@ -1539,23 +1538,6 @@ test('should return test results from close', {
     const result = eyes.close(false)
     assert.instanceOf(result, 'TestResults')
   }
-})
-
-test('acme login', {
-  page: 'Acme',
-  variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestAcmeLogin'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestAcmeLogin_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestAcmeLogin_VG'}},
-  },
-  test({driver, eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - ACME', viewportSize: {width: 1024, height: 768}})
-    driver.type(driver.findElement('#username'), 'adamC')
-    driver.type(driver.findElement('#password'), 'MySecret123?')
-    eyes.check({region: '#username'})
-    eyes.check({region: '#password'})
-    eyes.close()
-  },
 })
 
 test('should render special characters', {
