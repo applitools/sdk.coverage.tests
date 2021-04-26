@@ -45,7 +45,7 @@ module.exports = {
     'check frame with css stitching classic': {skip: true}, // diffs
     'check frame in frame fully with vg': {skip: true}, //  Unable to locate element: {"method":"css selector","selector":"[name="frame1"]"}
     'check frame fully with vg': {skip: true}, //  stale element reference
-    'check frame fully with css stitching': {skip: true}, // diffs
+    'check frame fully with css stitching': {config: {branchName: 'current_ruby'}}, // diffs
     'check frame after manual switch to frame with vg classic': {skip: true}, // java.lang.IllegalArgumentException: checkTasks == 0
     'appium android check window': {skip: true}, //wrong ignore region ticket 2396
     'appium android check region with ignore region': {skip: true}, //wrong ignore region region ticket 2396

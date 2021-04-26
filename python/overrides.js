@@ -44,8 +44,6 @@ module.exports = {
     'check window fully and frame in frame fully with vg': {skip: true},		//diffs
     'check window fully on page with sticky header with scroll stitching': {skip: true},	//diffs
     'check scrollable modal region by selector fully with css stitching': {skip: true},		//diffs
-    'check window fully and frame in frame fully with css stitching': {skip: true},		//diffs
-    'check window fully and frame in frame fully with scroll stitching': {skip: true},		//diffs
     'check regions by coordinates in overflowed frame with vg': {skip: true},			//diffs
     'check region by selector fully with scroll stitching': {skip: true},			//diffs
     'check region in frame hidden under top bar fully with scroll stitching': {skip: true},	//diffs
