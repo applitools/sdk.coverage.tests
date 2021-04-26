@@ -29,7 +29,7 @@ function checkSettings(cs, native) {
     } else if (cs.isFully === false) {
         options += '.fully(false)'
     }
-    if (cs.variantId) options += `.variantId("${cs.variantId}")`
+    if (cs.variationGroupId) options += `.variationGroupId("${cs.variationGroupId}")`
     return java + element + options
 
     // check settings
