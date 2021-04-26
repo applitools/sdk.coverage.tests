@@ -20,7 +20,6 @@ module.exports = {
     'check regions by coordinates in frame with vg': {skip: true},			//diffs
     'should find regions by visual locator': {skip: true},				//Visual locators not implemented
     'should find regions by visual locator with vg': {skip: true},			//Visual locators not implemented
-    'should not check if disabled': {skip: true},					//Unable to locate element: {"method":"css selector","selector":"[id="someId"]"}
     'should hide and restore scrollbars with scroll stitching': {skip: true},		//diff
     'should hide and restore scrollbars with vg': {skip: true},				// Unable to locate element: {"method":"css selector","selector":"#inner-frame-div"}
     'should send floating region by coordinates in frame with vg': {skip: true},	//diffs
