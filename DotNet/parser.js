@@ -29,7 +29,7 @@ function checkSettings(cs, mobile = false) {
 	if ((cs.isFully === true) || (cs.fully === true)) { options += '.Fully()' } else if (cs.isFully === false) { options += '.Fully(false)' }
 	if (cs.name) options += `.WithName(${cs.name})`
 	if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`
-	if (cs.variationGroupId) options += `.VariationGroupId(${cs.variationGroupId})`
+	if (cs.variationGroupId) {options += `.VariationGroupId("${cs.variationGroupId}")`}
 	return target + element + options
 }
 
