@@ -62,5 +62,4 @@ module.exports = {
 	'should send custom batch properties': {skipEmit: true},
 	'adopted styleSheets on chrome': {skipEmit: true},
 	'adopted styleSheets on firefox': {skipEmit: true},
-	'variant id with vg': {skipEmit: true},
 }
