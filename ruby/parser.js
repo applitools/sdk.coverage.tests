@@ -203,7 +203,7 @@ function variable({name, value}) {
 function getter({target, key, type}) {
     let get;
     if (type && type.name === 'Array') {
-        get = `[${key}]`
+        get = key === 'length' ? `.${key}` : `[${key}]`
     } else {
         get = key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `[${serialize(key)}]`
     }

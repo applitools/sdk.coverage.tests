@@ -231,6 +231,18 @@ module.exports = function (tracker, test) {
                 }
               }},
           },
+          startInfo: {
+            type: 'StartInfo',
+            schema: {
+                batchInfo: {
+                  type: 'BatchInfo',
+                  schema: {
+                    properties: { type: 'Array', items: 'Hash'}
+                  }
+
+                }
+            }
+          }
         },
       })
     },
