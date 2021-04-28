@@ -23,6 +23,7 @@ function checkSettings(cs, driver, native) {
     if (cs.scrollRootElement ) throw new Error("Scroll root option not implemented in the ruby SDK")
     if (cs.ignoreDisplacements !== undefined) options += `.ignore_displacements(${cs.ignoreDisplacements})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
+    if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
     if (cs.isFully) options += '.fully';
     if (cs.name) name = `'${cs.name}', `;
     return name + ruby + element + options
