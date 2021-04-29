@@ -69,9 +69,9 @@ module.exports = {
     'check hovered region by element with css stitching': {skip: true}, // Error: Applitools::OutOfBoundsException: Region (0, 0), 0 x 0 is out of screenshot bounds.
     'check hovered region by element with scroll stitching': {skip: true}, // Diff, hovered element was checked without hovering
     // Chrome emulator have wrong type of browser used
-    //'check window fully on android chrome emulator on mobile page': {skipEmit: true},
-    //'check window fully on android chrome emulator on mobile page with horizontal scroll': {skipEmit: true},
-    //'check window fully on android chrome emulator on desktop page': {skipEmit: true},
+    'check window fully on android chrome emulator on mobile page': {skipEmit: true},
+    'check window fully on android chrome emulator on mobile page with horizontal scroll': {skipEmit: true},
+    'check window fully on android chrome emulator on desktop page': {skipEmit: true},
 
     // Diffs
     'acme login with css stitching': {skip: true},
@@ -82,7 +82,7 @@ module.exports = {
     'check region by coordinates in frame with css stitching': {skip: true},
     'check region by selector after manual scroll with css stitching': {skip: true},
     'check region by selector in overflowed frame after manual scroll with css stitching': {skip: true},
-    'check region by selector after manual scroll with scroll stitching': {skip: true},
+    'check region by selector after manual scroll with scroll stitching': {config: {branchName: 'current_ruby'}}, // diffs if compare to common baseline
     'check region by selector fully on page with sticky header with css stitching': {skip: true},
     'check region by selector fully on page with sticky header with scroll stitching': {skip: true},
     'check region by selector in frame multiple times with scroll stitching': {skip: true},
@@ -91,7 +91,7 @@ module.exports = {
     'check region by selector on page with sticky header with scroll stitching': {skip: true},
     'check region fully after scroll non scrollable element with css stitching': {skip: true},
     'check region with fractional metrics by selector': {skip: true},
-    'check region in frame hidden under top bar fully with scroll stitching': {skip: true},
+    'check region in frame hidden under top bar fully with scroll stitching': {config: {branchName: 'current_ruby'}},
     'check window after manual scroll with vg': {skip: true},
     'check window after manual scroll with scroll stitching': {skip: true},
     'check window fully on page with sticky header with scroll stitching': {skip: true},
@@ -104,7 +104,7 @@ module.exports = {
     'check fixed region by selector fully with css stitching': {skip: true},
     'check fixed region by selector with css stitching': {skip: true},
     'check frame fully with vg': {skip: true},
-    'check frame fully with css stitching': {skip: true},
+    'check frame fully with css stitching': {config: {branchName: 'current_ruby'}}, // diffs if compare to common baseline
     'check frame after manual switch to frame with scroll stitching classic': {skip: true},
     'should send floating region by coordinates in frame with css stitching': {skip: true},
     'should send floating region by coordinates in frame with vg': {skip: true},
@@ -163,11 +163,14 @@ module.exports = {
     'should not check if disabled': {skip: true},
 
     // A bug in the full page algorithm to fix
-    'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skip: true},
-    'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skip: true},
+    'check window fully with html scrollRootElement after scroll when fail to scroll with scroll stitching': {skipEmit: true},
+    'check window fully with html scrollRootElement after scroll when fail to scroll with css stitching': {skipEmit: true},
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
-    'should send custom batch properties': {skipEmit: true},
     'adopted styleSheets on chrome': {skipEmit: true},
 	'adopted styleSheets on firefox': {skipEmit: true},
+    'variant id': {skipEmit: true},
+	'variant id with vg': {skipEmit: true},
+    // Scroll root option not implemented in the ruby SDK
+    'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},
 }
