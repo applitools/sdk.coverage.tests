@@ -91,7 +91,7 @@ module.exports = {
     'check region by selector on page with sticky header with scroll stitching': {skip: true},
     'check region fully after scroll non scrollable element with css stitching': {skip: true},
     'check region with fractional metrics by selector': {skip: true},
-    'check region in frame hidden under top bar fully with scroll stitching': {config: {branchName: 'current_ruby'}},
+    'check region in frame hidden under top bar fully with scroll stitching': {config: {parentBranchName: 'current_ruby', branchName: 'current_ruby'}},
     'check window after manual scroll with vg': {skip: true},
     'check window after manual scroll with scroll stitching': {skip: true},
     'check window fully on page with sticky header with scroll stitching': {skip: true},
