@@ -532,7 +532,7 @@ test('check region by native selector', {
   features: ['native-selectors'],
   env: {
     device: 'Samsung Galaxy S8',
-    app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk',
+    app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk',
   },
   config: {baselineName: 'AppiumAndroidCheckRegion'},
   test({eyes}) {
@@ -1617,7 +1617,7 @@ test('check window fully with html scrollRootElement after scroll when fail to s
 })
 
 test('appium android check window', {
-  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckWindow'},
   features: ['native-selectors'],
   test: ({driver, eyes, helpers, assert}) => {
@@ -1634,7 +1634,7 @@ test('appium android check window', {
 })
 
 test('appium android check region with ignore region', {
-  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckRegionWithIgnoreRegion'},
   features: ['native-selectors'],
   test: ({driver, eyes, helpers, assert}) => {
@@ -1655,7 +1655,7 @@ test('appium android check region with ignore region', {
 })
 
 test('appium android check region', {
-  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.bintray.com/Examples/eyes-android-hello-world.apk'},
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckRegion'},
   features: ['native-selectors'],
   test: ({eyes}) => {
@@ -1666,7 +1666,7 @@ test('appium android check region', {
 })
 
 test('appium iOS check window', {
-  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckWindow'},
   features: ['native-selectors'],
   test: ({driver, eyes, helpers, assert}) => {
@@ -1683,7 +1683,7 @@ test('appium iOS check window', {
 })
 
 test('appium iOS check region with ignore region', {
-  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
   features: ['native-selectors'],
   test: ({driver, eyes, helpers, assert}) => {
@@ -1704,7 +1704,7 @@ test('appium iOS check region with ignore region', {
 })
 
 test('appium iOS check region', {
-  env: {device: 'iPhone XS', app: 'https://applitools.bintray.com/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegion'},
   features: ['native-selectors'],
   test: ({eyes}) => {
