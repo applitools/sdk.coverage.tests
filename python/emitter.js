@@ -50,6 +50,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `from test import *`)
     addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
+    addHook('deps', `from applitools.core import VisualLocator`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
@@ -300,7 +301,10 @@ def app():
             return addCommand(python`eyes.abort`)
         },
         locate(visualLocatorSettings) {
-            return addCommand(python`eyes.locate(${visualLocatorSettings})`)
+            let names = `${visualLocatorSettings.locatorNames}`
+            names = names.replace(/\[/g, "")
+            names = names.replace(/\]/g, "")
+            return addCommand(python`eyes.locate(VisualLocator.name(${names}))[${names}][0]`)
         },
         extractText(regions) {
             return addCommand(python`eyes.extract_text(${regions})`)
@@ -311,6 +315,7 @@ def app():
         equal(actual, expected, message) {
             if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())
 	    if (((typeof expected) === 'string') && (expected === 'true')) return addCommand(python`assert ${actual} == ${expected}, ${message}`)
+	    if (expected.hasOwnProperty('applitools_title')) return addCommand(python`assert ${actual} == Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`)
 	    return addCommand(python`assert ${actual} == ${directString(JSON.stringify(expected))}, ${message}`)
         },
         notEqual(actual, expected, message) {

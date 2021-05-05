@@ -18,8 +18,6 @@ module.exports = {
     'check regions by coordinates in frame with css stitching': {skip: true},		//Unable to locate element: {"method":"css selector","selector":"#modal2"}
     'check regions by coordinates in frame with scroll stitching': {skip: true},	//Unable to locate element: {"method":"css selector","selector":"#modal2"}
     'check regions by coordinates in frame with vg': {skip: true},			//diffs
-    'should find regions by visual locator': {skip: true},				//Visual locators not implemented
-    'should find regions by visual locator with vg': {skip: true},			//Visual locators not implemented
     'should hide and restore scrollbars with scroll stitching': {skip: true},		//diff
     'should hide and restore scrollbars with vg': {skip: true},				// Unable to locate element: {"method":"css selector","selector":"#inner-frame-div"}
     'should send floating region by coordinates in frame with vg': {skip: true},	//diffs
