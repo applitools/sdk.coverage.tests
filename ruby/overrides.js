@@ -5,7 +5,7 @@ module.exports = {
     'check region by native selector': {skipEmit: true},
     'appium android check window': {skipEmit: true},
     'appium android check region with ignore region': {skipEmit: true},
-    'appium android check region': {skipEmit: true},
+    'appium android check region': {config: {branchName: 'current_ruby'}},
     'appium iOS check window': {skipEmit: true},
     'appium iOS check region with ignore region': {skipEmit: true},
     'appium iOS check region': {skipEmit: true},
