@@ -537,7 +537,7 @@ test('check region by native selector', {
   config: {baselineName: 'AppiumAndroidCheckRegion'},
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({region: 'android.widget.Button'})
+    eyes.check({region: {type: TYPE.CLASSNAME, selector: 'android.widget.Button'}})
     eyes.close()
   },
 })
