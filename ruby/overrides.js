@@ -63,15 +63,14 @@ module.exports = {
     'check window with layout breakpoints': {skipEmit: true},
     'check window with layout breakpoints in config': {skipEmit: true},
     // Set_viewport_size method should work without Eyes instance
-    'should set viewport size': {skip: true},
     'should set viewport size on edge legacy': {skip: true},
     // Hover errors
     'check hovered region by element with css stitching': {skip: true}, // Error: Applitools::OutOfBoundsException: Region (0, 0), 0 x 0 is out of screenshot bounds.
     'check hovered region by element with scroll stitching': {skip: true}, // Diff, hovered element was checked without hovering
     // Chrome emulator have wrong type of browser used
-    'check window fully on android chrome emulator on mobile page': {skipEmit: true},
-    'check window fully on android chrome emulator on mobile page with horizontal scroll': {skipEmit: true},
-    'check window fully on android chrome emulator on desktop page': {skipEmit: true},
+    //'check window fully on android chrome emulator on mobile page': {skipEmit: true},
+    //'check window fully on android chrome emulator on mobile page with horizontal scroll': {skipEmit: true},
+    //'check window fully on android chrome emulator on desktop page': {skipEmit: true},
 
     // Diffs
     'acme login with css stitching': {skip: true},
