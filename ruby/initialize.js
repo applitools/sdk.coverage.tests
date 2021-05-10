@@ -9,6 +9,8 @@ module.exports = function (tracker, test) {
     addSyntax('getter', getter)
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
+    
+    let native = ("features" in test) && (test.features[0] === 'native-selectors') ? true: false
 
     addHook(
         'beforeEach',
@@ -24,10 +26,10 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', ruby`eyes_config(${ref(prepareTestConfig(test.config))})`)
     }
 
-    addHook('afterEach', `@driver.${test.meta.native ? 'driver_quit' : 'quit'}`)
+    addHook('afterEach', `@driver.${native ? 'driver_quit' : 'quit'}`)
     addHook('afterEach', `@eyes.abort`)
 
-    if (test.meta.native) {
+    if (native) {
         addHook('deps', `require 'appium_helper'`)
         test.key += '_Native'
     } else {
@@ -98,7 +100,7 @@ module.exports = function (tracker, test) {
     const eyes = {
         constructor: {
             setViewportSize(viewportSize) {
-                return addCommand(ruby`Applitools::Selenium::Eyes.set_viewport_size(@driver, width: ${viewportSize.width}, height: ${viewportSize.height});`)
+                return addCommand(ruby`Applitools::Selenium::SeleniumEyes.set_viewport_size(@driver, Applitools::RectangleSize.new(${viewportSize.width}, ${viewportSize.height}));`)//width: ${viewportSize.width}, height: ${viewportSize.height});`)
             }
         },
         runner: {
@@ -112,13 +114,13 @@ module.exports = function (tracker, test) {
                 .add`    conf.test_name = ${testName || test.config.baselineName}`
                 .extra`    conf.viewport_size = ${ref(viewportSize).type('RectangleSize')}`
                 .add`  end`
-                .addIf(test.meta.native)`  @eyes.open(driver: @driver)`
-                .addIf(!test.meta.native)`  @driver = @eyes.open(driver: @driver)`
+                .addIf(native)`  @eyes.open(driver: @driver)`
+                .addIf(!native)`  @driver = @eyes.open(driver: @driver)`
                 .build('\n  '))
         },
         check(checkSettings = {}) {
             if (test.api !== 'classic') {
-                return addCommand(`@eyes.check(${checkSettingsParser(checkSettings, driver, test.meta.native)})`)
+                return addCommand(`@eyes.check(${checkSettingsParser(checkSettings, driver, native)})`)
             } else if (checkSettings.region) {
                 if (checkSettings.frames && checkSettings.frames.length > 0) {
                     const [frameReference] = checkSettings.frames
