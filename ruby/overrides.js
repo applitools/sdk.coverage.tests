@@ -82,8 +82,8 @@ module.exports = {
     'check region by selector after manual scroll with scroll stitching': {config: {branchName: 'current_ruby'}}, // diffs if compare to common baseline
     'check region by selector fully on page with sticky header with css stitching': {skip: true},
     'check region by selector fully on page with sticky header with scroll stitching': {skip: true},
-    'check region by selector in frame multiple times with scroll stitching': {skip: true},
-    'check region by selector in frame multiple times with css stitching': {skip: true},
+    'check region by selector in frame multiple times with scroll stitching': {config: {branchName: 'current_ruby'}},
+    'check region by selector in frame multiple times with css stitching': {config: {branchName: 'current_ruby'}},
     'check region by selector on page with sticky header with css stitching': {skip: true},
     'check region by selector on page with sticky header with scroll stitching': {skip: true},
     'check region fully after scroll non scrollable element with css stitching': {skip: true},
@@ -103,8 +103,8 @@ module.exports = {
     'check frame fully with vg': {skip: true},
     'check frame fully with css stitching': {config: {branchName: 'current_ruby'}}, // diffs if compare to common baseline
     'check frame after manual switch to frame with scroll stitching classic': {skip: true},
-    'should send floating region by coordinates in frame with css stitching': {skip: true},
-    'should send floating region by coordinates in frame with vg': {skip: true},
+    'should send floating region by coordinates in frame with css stitching': {skip: true}, //for branchName: 'current_ruby' - diff in floating region
+    'should send floating region by coordinates in frame with vg': {skip: true},   //for branchName: 'current_ruby' - diff in floating region
     'should send ignore region by coordinates with css stitching': {skip: true},
 
     // Assertion error
