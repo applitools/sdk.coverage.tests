@@ -1,6 +1,7 @@
 'use strict'
 const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
 const {capitalizeFirstLetter} = require('./util')
+const find_commands = require('./mapping/find_commands')
 
 function directString(String) {
     return {
@@ -48,15 +49,15 @@ module.exports = function (tracker, test) {
 	addHook('deps', `from applitools.core import Feature`)
     }
     addHook('deps', `from test import *`)
-    addHook('deps', `from applitools.selenium import (Region, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
+    addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
-    addHook('deps', `from applitools.core import VisualLocator`)
+    addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
 	if (key.startsWith('get')) return `${target}.${key.slice(3).toLowerCase()}`
 	if ((type !== undefined) && (type !== null) && (type.name === 'JsonNode')) return `${target}[${key}]`
-	if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (Number(key))) return `${target}[${key}]`
+	if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (!isNaN(key))) return `${target}[${key}]`
 	else return `${target}["${key}"]`
     })
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
@@ -145,6 +146,10 @@ def app():
         },
         findElement(selector) {
             //return addCommand(python`driver.find_element_by_css_selector(${selector})`)
+            if (selector.type) {
+                let command = `${find_commands[selector.type]}`
+                return addCommand(python`driver.` + command + `(\"${selector.selector}\")`)
+            }
             return addCommand(python`driver.find_element(` + parseSelectorByType(selector) + `)`)
         },
         findElements(selector) {
@@ -306,9 +311,63 @@ def app():
             names = names.replace(/\]/g, "")
             return addCommand(python`eyes.locate(VisualLocator.name(${names}))[${names}][0]`)
         },
-        extractText(regions) {
-            return addCommand(python`eyes.extract_text(${regions})`)
-        }
+        extractText(ocrRegions) {
+    	const commands = []
+    	commands.push(python`eyes.extract_text(`)
+    	for (const index in ocrRegions) {
+    		commands.push(python`OCRRegion(`)
+    		const region = ocrRegions[index]
+    		if (typeof(region.target) === "string") {
+    			commands.push(python`[By.CSS_SELECTOR, ${region.target}])`)
+    		} else if (typeof(region.target) === "object") {
+    			commands.push(python`Region(${region.target.left}, ${region.target.top}, ${region.target.width}, ${region.target.height}))`)
+    		} else {
+    			commands.push(python`${region.target})`)
+    		}
+
+    		if (region.hint) {
+    			commands.push(python`.hint(${region.hint})`)
+    		}
+    		if (region.minMatch) {
+    			commands.push(python`.min_match(${region.minMatch})`)
+    		}
+    		if (region.language) {
+    			commands.push(python`.language(${region.language})`)
+    		}
+	commands.push(python`, `)
+    	}
+    	commands.pop()
+    	commands.push(python`);`)
+    	return addCommand([commands.join('')]).type({
+    		type: 'List<String>',
+    		items: {
+    			type: 'String'
+    		}
+    	});
+    },
+        extractTextRegions({patterns, ignoreCase, firstOnly, language}) {
+	      const commands = []
+	      commands.push(python`eyes.extract_text_regions(TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
+	      if (ignoreCase) commands.push(python`.ignore_case(${ignoreCase})`)
+	      if (firstOnly) commands.push(python`.first_only(${firstOnly})`)
+	      if (language) commands.push(python`.language(${language})`)
+	      commands.push(python`);`)
+	      return addCommand([commands.join('')]).type({
+	      	type: 'Map<String, List<TextRegion>>',
+	      	items: {
+	      		type: 'List<TextRegion>',
+			getter: ({target, key}) => {if (`${key}` !== "len") return `${target}[${key}]`
+					else return `${key}(${target})`},
+	      		schema: {
+		  		length: {type: 'Number', rename: 'len', getter: ({target, key}) => `${key}(${target})`}
+		  	},
+	      		items: {
+	      			type: 'TextRegion',
+	      			schema: { text: { type: 'String'}}
+	      		}
+	      	}
+	      })
+	    }
     }
 
     const assert = {
@@ -401,6 +460,13 @@ function getVal(val) {
     let nameAndValue = val.toString().split("\"")
     return nameAndValue[1]
 }
+
+function insert(value) {
+    return {
+      isRef: true,
+      ref: () => value
+    }
+  }
 
 function setUpMobileNative(test, addHook) {
 	addHook('beforeEach', python`@pytest.fixture(scope="function")`)
