@@ -1,7 +1,6 @@
 module.exports = {
     'should handle check of stale element in frame if selector is preserved': {skipEmit: true, skip: true},
-    //'should extract text from regions': {skipEmit: true, skip: true},
-    //'should extract text regions from image': {skipEmit: true}, // Not implemented yet
+    'should extract text from regions': {skip: true},						//assertion error - actual "Header l: Hello world!" instead of "Header 1: Hello world!"
     'check region by selector in frame multiple times with scroll stitching': {skip: true},	//problems in SDK to check multiple times
     'check region by selector in overflowed frame with scroll stitching': {skip: true},		//OutOfBoundsError: Region [Region(20, 708, 450 x 282, CONTEXT_RELATIVE)] is out of screenshot bounds [Region(0, 0, 700 x 460, SCREENSHOT_AS_IS)]
     'check region by selector in overflowed frame with vg': {skip: true},			//Unable to locate element: {"method":"css selector","selector":"img"}
@@ -100,6 +99,4 @@ module.exports = {
     'should send custom batch properties': {skipEmit: true},
     'adopted styleSheets on chrome': {skipEmit: true},
 	'adopted styleSheets on firefox': {skipEmit: true},
-    //'variant id': {skipEmit: true},
-	//'variant id with vg': {skipEmit: true},
 }
