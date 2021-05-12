@@ -23,6 +23,7 @@ function checkSettings(cs) {
     if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
+    if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.isFully) options += '.fully()'
     if (cs.name) options += `.with_name(${cs.name})`
