@@ -2,6 +2,7 @@
 const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
 const {capitalizeFirstLetter} = require('./util')
 const find_commands = require('./mapping/find_commands')
+const types = require('./mapping/types')
 
 function directString(String) {
     return {
@@ -56,6 +57,7 @@ module.exports = function (tracker, test) {
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
 	if (key.startsWith('get')) return `${target}.${key.slice(3).toLowerCase()}`
+        if (key.startsWith('length')) return `len(${target})`
 	if ((type !== undefined) && (type !== null) && (type.name === 'JsonNode')) return `${target}[${key}]`
 	if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (!isNaN(key))) return `${target}[${key}]`
 	else return `${target}["${key}"]`
@@ -107,6 +109,10 @@ def app():
 	let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 	let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
 	addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level +`, AccessibilityGuidelinesVersion.` + version + `))`)
+    }
+    if(test.config.browsersInfo) {
+	    addHook('deps', 'from applitools.common.ultrafastgrid import DesktopBrowserInfo, IosDeviceInfo, ChromeEmulationInfo, ScreenOrientation')
+	    addHook('beforeEach', python`    conf.add_browser(${{value:test.config.browsersInfo, type: 'BrowsersInfo'}})`)
     }
     addHook('beforeEach', python`    return conf`)
     addHook('beforeEach', python`\n`)
@@ -496,6 +502,10 @@ function setUpWithEmulators(test, addHook) {
 					case 'Android Emulator 8.0 Portrait desktop fully':
 						addHook('beforeEach', python`    orientation = "Portrait"`)
 						addHook('beforeEach', python`    page = "desktop"`)
+						break;
+					case 'ShouldNotFailIfScrollRootIsStaleOnAndroid':
+						addHook('beforeEach', python`    orientation = "Landscape"`)
+						addHook('beforeEach', python`    page = "mobile"`)
 						break;
 					default:
 						throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
