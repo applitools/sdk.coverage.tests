@@ -29,8 +29,8 @@ module.exports = {
     'should send accessibility regions by selector with css stitching': {skip: true},		//Index error. [imageMatchSettings][accessibility] is empty...
     'should send accessibility regions by selector with scroll stitching': {skip: true},	//Index error. [imageMatchSettings][accessibility] is empty...
     'check window fully on android chrome emulator on desktop page': {skip: true},		//diffs
-    'check window fully on android chrome emulator on mobile page with horizontal scroll': {skip: true},	//diffs
-    'check window fully on android chrome emulator on mobile page': {skip: true},		//diffs
+    'check window fully on android chrome emulator on mobile page with horizontal scroll': {config: {branchName: 'current_python'}},	//diffs if compare to common baseline
+    'check window fully on android chrome emulator on mobile page': {config: {branchName: 'current_python'}},				//diffs if compare to common baseline
     'check window with layout breakpoints': {skip: true},				//layout breakpoints are not implemented
     'check window with layout breakpoints in config': {skip: true},			//layout breakpoints are not implemented
     'check window on page with sticky header with vg': {skip: true},			//diffs
@@ -66,7 +66,7 @@ module.exports = {
     'check region by coordinates in frame with scroll stitching': {skip: true},			//diffs
     'check region by coordinates in frame with css stitching': {skip: true},			//diffs
     'check region by coordinates in frame with vg': {skip: true},				//diffs
-    'check frame fully with css stitching': {skip: true},					//diffs
+    'check frame fully with css stitching': {config: {branchName: 'current_ruby'}},		//diffs if compare to common baseline
     'check frame in frame fully with scroll stitching': {skip: true},				//diffs
     'check frame in frame fully with css stitching': {skip: true},				//diffs
     'check frame in frame fully with vg': {skip: true},						//diffs
