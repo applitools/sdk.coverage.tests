@@ -41,7 +41,7 @@ module.exports = function(tracker, test) {
   addHook('deps', `const path = require('path')`)
   addHook('deps', `const assert = require('assert')`)
   addHook('deps', `const fs = require('fs')`)
-  addHook('deps', `const {testSetup, getTestInfo, getDom} = require('@applitools/sdk-shared')`)
+  addHook('deps', `const {setupEyes, getTestInfo, getTestDom} = require('@applitools/test-utils')`)
   addHook('deps', `const cwd = process.cwd()`)
   addHook('deps', `const sdk = require(cwd)`)
   addHook('deps', `const spec = require(path.resolve(cwd, fs.existsSync('./dist') ? './dist' : './src', './spec-driver'))`)
@@ -54,7 +54,7 @@ module.exports = function(tracker, test) {
   )
   addHook(
     'beforeEach',
-    js`eyes = testSetup.getEyes(${{vg: test.vg, displayName: test.name, ...test.config}})`,
+    js`eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config}})`,
   )
 
   addHook('afterEach', js`await destroyDriver(driver)`)
@@ -223,7 +223,7 @@ module.exports = function(tracker, test) {
       return addCommand(js`await getTestInfo(${result})`)
     },
     getDom(result, domId) {
-      return addCommand(js`await getDom(${result}, ${domId})`).methods({
+      return addCommand(js`await getTestDom(${result}, ${domId})`).methods({
         getNodesByAttribute: (dom, name) => addExpression(js`${dom}.getNodesByAttribute(${name})`)
       })
     },
