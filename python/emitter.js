@@ -315,7 +315,7 @@ def app():
         close(throwEx = true) {
             let isThrow = throwEx.toString()
             return addCommand(python`eyes_driver.quit()
-              eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
+    eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
         },
         abort() {
             return addCommand(python`eyes.abort`)
