@@ -193,10 +193,13 @@ def app():
         },
         scrollIntoView(element, align) {
             console.log('scroll into view Need to be implemented')
+            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
             return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
         },
         hover(element, offset) {
             console.log('hover Need to be implemented')
+            if (openPerformed) return addCommand(python`hover = ActionChains(eyes_driver).move_to_element(${findElementFunc(element)})
+    hover.perform()`)
             return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
         },
@@ -314,8 +317,8 @@ def app():
         },
         close(throwEx = true) {
             let isThrow = throwEx.toString()
-            return addCommand(python`eyes_driver.quit()
-    eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
+            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)
+    eyes_driver.quit()`)
         },
         abort() {
             return addCommand(python`eyes.abort`)
