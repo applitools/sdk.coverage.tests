@@ -12,7 +12,7 @@ module.exports = {
     'check region by selector in frame in frame fully with scroll stitching': {skip: true},	//diffs
     'check hovered region by element with css stitching': {config: {branchName: 'current_python'}}, // diffs if compare to common baseline
     'check hovered region by element with scroll stitching': {skip: true},			//OutOfBoundsError: Region [Region(67, 0, 191 x 29, CONTEXT_RELATIVE)] is out of screenshot bounds [Region(0, 0, 685 x 460, SCREENSHOT_AS_IS)]
-    'check region by selector in overflowed frame after manual scroll with css stitching': {skip: true},	//Stale element
+    //'check region by selector in overflowed frame after manual scroll with css stitching': {skip: true},	//Stale element
     'check region by selector in overflowed frame after manual scroll with scroll stitching': {skip: true},	//Stale element
     'check regions by coordinates in frame with css stitching': {skip: true},		//Unable to locate element: {"method":"css selector","selector":"#modal2"}
     'check regions by coordinates in frame with scroll stitching': {skip: true},	//Unable to locate element: {"method":"css selector","selector":"#modal2"}
@@ -94,8 +94,8 @@ module.exports = {
     'appium iOS check window': {skip: true},							//assertion for ignored region fails
     'appium iOS check region with ignore region': {skip: true},					//assertion for ignored region fails
     'appium iOS check region': {skip: true},							//wrong  scale
-    'should not fail if scroll root is stale on android': {skipEmit: true},
-    'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+    'should not fail if scroll root is stale on android': {skip: true},				//Couldn't set viewport size
+    'check region by selector in frame fully on firefox legacy': { skip: true },		//diffs
     'should send custom batch properties': {skip: true},					//assertion fail - assert 0 == 1
 	'adopted styleSheets on firefox': {skipEmit: true},
 }
