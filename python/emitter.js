@@ -136,8 +136,12 @@ def app():
             return addCommand(python`driver.get(${url})`)
         },
         executeScript(script, ...args) {
-            if (args.length > 0) return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
-            return addCommand(python`driver.execute_script(${script})`)
+            if (args.length > 0) {
+		if (openPerformed) return addCommand(python`eyes_driver.execute_script(${script}, ${args[0]})`)
+		else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
+	    }
+            if (openPerformed) return addCommand(python`eyes_driver.execute_script(${script})`)
+	    else return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
             console.log('Sleep was used Need to Implement')
@@ -145,21 +149,22 @@ def app():
         },
         switchToFrame(selector) {
             //return addCommand(python`driver.switch_to.frame(${selector})`)
-            return addCommand(python`driver.switch_to.frame(` + framesClassic(selector) + `)`)
+            return addCommand(python`eyes_driver.switch_to.frame(` + framesClassic(selector) + `)`)
         },
         switchToParentFrame() {
-            return addCommand(python`driver.switch_to.parent_frame()`)
+            return addCommand(python`eyes_driver.switch_to.parent_frame()`)
         },
         findElement(selector) {
-            //return addCommand(python`driver.find_element_by_css_selector(${selector})`)
+            let drv = "driver"
+	    if (openPerformed) drv = "eyes_driver"
             if (selector.type) {
                 let command = `${find_commands[selector.type]}`
-                return addCommand(python`driver.` + command + `(\"${selector.selector}\")`)
+                return addCommand(python`` + drv + command + `(\"${selector.selector}\")`)
             }
-            return addCommand(python`driver.find_element(` + parseSelectorByType(selector) + `)`)
+            return addCommand(python`` + drv + `.find_element(` + parseSelectorByType(selector) + `)`)
         },
         findElements(selector) {
-            return addCommand(python`driver.find_elements_by_css_selector(${selector})`)
+            return addCommand(python`eyes_driver.find_elements_by_css_selector(${selector})`)
         },
         getWindowLocation() {
             // return addCommand(ruby`await specs.getWindowLocation(driver)`)
@@ -176,20 +181,25 @@ def app():
             return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
+	    let drv = "driver"
+	    if (openPerformed) drv = "eyes_driver"
             let selector = parseSelectorByType(element)
             selector = selector.replace(/\[/g, "")
 	    selector = selector.replace(/\]/g, "")
-            return addCommand(python`driver.find_element(` + selector + `).click()`)
+            return addCommand(python`` + drv + `.find_element(` + selector + `).click()`)
         },
         type(element, keys) {
             return addCommand(python`${element}.send_keys(${keys})`)
         },
         scrollIntoView(element, align) {
             console.log('scroll into view Need to be implemented')
+            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
             return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
         },
         hover(element, offset) {
             console.log('hover Need to be implemented')
+            if (openPerformed) return addCommand(python`hover = ActionChains(eyes_driver).move_to_element(${findElementFunc(element)})
+    hover.perform()`)
             return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
         },
@@ -221,10 +231,11 @@ def app():
                 special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
             let scale_mobile_app = (mobile)&&(test.name.includes('iOS')) ? 'eyes.configure.set_features(Feature.SCALE_MOBILE_APP)\n    ' : ''
             let appNm = (appName) ? appName : test.config.appName
+            openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
     eyes.set_configuration(configuration)` + special_branch + scale_mobile_app +
-                `eyes.open(driver)`)
+                `eyes_driver = eyes.open(driver)`)
         },
         check(checkSettings) {
             if(test.api === 'classic') {
@@ -306,7 +317,8 @@ def app():
         },
         close(throwEx = true) {
             let isThrow = throwEx.toString()
-            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
+            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)
+    if eyes_driver is not None: eyes_driver.quit()`)
         },
         abort() {
             return addCommand(python`eyes.abort`)
@@ -527,6 +539,13 @@ function setUpBrowsers(test, addHook) {
         switch (test.env.browser){
           case 'firefox':
             addHook('beforeEach', python`    return "Firefox"`)
+            addHook('beforeEach', python`\n`)
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def options():`)
+            addHook('beforeEach', python`    return webdriver.FirefoxOptions()`)
+            break;
+          case 'firefox-48':
+            addHook('beforeEach', python`    return "Firefox48"`)
             addHook('beforeEach', python`\n`)
             addHook('beforeEach', python`@pytest.fixture(scope="function")`)
             addHook('beforeEach', python`def options():`)
