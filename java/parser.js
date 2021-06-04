@@ -1,7 +1,8 @@
 'use strict'
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
-const  {capitalizeFirstLetter} = require('./util')
+const {capitalizeFirstLetter} = require('./util')
+
 function checkSettings(cs, native) {
     let java = `Target`
     if (cs === undefined) {
@@ -23,7 +24,7 @@ function checkSettings(cs, native) {
     if (cs.sendDom !== undefined) options += `.sendDom(${serialize(cs.sendDom)})`
     if (cs.matchLevel) options += `.matchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.name) options += `.withName(${cs.name})`
-    if (cs.layoutBreakpoints) options+= `.layoutBreakpoints(${cs.layoutBreakpoints})`
+    if (cs.layoutBreakpoints) options += `.layoutBreakpoints(${cs.layoutBreakpoints})`
     if (cs.isFully === true) {
         options += '.fully()'
     } else if (cs.isFully === false) {
@@ -37,15 +38,18 @@ function checkSettings(cs, native) {
     function frames(arr) {
         return arr.reduce((acc, val) => acc + `${frame(val)}`, '')
     }
+
     function frame(frame) {
-        return  ( !frame.isRef && frame.frame) ? `.frame(${frameSelector(frame.frame)}).scrollRootElement(${printSelector(frame.scrollRootElement)})` : `.frame(${frameSelector(frame)})`
+        return (!frame.isRef && frame.frame) ? `.frame(${frameSelector(frame.frame)}).scrollRootElement(${printSelector(frame.scrollRootElement)})` : `.frame(${frameSelector(frame)})`
     }
+
     function frameSelector(selector) {
-        if(typeof selector === 'string' && !checkCss(selector)) {
+        if (typeof selector === 'string' && !checkCss(selector)) {
             return JSON.stringify(selector)
         } else {
             return printSelector(selector);
         }
+
         function checkCss(string) {
             return (string.includes('[') && string.includes(']')) || string.includes('#')
         }
@@ -58,9 +62,11 @@ function checkSettings(cs, native) {
     function ignoreRegions(arr) {
         return arr.reduce((acc, val) => `${acc}.ignore(${regionParameter(val)})`, '')
     }
-    function layoutRegions(arr){
+
+    function layoutRegions(arr) {
         return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '')
     }
+
     function floatingRegions(arr) {
         return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``)
     }
@@ -87,7 +93,7 @@ function checkSettings(cs, native) {
                 string = `By.cssSelector(${JSON.stringify(region)})`
                 break;
             case "object":
-                if(region.type) {
+                if (region.type) {
                     string = native ? `getDriver().findElement(${parseObject(region)})` : parseObject(region)
                 } else {
                     string = parseObject({value: region, type: 'Region'})
@@ -146,7 +152,7 @@ function parseObject(object) {
     } else if (object.type) {
         const typeBuilder = types[object.type]
         if (typeBuilder) {
-            if(typeBuilder.isGeneric) {
+            if (typeBuilder.isGeneric) {
                 return typeBuilder.constructor(object.value, object.generic)
             } else {
                 return typeBuilder.constructor(object.value)
@@ -171,12 +177,15 @@ function mapTypes(type) {
     }
     return mapped
 }
+
 function wrapSelector(val) {
     return val.selector ? val : {type: 'css', selector: val}
 }
+
 function printSelector(val) {
     return serialize((val && val.isRef) ? val : wrapSelector(val))
 }
+
 const variable = ({name, value, type}) => `final ${mapTypes(type)} ${name} = (${mapTypes(type)}) ${value}`
 const call = ({target, args}) => {
     return args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}()`
@@ -184,6 +193,20 @@ const call = ({target, args}) => {
 const returnSyntax = ({value}) => {
     return `return ${value};`
 }
+
+function parseEnv(env) {
+    let result = 'driver = buildDriver()'
+    if (env) {
+        if (env.browser) result += `.browser(${serialize(env.browser)})`
+        if (env.device) result += `.device(${serialize(env.device)})`
+        if (env.app) result += `.app(${serialize(env.app)})`
+        if (env.hasOwnProperty('headless')) result += `.headless(${serialize(env.headless)})`
+        if (env.hasOwnProperty('legacy')) result += `.legacy(${serialize(env.legacy)})`
+        if (env.hasOwnProperty('useLocalDriver') && env.useLocalDriver !== undefined) result += `.localDriver(${serialize(env.useLocalDriver)})`
+    }
+    return result + '.build();'
+}
+
 module.exports = {
     checkSettingsParser: checkSettings,
     java: java,
@@ -192,4 +215,5 @@ module.exports = {
     call: call,
     returnSyntax: returnSyntax,
     wrapSelector: wrapSelector,
+    parseEnv: parseEnv
 }
