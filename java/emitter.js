@@ -126,7 +126,7 @@ module.exports = function (tracker, test) {
 	  }).map(property => java`${property}`).join(',\n    ')}});`)
 	}
 
-  addHook('afterEach', java`driver.close();`)
+  addHook('afterEach', java`driver.quit();`)
   addHook('afterEach', java`eyes.abort();`)
 
   const driver = {

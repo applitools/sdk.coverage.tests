@@ -304,8 +304,8 @@ test('check frame in frame fully', {
 test('check window fully and frame in frame fully', {
   page: 'Default',
   variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2_Scroll'}},
+    'with css stitching': {env: {local:true}, config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2'}},
+    'with scroll stitching': {env: {local:true}, config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckFrameInFrame_Fully_Fluent2_VG'}},
   },
   test({eyes}) {
@@ -321,8 +321,8 @@ test('check frame after manual switch to frame', {
   page: 'Default',
   config: {hideScrollbars: false},
   variants: {
-    'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckInnerFrame'}},
-    'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckInnerFrame_Scroll'}},
+    'with css stitching classic': {api: 'classic', env: {local:true}, config: {stitchMode: 'CSS', baselineName: 'TestCheckInnerFrame'}},
+    'with scroll stitching classic': {api: 'classic', env: {local:true}, config: {stitchMode: 'Scroll', baselineName: 'TestCheckInnerFrame_Scroll'}},
     'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckInnerFrame_VG'}}
   },
   test({driver, eyes}) {
@@ -679,6 +679,7 @@ test('check region by selector in overflowed frame after manual scroll', {
 
 test('check region by selector in frame multiple times', {
   page: 'Default',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame2_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame2_Fluent_Scroll'}},
@@ -1321,8 +1322,8 @@ test('should send custom batch properties', {
 test('should hide and restore scrollbars', {
   page: 'Default',
   variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_Scroll'}},
+    'with css stitching': { env: {local:true}, config: {stitchMode: 'CSS', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent'}},
+    'with scroll stitching': {env: {local:true}, config: {stitchMode: 'Scroll', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_VG'}},
   },
   test({eyes}) {
