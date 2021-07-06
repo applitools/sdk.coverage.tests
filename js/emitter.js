@@ -31,7 +31,7 @@ function serialize(data) {
 }
 
 module.exports = function(tracker, test) {
-  const {addSyntax, addCommand, addExpression, addHook, withScope} = tracker
+  const {useRef, addSyntax, addCommand, addExpression, addHook, withScope} = tracker
 
   addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
   addSyntax('getter', ({target, key}) => `${target}['${key}']`)
@@ -40,11 +40,15 @@ module.exports = function(tracker, test) {
 
   addHook('deps', `const path = require('path')`)
   addHook('deps', `const assert = require('assert')`)
-  addHook('deps', `const fs = require('fs')`)
-  addHook('deps', `const {setupEyes, getTestInfo, getTestDom} = require('@applitools/test-utils')`)
-  addHook('deps', `const cwd = process.cwd()`)
-  addHook('deps', `const sdk = require(cwd)`)
-  addHook('deps', `const spec = require(path.resolve(cwd, fs.existsSync('./dist') ? './dist' : './src', './spec-driver'))`)
+  addHook('deps', `const {getTestInfo, getTestDom} = require('@applitools/test-utils')`)
+
+  if (process.env.SPEC_DRIVER_PATH) addHook('deps', `const spec = require(path.resolve(process.cwd(), '${process.env.SPEC_DRIVER_PATH}'))`)
+  else addHook('deps', `const spec = require(path.resolve(process.cwd(), ''./dist/spec-driver'))`)
+
+  if (process.env.SETUP_EYES_PATH) addHook('deps', `const setupEyes = require(path.resolve(process.cwd(), '${process.env.SETUP_EYES_PATH}'))`)
+  else addHook('deps', `const spec = require('@applitools/test-utils/src/setup-eyes')`)
+
+  if (!process.env.NO_SDK) addHook('deps', `const sdk = require(process.cwd())`)
 
   addHook('vars', `let driver, destroyDriver, eyes`)
 
@@ -54,11 +58,11 @@ module.exports = function(tracker, test) {
   )
   addHook(
     'beforeEach',
-    js`eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config}})`,
+    js`eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})`,
   )
 
-  addHook('afterEach', js`await destroyDriver(driver)`)
   addHook('afterEach', js`await eyes.abort()`)
+  addHook('afterEach', js`await destroyDriver(driver)`)
 
   const driver = {
     constructor: {
