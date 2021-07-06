@@ -178,8 +178,8 @@ test('check window fully on page with sticky header', {
 test('check window fully with custom scroll root', {
   page: 'ScrollableBody',
   variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow_Body'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Body_Scroll'}},
+    'with css stitching': {env: {local:true},config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow_Body'}},
+    'with scroll stitching': {env: {local:true},config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Body_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_Body_VG'}},
   },
   test({eyes}) {
@@ -289,6 +289,7 @@ test('check frame fully', {
 
 test('check frame in frame fully', {
   page: 'Default',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameInFrame_Fully_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameInFrame_Fully_Fluent_Scroll'}},
@@ -303,6 +304,7 @@ test('check frame in frame fully', {
 
 test('check window fully and frame in frame fully', {
   page: 'Default',
+  env: {local:true},
   variants: {
     'with css stitching': {env: {local:true}, config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2'}},
     'with scroll stitching': {env: {local:true}, config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2_Scroll'}},
@@ -320,9 +322,10 @@ test('check frame after manual switch to frame', {
   features: ['webdriver'],
   page: 'Default',
   config: {hideScrollbars: false},
+  env: {local:true},
   variants: {
-    'with css stitching classic': {api: 'classic', env: {local:true}, config: {stitchMode: 'CSS', baselineName: 'TestCheckInnerFrame'}},
-    'with scroll stitching classic': {api: 'classic', env: {local:true}, config: {stitchMode: 'Scroll', baselineName: 'TestCheckInnerFrame_Scroll'}},
+    'with css stitching classic': {api: 'classic',  config: {stitchMode: 'CSS', baselineName: 'TestCheckInnerFrame'}},
+    'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckInnerFrame_Scroll'}},
     'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckInnerFrame_VG'}}
   },
   test({driver, eyes}) {
@@ -614,6 +617,7 @@ test('check region by selector in frame fully', {
 
 test('check region by selector in frame in frame fully', {
   page: 'Default',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrameInFrame_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrameInFrame_Fluent_Scroll'}},
@@ -631,6 +635,7 @@ test('check region by selector in frame in frame fully', {
 
 test('check region by selector in overflowed frame', {
   page: 'Wix',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInAVeryBigFrame'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInAVeryBigFrame_Scroll'}},
@@ -644,6 +649,7 @@ test('check region by selector in overflowed frame', {
 })
 
 test('check region by selector in overflowed frame fully', {
+  env: {local:true},
   page: 'FrameLargerThenViewport',
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'CheckRegionInFrameLargerThenViewport'}},
@@ -662,6 +668,7 @@ test('check region by selector in overflowed frame fully', {
 })
 
 test('check region by selector in overflowed frame after manual scroll', {
+  env: {local:true},
   features: ['webdriver'],
   page: 'Wix',
   variants: {
@@ -724,6 +731,7 @@ test('check region by selector in frame multiple times', {
 
 test('check regions by coordinates in frame', {
   page: 'Default',
+  env: {local:true},
   config: {hideScrollbars: false},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckLongIFrameModal'}},
@@ -960,6 +968,7 @@ test('should send floating region by selector', {
 
 test('should send floating region by coordinates in frame', {
   page: 'Default',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame3_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame3_Fluent_Scroll'}},
@@ -1321,9 +1330,10 @@ test('should send custom batch properties', {
 
 test('should hide and restore scrollbars', {
   page: 'Default',
+  env: {local:true},
   variants: {
-    'with css stitching': { env: {local:true}, config: {stitchMode: 'CSS', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent'}},
-    'with scroll stitching': {env: {local:true}, config: {stitchMode: 'Scroll', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_Scroll'}},
+    'with css stitching': { config: {stitchMode: 'CSS', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent'}},
+    'with scroll stitching': { config: {stitchMode: 'Scroll', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_VG'}},
   },
   test({eyes}) {
@@ -1585,6 +1595,43 @@ test('check region in frame hidden under top bar fully', {
 
 test('check window fully with html scrollRootElement after scroll', {
   page: 'Simple',
+  env: {local:true},
+})
+
+test('check region fully after scroll non scrollable element', {
+  page: 'Simple',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_VG'}},
+  },
+  test({driver, eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - check non scrollable element', viewportSize})
+    driver.executeScript('window.scrollBy(0, 500)')
+    eyes.check({
+      region: '#overflowing-div',
+      isFully: true,
+    })
+    eyes.close()
+  }
+})
+
+test('check region in frame hidden under top bar fully', {
+  page: 'PageWithFrameHiddenByBar',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent_Scroll'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({frames: ['[name="frame1"]'], region: '#div1', isFully: true})
+    eyes.close()
+  }
+})
+
+test('check window fully with html scrollRootElement after scroll', {
+  page: 'Simple',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScroll_Scroll'}},
@@ -1602,6 +1649,7 @@ test('check window fully with html scrollRootElement after scroll', {
 
 test('check window fully with html scrollRootElement after scroll when fail to scroll', {
   page: 'Default',
+  env: {local:true},
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScrollWhenFailToScroll'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowFullyWithHtmlScrollRootElementAfterScrollWhenFailToScroll_Scroll'}},
