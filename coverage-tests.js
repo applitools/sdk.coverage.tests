@@ -1394,6 +1394,7 @@ test('should extract text regions from image', {
 })
 
 test('should return actual viewport size', {
+  page: 'Default',
   env: {browser: 'chrome', headless: false},
   test({driver, eyes, assert}) {
     eyes.open({
@@ -1409,6 +1410,7 @@ test('should return actual viewport size', {
 })
 
 test('should set viewport size', {
+  page: 'Default',
   variants: {
     '': {env: {browser: 'chrome'}},
     'on edge legacy': {env: {browser: 'edge-18'}},
