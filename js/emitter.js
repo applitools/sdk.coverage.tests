@@ -52,17 +52,19 @@ module.exports = function(tracker, test) {
 
   addHook('vars', `let driver, destroyDriver, eyes`)
 
-  addHook(
-    'beforeEach',
-    js`[driver, destroyDriver] = await spec.build(${test.env || {browser: 'chrome'}})`,
-  )
-  addHook(
-    'beforeEach',
-    js`eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})`,
-  )
+  addHook('beforeEach', js`
+    ;[driver, destroyDriver] = await spec.build(${test.env || {browser: 'chrome'}})
+    eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})
+  `)
 
-  addHook('afterEach', js`await eyes.abort()`)
-  addHook('afterEach', js`await destroyDriver(driver)`)
+
+  addHook('afterEach', js`
+    try {
+      await eyes.abort()
+    } finally {
+      await destroyDriver(driver)
+    }
+  `)
 
   const driver = {
     constructor: {
