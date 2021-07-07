@@ -1495,6 +1495,7 @@ test('should abort if not closed', {
 })
 
 test('should throw if no checkpoints before close', {
+  page: 'Default',
   config: {baselineName: 'TestGetAllTestResults'},
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
