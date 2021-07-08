@@ -1593,41 +1593,6 @@ test('check region in frame hidden under top bar fully', {
   }
 })
 
-test('check window fully with html scrollRootElement after scroll', {
-  page: 'Simple',
-  env: {local:true},
-})
-
-test('check region fully after scroll non scrollable element', {
-  page: 'Simple',
-  variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckElementFullyAfterScrollNonScrollableElement_VG'}},
-  },
-  test({driver, eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - check non scrollable element', viewportSize})
-    driver.executeScript('window.scrollBy(0, 500)')
-    eyes.check({
-      region: '#overflowing-div',
-      isFully: true,
-    })
-    eyes.close()
-  }
-})
-
-test('check region in frame hidden under top bar fully', {
-  page: 'PageWithFrameHiddenByBar',
-  variants: {
-    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent'}},
-    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent_Scroll'}},
-  },
-  test({eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({frames: ['[name="frame1"]'], region: '#div1', isFully: true})
-    eyes.close()
-  }
-})
 
 test('check window fully with html scrollRootElement after scroll', {
   page: 'Simple',
