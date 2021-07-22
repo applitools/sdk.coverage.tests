@@ -101,6 +101,7 @@ def app():
     addHook('beforeEach', python`def configuration(eyes):`)
     addHook('beforeEach', python`    conf = eyes.get_configuration()`)
     addHook('beforeEach', python`    conf.test_name = ${test.config.baselineName}`)
+	if (test.config.baselineName === 'TestWindowWithModal_Fully_Scroll') addHook('beforeEach', python`    conf.save_new_tests = True;`)
     if ("branchName" in test.config) addHook('beforeEach', python`    conf.branch_name = ${test.config.branchName};`)
     if ("parentBranchName" in test.config) addHook('beforeEach', python`    conf.parent_branch_name = ${test.config.parentBranchName};`)
     if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
