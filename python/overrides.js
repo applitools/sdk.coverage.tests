@@ -29,8 +29,6 @@ module.exports = {
     'should send accessibility regions by selector with css stitching': {skip: true},		//Index error. [imageMatchSettings][accessibility] is empty...
     'should send accessibility regions by selector with scroll stitching': {skip: true},	//Index error. [imageMatchSettings][accessibility] is empty...
     'check window fully on android chrome emulator on desktop page': {skip: true},		//diffs
-    'check window fully on android chrome emulator on mobile page with horizontal scroll': {config: {branchName: 'current_python'}},	//diffs if compare to common baseline
-    'check window fully on android chrome emulator on mobile page': {config: {branchName: 'current_python'}},				//diffs if compare to common baseline
     'check window with layout breakpoints': {skip: true},				//layout breakpoints are not implemented
     'check window with layout breakpoints in config': {skip: true},			//layout breakpoints are not implemented
     'check window on page with sticky header with vg': {skip: true},			//diffs
