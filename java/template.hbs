@@ -8,7 +8,7 @@ public class {{key}} extends {{#if meta.native}}NativeSetup{{else}}TestSetup{{/i
   {{var}}
   {{/each}}
   @BeforeMethod
-  public void before(){
+  public void before() throws MalformedURLException {
     {{#each output.hooks.beforeEach as |command|}}
     {{command}}
     {{/each}}
