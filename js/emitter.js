@@ -135,6 +135,7 @@ module.exports = function(tracker, test) {
       )
     },
     check(checkSettings = {}) {
+      checkSettings = {...checkSettings, fully: checkSettings.isFully}
       if (test.api !== 'classic') {
         return addCommand(js`await eyes.check(${checkSettings})`)
       } else if (checkSettings.region) {
@@ -145,14 +146,14 @@ module.exports = function(tracker, test) {
             ${checkSettings.region},
             ${checkSettings.timeout},
             ${checkSettings.name},
-            ${checkSettings.isFully},
+            ${checkSettings.fully},
           )`)
         }
         return addCommand(js`await eyes.checkRegionBy(
           ${checkSettings.region},
           ${checkSettings.name},
           ${checkSettings.timeout},
-          ${checkSettings.isFully},
+          ${checkSettings.fully},
         )`)
       } else if (checkSettings.frames && checkSettings.frames.length > 0) {
         const [frameReference] = checkSettings.frames
@@ -165,7 +166,7 @@ module.exports = function(tracker, test) {
         return addCommand(js`await eyes.checkWindow(
           ${checkSettings.name},
           ${checkSettings.timeout},
-          ${checkSettings.isFully}
+          ${checkSettings.fully}
         )`)
       }
     },
