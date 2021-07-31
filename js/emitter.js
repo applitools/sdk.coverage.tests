@@ -135,16 +135,18 @@ module.exports = function(tracker, test) {
       )
     },
     check(checkSettings = {}) {
-      const transformRegion = region => region.left || region.top ? {x: region.left, y: region.top, width: region.width, height: region.height} : region
+      const transformRegion = region => {
+        return (!region.isRef && (region.left != null || region.top != null)) ? {x: region.left, y: region.top, width: region.width, height: region.height} : region
+      }
       checkSettings = {
         ...checkSettings,
         region: checkSettings.region && transformRegion(checkSettings.region),
-        ignoreRegion: checkSettings.ignoreRegions && checkSettings.ignoreRegions.map(transformRegion),
-        strictRegion: checkSettings.strictRegions && checkSettings.strictRegions.map(transformRegion),
-        contentRegion: checkSettings.contentRegions && checkSettings.contentRegions.map(transformRegion),
-        layoutRegion: checkSettings.layoutRegions && checkSettings.layoutRegions.map(transformRegion),
-        floatingRegion: checkSettings.floatingRegions && checkSettings.floatingRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
-        accessibilityRegion: checkSettings.accessibilityRegions && checkSettings.accessibilityRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
+        ignoreRegions: checkSettings.ignoreRegions && checkSettings.ignoreRegions.map(transformRegion),
+        strictRegions: checkSettings.strictRegions && checkSettings.strictRegions.map(transformRegion),
+        contentRegions: checkSettings.contentRegions && checkSettings.contentRegions.map(transformRegion),
+        layoutRegions: checkSettings.layoutRegions && checkSettings.layoutRegions.map(transformRegion),
+        floatingRegions: checkSettings.floatingRegions && checkSettings.floatingRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
+        accessibilityRegions: checkSettings.accessibilityRegions && checkSettings.accessibilityRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
         fully: checkSettings.isFully,
       }
       if (test.api !== 'classic') {
