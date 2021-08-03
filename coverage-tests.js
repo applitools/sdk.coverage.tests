@@ -528,20 +528,6 @@ test('check scrollable modal region by selector fully', {
   },
 })
 
-test('check region by native selector', {
-  features: ['native-selectors'],
-  env: {
-    device: 'Samsung Galaxy S8',
-    app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk',
-  },
-  config: {baselineName: 'AppiumAndroidCheckRegion'},
-  test({eyes}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({region: {type: TYPE.CLASSNAME, selector: 'android.widget.Button'}})
-    eyes.close()
-  },
-})
-
 test('check hovered region by element', {
   page: 'StickyHeaderWithRegions',
   config: {hideScrollbars: false},
