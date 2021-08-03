@@ -52,17 +52,5 @@ module.exports = {
   'should send accessibility regions by selector with vg': {config: {branchName: 'v1'}},
   'check region in frame hidden under top bar fully with css stitching': {skip: true},
   'check region in frame hidden under top bar fully with scroll stitching': {skip: true},
-  'appium android check window': {skipEmit: true, config: {branchName: 'javascript_mobile'}},
-  'appium android check region with ignore region': {
-    skipEmit: true,
-    config: {branchName: 'javascript_mobile'},
-  },
-  'appium android check region': {skipEmit: false, config: {branchName: 'javascript_mobile'}},
-  'appium iOS check window': {skipEmit: true, config: {branchName: 'javascript_mobile'}},
-  'appium iOS check region with ignore region': {
-    skipEmit: false,
-    config: {branchName: 'javascript_mobile'},
-  },
-  'appium iOS check region': {skipEmit: false, config: {branchName: 'javascript_mobile'}},
   'check region by selector in frame fully on firefox legacy': { skip: true },
 }
