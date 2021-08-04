@@ -200,9 +200,9 @@ function parseEnv(env) {
         if (env.browser) result += `.browser(${serialize(env.browser)})`
         if (env.device) result += `.device(${serialize(env.device)})`
         if (env.app) result += `.app(${serialize(env.app)})`
-        if (env.headless) result += `.headless(${serialize(env.headless)})`
-        if (env.legacy) result += `.legacy(${serialize(env.legacy)})`
-        if (env.localDriver) result += `.localDriver(${serialize(env.localDriver)})`
+        if (env.hasOwnProperty('headless')) result += `.headless(${serialize(env.headless)})`
+        if (env.hasOwnProperty('legacy')) result += `.legacy(${serialize(env.legacy)})`
+        if (env.hasOwnProperty('useLocalDriver') && env.useLocalDriver !== undefined) result += `.localDriver(${serialize(env.useLocalDriver)})`
     }
     return result + '.build();'
 }

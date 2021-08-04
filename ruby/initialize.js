@@ -9,12 +9,15 @@ module.exports = function (tracker, test) {
     addSyntax('getter', getter)
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
-    
-    let native = ("features" in test) && (test.features[0] === 'native-selectors') ? true: false
 
+    let native = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
+    let env = {...test.env};
+    if (test.useLocalDriver) {
+        env.useLocalDriver = test.useLocalDriver;
+    }
     addHook(
         'beforeEach',
-        driverBuild(test.env),
+        driverBuild(env),
     )
 
     addHook(

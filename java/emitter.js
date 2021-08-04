@@ -102,7 +102,7 @@ module.exports = function (tracker, test) {
   addSyntax('return', returnSyntax)
 
   addHook('beforeEach', java`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
-  addHook('beforeEach', parseEnv(test.env))
+  addHook('beforeEach', parseEnv({...test.env, useLocalDriver: test.useLocalDriver}))
   addHook('beforeEach', java`System.out.println(getClass().getName());`)
   const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
   Object.keys(test.config).filter(property => !specific.includes(property))
