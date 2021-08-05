@@ -169,4 +169,7 @@ module.exports = {
     'variant id with vg': {skip: true},
     // Scroll root option not implemented in the ruby SDK
     'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},
+    'check window fully on android chrome emulator on mobile page': {useLocalDriver: true},
+    'check window fully on android chrome emulator on mobile page with horizontal scroll': {useLocalDriver: true},
+    'check window fully on android chrome emulator on desktop page': {useLocalDriver: true}
 }
