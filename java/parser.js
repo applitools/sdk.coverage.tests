@@ -202,7 +202,7 @@ function parseEnv(env) {
         if (env.app) result += `.app(${serialize(env.app)})`
         if (env.hasOwnProperty('headless')) result += `.headless(${serialize(env.headless)})`
         if (env.hasOwnProperty('legacy')) result += `.legacy(${serialize(env.legacy)})`
-        if (env.hasOwnProperty('useLocalDriver') && env.useLocalDriver !== undefined) result += `.localDriver(${serialize(env.useLocalDriver)})`
+        if (env.hasOwnProperty('executionGrid') && env.executionGrid !== undefined) result += `.executionGrid(${serialize(env.executionGrid)})`
     }
     return result + '.build();'
 }
