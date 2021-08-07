@@ -1,5 +1,5 @@
 'use strict'
-const {checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv} = require('./parser')
+const {checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector} = require('./parser')
 const {capitalizeFirstLetter} = require('./util')
 const imageMatchSettings = {
   type: 'ImageMatchSettings',
@@ -83,7 +83,6 @@ module.exports = function (tracker, test) {
     addHook('afterEach', `runner.getAllTestResults(false);`)
   }
   // Not specific
-  addHook('deps', `import java.net.MalformedURLException;`)
   addHook('deps', `import com.applitools.eyes.*;`)
   addHook('deps', `import com.applitools.eyes.metadata.SessionResults;`)
   addHook('deps', `import org.openqa.selenium.*;`)
@@ -102,7 +101,7 @@ module.exports = function (tracker, test) {
   addSyntax('return', returnSyntax)
 
   addHook('beforeEach', java`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
-  addHook('beforeEach', parseEnv({...test.env, executionGrid: test.executionGrid}))
+  addHook('beforeEach', java`buildDriver(${JSON.stringify(test.env) || emptyValue()});`)
   addHook('beforeEach', java`System.out.println(getClass().getName());`)
   const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
   Object.keys(test.config).filter(property => !specific.includes(property))
