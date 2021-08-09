@@ -33,7 +33,7 @@ module.exports = {
     'check window with layout breakpoints in config': {skip: true},			//layout breakpoints are not implemented
     'check window on page with sticky header with vg': {skip: true},			//diffs
     'check window fully with custom scroll root with css stitching': {skip: true},	//diffs
-    'check window fully with fixed scroll root element': {config: {branchName: 'current_python'}}, // diffs if compare to common baseline
+    // 'check window fully with fixed scroll root element': {config: {branchName: 'current_python'}}, // diffs if compare to common baseline
     'check scrollable modal region by selector fully with scroll stitching': {skip: true},	//diffs
     'check window fully and frame in frame fully with vg': {skip: true},		//diffs
     'check window fully on page with sticky header with scroll stitching': {skip: true},	//diffs
