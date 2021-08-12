@@ -174,8 +174,8 @@ function serialize(value) {
 }
 
 function driverBuild(env) {
-    let parsed = env ? '(' +
-        Object.keys(env).map(key => `${key}: '${env[key]}'`).join(', ') +
+    let parsed = (env && Object.keys(env).length > 0) ? '(' +
+        Object.keys(env).map(key => `${key}: ${serialize(env[key])}`).join(', ') +
         ')' : ''
     let string = `@driver = build_driver${parsed}`
     return string
