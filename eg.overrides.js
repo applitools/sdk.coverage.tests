@@ -28,7 +28,6 @@ module.exports = {
     'check window fully with wrong scroll root with css stitching': { executionGrid: true},
     'check window fully with wrong scroll root with scroll stitching': { executionGrid: true},
     'check window fully with wrong scroll root with vg': { executionGrid: true},
-    'check window fully with fixed scroll root element': { executionGrid: true},
     'check window fully on page with burger menu': { executionGrid: true},
     'check frame with css stitching classic': { executionGrid: true},
     'check frame with scroll stitching classic': { executionGrid: true},
@@ -223,4 +222,5 @@ module.exports = {
     'should hide and restore scrollbars with scroll stitching': { executionGrid: false},
     'check window fully with html scrollRootElement after scroll with css stitching': { executionGrid: false},
     'check window fully with html scrollRootElement after scroll with scroll stitching': { executionGrid: false},
+    'check window fully with fixed scroll root element': { executionGrid: false},
 }
