@@ -502,6 +502,10 @@ function setUpMobileNative(test, addHook) {
     addHook('beforeEach', python`def browser_type():`)
     addHook('beforeEach', python`    return "Appium"`)
     addHook('beforeEach', python`\n`)
+    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+    addHook('beforeEach', python`def driver_builder(appium):`)
+    addHook('beforeEach', python`    return appium`)
+    addHook('beforeEach', python`\n`)
 }
 
 function setUpWithEmulators(test, addHook) {
@@ -536,7 +540,7 @@ function setUpWithEmulators(test, addHook) {
         addHook('beforeEach', python`    return is_emulation, orientation, page`)
         addHook('beforeEach', python`\n`)
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def driver_build(chrome_emulator):`)
+        addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
         addHook('beforeEach', python`    return chrome_emulator`)
         addHook('beforeEach', python`\n`)
     } else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
@@ -558,7 +562,7 @@ function setUpBrowsers(test, addHook) {
                 addHook('beforeEach', python`    return webdriver.FirefoxOptions()`)
                 addHook('beforeEach', python`\n`)
                 addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_build(firefox):`)
+                addHook('beforeEach', python`def driver_builder(firefox):`)
                 addHook('beforeEach', python`    return firefox`)
                 break;
             case 'firefox-48':
@@ -569,35 +573,35 @@ function setUpBrowsers(test, addHook) {
                 addHook('beforeEach', python`    return webdriver.FirefoxOptions()`)
                 addHook('beforeEach', python`\n`)
                 addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_build(firefox48):`)
+                addHook('beforeEach', python`def driver_builder(firefox48):`)
                 addHook('beforeEach', python`    return firefox48`)
                 break;
             case 'ie-11':
                 addHook('beforeEach', python`    return "IE11"`)
                 addHook('beforeEach', python`\n`)
                 addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_build(ie11):`)
+                addHook('beforeEach', python`def driver_builder(ie11):`)
                 addHook('beforeEach', python`    return ie11`)
                 break;
             case 'edge-18':
                 addHook('beforeEach', python`    return "Edge"`)
                 addHook('beforeEach', python`\n`)
                 addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_build(edge):`)
+                addHook('beforeEach', python`def driver_builder(edge):`)
                 addHook('beforeEach', python`    return edge`)
                 break;
             case 'safari-11':
                 addHook('beforeEach', python`    return "Safari11"`)
                 addHook('beforeEach', python`\n`)
                 addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_build(safari11):`)
+                addHook('beforeEach', python`def driver_builder(safari11):`)
                 addHook('beforeEach', python`    return safari11`)
                 break;
             case 'safari-12':
                 addHook('beforeEach', python`    return "Safari12"`)
                 addHook('beforeEach', python`\n`)
                 addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_build(safari12):`)
+                addHook('beforeEach', python`def driver_builder(safari12):`)
                 addHook('beforeEach', python`    return safari12`)
                 break;
             case 'chrome':
