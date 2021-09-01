@@ -53,7 +53,7 @@ module.exports = function(tracker, test) {
   addHook('vars', `let driver, destroyDriver, eyes`)
 
   addHook('beforeEach', js`
-    ;[driver, destroyDriver] = await spec.build(${test.env || {browser: 'chrome'}})
+    ;[driver, destroyDriver] = await spec.build(${{eg: test.executionGrid, ...(test.env || {browser: 'chrome'})}})
     eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})
   `)
 
