@@ -40,6 +40,7 @@ config({
     PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
     OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
+    ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html'
   },
 })
 
@@ -1751,5 +1752,18 @@ test('variant id', {
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
   }
+})
+
+test('check region within shadow dom', {
+  page: 'ShadowDOM',
+  variants: {
+    'with vg': {vg: true},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({shadow: ['#has-shadow-root'], region: ['h1']})
+    eyes.check({shadow: ['#has-shadow-root', '#has-shadow-root-nested > div'], region: ['div']})
+    eyes.close()
+  },
 })
 // #endregion
