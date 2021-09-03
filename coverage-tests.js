@@ -770,6 +770,38 @@ test('check regions by coordinates in overflowed frame', {
   }
 })
 
+test('check region by selector within shadow dom', {
+  page: 'ShadowDOM',
+  variants: {
+    'with vg': {vg: true},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({region: {selector: '#has-shadow-root', shadow: 'h1'}})
+    eyes.check({region: {selector: '#has-shadow-root', shadow: {selector: '#has-shadow-root-nested > div', shadow: 'div'}}})
+    eyes.close()
+  },
+})
+
+test('check region by element within shadow dom', {
+  page: 'ShadowDOM',
+  variants: {
+    'with vg': {vg: true},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    const shadowRootHost = driver.findElement('#has-shadow-root')
+    const shadowRoot = driver.executeScript('return arguments[0].shadowRoot', shadowRootHost)
+    const nestedShadowRootHost = driver.findElement('#has-shadow-root-nested > div', shadowRoot)
+    const nestedShadowRoot = driver.executeScript('return arguments[0].shadowRoot', nestedShadowRootHost)
+    const element1 = driver.findElement('h1', shadowRoot)
+    const element2 = driver.findElement('div', nestedShadowRoot)
+    eyes.check({region: element1})
+    eyes.check({region: element2})
+    eyes.close()
+  },
+})
+
 // #endregion
 
 // #region SEND CODED REGIONS, FLAGS and DOM
@@ -1754,16 +1786,4 @@ test('variant id', {
   }
 })
 
-test('check region within shadow dom', {
-  page: 'ShadowDOM',
-  variants: {
-    'with vg': {vg: true},
-  },
-  test({eyes}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({region: {selector: '#has-shadow-root', shadow: 'h1'}})
-    eyes.check({region: {selector: '#has-shadow-root', shadow: {selector: '#has-shadow-root-nested > div', shadow: 'div'}}})
-    eyes.close()
-  },
-})
 // #endregion
