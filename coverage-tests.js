@@ -788,7 +788,7 @@ test('check region by element within shadow dom', {
   variants: {
     'with vg': {vg: true},
   },
-  test({eyes}) {
+  test({driver, eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const shadowRootHost = driver.findElement('#has-shadow-root')
     const shadowRoot = driver.executeScript('return arguments[0].shadowRoot', shadowRootHost)
