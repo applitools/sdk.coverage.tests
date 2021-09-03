@@ -1761,8 +1761,8 @@ test('check region within shadow dom', {
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({shadow: ['#has-shadow-root'], region: ['h1']})
-    eyes.check({shadow: ['#has-shadow-root', '#has-shadow-root-nested > div'], region: ['div']})
+    eyes.check({region: {selector: '#has-shadow-root', shadow: 'h1'}})
+    eyes.check({region: {selector: '#has-shadow-root', shadow: {selector: '#has-shadow-root-nested > div', shadow: 'div'}}})
     eyes.close()
   },
 })
