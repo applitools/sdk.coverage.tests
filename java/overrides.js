@@ -74,5 +74,6 @@ module.exports = {
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
     'adopted styleSheets on chrome': {skipEmit: true},
 	'adopted styleSheets on firefox': {skipEmit: true},
-	'check region within shadow dom with vg': {skipEmit: true},
+	'check region by selector within shadow dom with vg': {skipEmit: true},
+	'check region by element within shadow dom with vg': {skipEmit: true},
 }
