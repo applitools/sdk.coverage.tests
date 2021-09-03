@@ -96,4 +96,6 @@ module.exports = {
     'check region by selector in frame fully on firefox legacy': { skip: true },		//diffs
     'should send custom batch properties': {skip: true},					//assertion fail - assert 0 == 1
 	'adopted styleSheets on firefox': {skipEmit: true},
+    'check region by selector within shadow dom with vg': {skipEmit: true},
+	'check region by element within shadow dom with vg': {skipEmit: true},
 }

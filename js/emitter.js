@@ -90,11 +90,11 @@ module.exports = function(tracker, test) {
     switchToParentFrame() {
       addCommand(js`await spec.mainContext(driver)`)
     },
-    findElement(selector) {
-      return addExpression(js`await spec.findElement(driver, ${selector})`)
+    findElement(selector, parent) {
+      return addExpression(js`await spec.findElement(driver, ${selector}, ${parent})`)
     },
-    findElements(selector) {
-      return addExpression(js`await spec.findElements(driver, ${selector})`)
+    findElements(selector, parent) {
+      return addExpression(js`await spec.findElements(driver, ${selector}, ${parent})`)
     },
     click(element) {
       addCommand(js`await spec.click(driver, ${element})`)

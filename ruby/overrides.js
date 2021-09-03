@@ -169,4 +169,7 @@ module.exports = {
     'variant id with vg': {skip: true},
     // Scroll root option not implemented in the ruby SDK
     'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},
+
+    'check region by selector within shadow dom with vg': {skipEmit: true},
+	'check region by element within shadow dom with vg': {skipEmit: true},
 }
