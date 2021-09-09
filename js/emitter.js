@@ -84,8 +84,8 @@ module.exports = function(tracker, test) {
     sleep(ms) {
       addCommand(js`await spec.sleep(driver, ${ms})`)
     },
-    switchToFrame(selector) {
-      addCommand(js`await spec.childContext(driver, spec.transformSelector(${selector}))`)
+    switchToFrame(element) {
+      addCommand(js`await spec.childContext(driver, ${element})`)
     },
     switchToParentFrame() {
       addCommand(js`await spec.mainContext(driver)`)
