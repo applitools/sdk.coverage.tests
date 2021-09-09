@@ -85,28 +85,28 @@ module.exports = function(tracker, test) {
       addCommand(js`await spec.sleep(driver, ${ms})`)
     },
     switchToFrame(selector) {
-      addCommand(js`await spec.childContext(driver, ${selector})`)
+      addCommand(js`await spec.childContext(driver, spec.transformSelector(${selector}))`)
     },
     switchToParentFrame() {
       addCommand(js`await spec.mainContext(driver)`)
     },
     findElement(selector, parent) {
-      return addExpression(js`await spec.findElement(driver, ${selector}, ${parent})`)
+      return addExpression(js`await spec.findElement(driver, spec.transformSelector(${selector}), ${parent})`)
     },
     findElements(selector, parent) {
-      return addExpression(js`await spec.findElements(driver, ${selector}, ${parent})`)
+      return addExpression(js`await spec.findElements(driver, spec.transformSelector(${selector}), ${parent})`)
     },
     click(element) {
-      addCommand(js`await spec.click(driver, ${element})`)
+      addCommand(js`await spec.click(driver, spec.transformSelector(${element}))`)
     },
     type(element, keys) {
-      addCommand(js`await spec.type(driver, ${element}, ${keys})`)
+      addCommand(js`await spec.type(driver, spec.transformSelector(${element}), ${keys})`)
     },
     scrollIntoView(element, align) {
-      addCommand(js`await spec.scrollIntoView(driver, ${element}, ${align})`)
+      addCommand(js`await spec.scrollIntoView(driver, spec.transformSelector(${element}), ${align})`)
     },
     hover(element, offset) {
-      addCommand(js`await spec.hover(driver, ${element}, ${offset})`)
+      addCommand(js`await spec.hover(driver, spec.transformSelector(${element}), ${offset})`)
     },
   }
 
