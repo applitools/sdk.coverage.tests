@@ -95,8 +95,6 @@ module.exports = {
     'check region by selector in overflowed frame with vg': { executionGrid: true},
     'check region by selector in overflowed frame after manual scroll with vg': { executionGrid: true},
     'check regions by coordinates in frame with vg': { executionGrid: true},
-    'check regions by coordinates in overflowed frame with css stitching': { executionGrid: true},
-    'check regions by coordinates in overflowed frame with scroll stitching': { executionGrid: true},
     'check regions by coordinates in overflowed frame with vg': { executionGrid: true},
     'should send ignore region by coordinates with css stitching': { executionGrid: true},
     'should send ignore region by coordinates with scroll stitching': { executionGrid: true},
@@ -223,4 +221,6 @@ module.exports = {
     'check window fully with html scrollRootElement after scroll with css stitching': { executionGrid: false},
     'check window fully with html scrollRootElement after scroll with scroll stitching': { executionGrid: false},
     'check window fully with fixed scroll root element': { executionGrid: false},
+    'check regions by coordinates in overflowed frame with css stitching': { executionGrid: false},
+    'check regions by coordinates in overflowed frame with scroll stitching': { executionGrid: false},
 }
