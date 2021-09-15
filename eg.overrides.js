@@ -223,4 +223,6 @@ module.exports = {
     'check window fully with fixed scroll root element': { executionGrid: false},
     'check regions by coordinates in overflowed frame with css stitching': { executionGrid: false},
     'check regions by coordinates in overflowed frame with scroll stitching': { executionGrid: false},
+    'check regions by coordinates in frame with vg': { executionGrid: false},
+    'check regions by coordinates in overflowed frame with vg': { executionGrid: false},
 }
