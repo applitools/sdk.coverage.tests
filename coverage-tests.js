@@ -884,7 +884,7 @@ test('should send ignore regions by selector with vg', {
     const expectedIgnoreRegions = [
       {left: 10, top: 285, width: 800, height: 501},
       {left: 122, top: 932, width: 456, height: 307},
-      {left: 8, top: 1277, width: 690, height: 206},
+      {left: 8, top: 1276, width: 690, height: 207},
     ]
     for (const [index, expectedIgnoreRegion] of expectedIgnoreRegions.entries()) {
       assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
@@ -1097,7 +1097,7 @@ test('should send accessibility regions by selector with vg', {
     const expectedAccessibilityRegions = [
       {isDisabled: false, type: 'LargeText', left: 10, top: 285, width: 800, height: 501},
       {isDisabled: false, type: 'LargeText', left: 122, top: 932, width: 456, height: 307},
-      {isDisabled: false, type: 'LargeText', left: 8, top: 1277, width: 690, height: 206},
+      {isDisabled: false, type: 'LargeText', left: 8, top: 1276, width: 690, height: 207},
     ]
     for (const [index, expectedAccessibilityRegion] of expectedAccessibilityRegions.entries()) {
       assert.equal(imageMatchSettings.accessibility[index], expectedAccessibilityRegion)
