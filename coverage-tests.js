@@ -853,7 +853,6 @@ test('should send ignore regions by selector', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent_VG'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -863,6 +862,27 @@ test('should send ignore regions by selector', {
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedIgnoreRegions = [
       {left: 10, top: 286, width: 800, height: 500},
+      {left: 122, top: 933, width: 456, height: 306},
+      {left: 8, top: 1277, width: 690, height: 206},
+    ]
+    for (const [index, expectedIgnoreRegion] of expectedIgnoreRegions.entries()) {
+      assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
+    }
+  },
+})
+
+test('should send ignore regions by selector with vg', {
+  page: 'Default',
+  vg: true,
+  config: {baselineName: 'TestCheckFullWindowWithMultipleIgnoreRegionsBySelector_Fluent_VG'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({ignoreRegions: ['.ignore'], isFully: true})
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
+    const expectedIgnoreRegions = [
+      {left: 10, top: 285, width: 800, height: 501},
       {left: 122, top: 933, width: 456, height: 306},
       {left: 8, top: 1277, width: 690, height: 206},
     ]
@@ -896,7 +916,6 @@ test('should send ignore region by the same selector as target region', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent_VG'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -906,6 +925,22 @@ test('should send ignore region by the same selector as target region', {
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 0, top: 0, width: 304, height: 184},
+    )
+  },
+})
+
+test('should send ignore region by the same selector as target region with vg', {
+  page: 'Default',
+  vg: true,
+  config: {baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent_VG'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({region: '#overflowing-div-image', ignoreRegions: ['#overflowing-div-image']})
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].imageMatchSettings.ignore[0],
+      {left: 0, top: 0, width: 304, height: 185},
     )
   },
 })
@@ -1018,7 +1053,6 @@ test('should send accessibility regions by selector', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestAccessibilityRegions'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestAccessibilityRegions_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestAccessibilityRegions_VG'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -1032,6 +1066,36 @@ test('should send accessibility regions by selector', {
     assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
     const expectedAccessibilityRegions = [
       {isDisabled: false, type: 'LargeText', left: 10, top: 286, width: 800, height: 500},
+      {isDisabled: false, type: 'LargeText', left: 122, top: 933, width: 456, height: 306},
+      {isDisabled: false, type: 'LargeText', left: 8, top: 1277, width: 690, height: 206},
+    ]
+    for (const [index, expectedAccessibilityRegion] of expectedAccessibilityRegions.entries()) {
+      assert.equal(imageMatchSettings.accessibility[index], expectedAccessibilityRegion)
+    }
+  }
+})
+
+test('should send accessibility regions by selector with vg', {
+  page: 'Default',
+  vg: true,
+  config: {
+    baselineName: 'TestAccessibilityRegions_VG',
+    defaultMatchSettings: {
+      accessibilitySettings: {level: 'AAA', guidelinesVersion: 'WCAG_2_0'}
+    }
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({
+      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}]
+    })
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
+    assert.equal(imageMatchSettings.accessibilitySettings.level, 'AAA')
+    assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
+    const expectedAccessibilityRegions = [
+      {isDisabled: false, type: 'LargeText', left: 10, top: 285, width: 800, height: 501},
       {isDisabled: false, type: 'LargeText', left: 122, top: 933, width: 456, height: 306},
       {isDisabled: false, type: 'LargeText', left: 8, top: 1277, width: 690, height: 206},
     ]
@@ -1382,7 +1446,7 @@ test('should extract text from regions', {
     ])
     eyes.close(false)
     assert.equal(texts[0], 'Header 1: Hello world!')
-    assert.equal(texts[1], 'Header 2: He110 w0rld!')
+    assert.equal(texts[1], 'Header 2: He110 world!')
     assert.equal(texts[2], 'imagination be your guide.')
   },
 })
