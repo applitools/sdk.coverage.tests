@@ -883,7 +883,7 @@ test('should send ignore regions by selector with vg', {
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedIgnoreRegions = [
       {left: 10, top: 285, width: 800, height: 501},
-      {left: 122, top: 933, width: 456, height: 306},
+      {left: 122, top: 932, width: 456, height: 307},
       {left: 8, top: 1277, width: 690, height: 206},
     ]
     for (const [index, expectedIgnoreRegion] of expectedIgnoreRegions.entries()) {
@@ -1096,7 +1096,7 @@ test('should send accessibility regions by selector with vg', {
     assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
     const expectedAccessibilityRegions = [
       {isDisabled: false, type: 'LargeText', left: 10, top: 285, width: 800, height: 501},
-      {isDisabled: false, type: 'LargeText', left: 122, top: 933, width: 456, height: 306},
+      {isDisabled: false, type: 'LargeText', left: 122, top: 932, width: 456, height: 307},
       {isDisabled: false, type: 'LargeText', left: 8, top: 1277, width: 690, height: 206},
     ]
     for (const [index, expectedAccessibilityRegion] of expectedAccessibilityRegions.entries()) {
