@@ -95,4 +95,6 @@ module.exports = {
     'should send dom and location when check window with vg': {skipEmit: true},
     'should send dom and location when check window': {skipEmit: true},
     'should send dom of version 11': {skipEmit: true},
+    'check region by selector within shadow dom with vg': {skipEmit: true},
+  	'check region by element within shadow dom with vg': {skipEmit: true},
 }

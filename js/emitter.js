@@ -53,7 +53,7 @@ module.exports = function(tracker, test) {
   addHook('vars', `let driver, destroyDriver, eyes`)
 
   addHook('beforeEach', js`
-    ;[driver, destroyDriver] = await spec.build(${test.env || {browser: 'chrome'}})
+    ;[driver, destroyDriver] = await spec.build(${{eg: test.executionGrid, ...(test.env || {browser: 'chrome'})}})
     eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})
   `)
 
@@ -84,29 +84,29 @@ module.exports = function(tracker, test) {
     sleep(ms) {
       addCommand(js`await spec.sleep(driver, ${ms})`)
     },
-    switchToFrame(selector) {
-      addCommand(js`await spec.childContext(driver, ${selector})`)
+    switchToFrame(element) {
+      addCommand(js`await spec.childContext(driver, ${element})`)
     },
     switchToParentFrame() {
       addCommand(js`await spec.mainContext(driver)`)
     },
-    findElement(selector) {
-      return addExpression(js`await spec.findElement(driver, ${selector})`)
+    findElement(selector, parent) {
+      return addExpression(js`await spec.findElement(driver, spec.transformSelector(${selector}), ${parent})`)
     },
-    findElements(selector) {
-      return addExpression(js`await spec.findElements(driver, ${selector})`)
+    findElements(selector, parent) {
+      return addExpression(js`await spec.findElements(driver, spec.transformSelector(${selector}), ${parent})`)
     },
     click(element) {
-      addCommand(js`await spec.click(driver, ${element})`)
+      addCommand(js`await spec.click(driver, spec.transformSelector(${element}))`)
     },
     type(element, keys) {
-      addCommand(js`await spec.type(driver, ${element}, ${keys})`)
+      addCommand(js`await spec.type(driver, spec.transformSelector(${element}), ${keys})`)
     },
     scrollIntoView(element, align) {
-      addCommand(js`await spec.scrollIntoView(driver, ${element}, ${align})`)
+      addCommand(js`await spec.scrollIntoView(driver, spec.transformSelector(${element}), ${align})`)
     },
     hover(element, offset) {
-      addCommand(js`await spec.hover(driver, ${element}, ${offset})`)
+      addCommand(js`await spec.hover(driver, spec.transformSelector(${element}), ${offset})`)
     },
   }
 
@@ -135,6 +135,20 @@ module.exports = function(tracker, test) {
       )
     },
     check(checkSettings = {}) {
+      const transformRegion = region => {
+        return (!region.isRef && (region.left != null || region.top != null)) ? {x: region.left, y: region.top, width: region.width, height: region.height} : region
+      }
+      checkSettings = {
+        ...checkSettings,
+        region: checkSettings.region && transformRegion(checkSettings.region),
+        ignoreRegions: checkSettings.ignoreRegions && checkSettings.ignoreRegions.map(transformRegion),
+        strictRegions: checkSettings.strictRegions && checkSettings.strictRegions.map(transformRegion),
+        contentRegions: checkSettings.contentRegions && checkSettings.contentRegions.map(transformRegion),
+        layoutRegions: checkSettings.layoutRegions && checkSettings.layoutRegions.map(transformRegion),
+        floatingRegions: checkSettings.floatingRegions && checkSettings.floatingRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
+        accessibilityRegions: checkSettings.accessibilityRegions && checkSettings.accessibilityRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
+        fully: checkSettings.isFully,
+      }
       if (test.api !== 'classic') {
         return addCommand(js`await eyes.check(${checkSettings})`)
       } else if (checkSettings.region) {
@@ -145,14 +159,14 @@ module.exports = function(tracker, test) {
             ${checkSettings.region},
             ${checkSettings.timeout},
             ${checkSettings.name},
-            ${checkSettings.isFully},
+            ${checkSettings.fully},
           )`)
         }
         return addCommand(js`await eyes.checkRegionBy(
           ${checkSettings.region},
           ${checkSettings.name},
           ${checkSettings.timeout},
-          ${checkSettings.isFully},
+          ${checkSettings.fully},
         )`)
       } else if (checkSettings.frames && checkSettings.frames.length > 0) {
         const [frameReference] = checkSettings.frames
@@ -165,7 +179,7 @@ module.exports = function(tracker, test) {
         return addCommand(js`await eyes.checkWindow(
           ${checkSettings.name},
           ${checkSettings.timeout},
-          ${checkSettings.isFully}
+          ${checkSettings.fully}
         )`)
       }
     },
