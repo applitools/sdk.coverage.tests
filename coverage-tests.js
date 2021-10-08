@@ -834,7 +834,6 @@ test('should send ignore region by selector', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowWithIgnoreBySelector_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowWithIgnoreBySelector_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Fluent_VG'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -844,6 +843,22 @@ test('should send ignore region by selector', {
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 8, top: 81, width: 304, height: 184},
+    )
+  },
+})
+
+test('should send ignore region by selector with vg', {
+  page: 'Default',
+  vg: true,
+  config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Fluent_VG'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({ignoreRegions: ['#overflowing-div']})
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].imageMatchSettings.ignore[0],
+      {left: 8, top: 80, width: 304, height: 185},
     )
   },
 })
@@ -987,7 +1002,6 @@ test('should send floating region by selector', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowWithFloatingBySelector_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowWithFloatingBySelector_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckWindowWithFloatingBySelector_Fluent_VG'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -1007,6 +1021,32 @@ test('should send floating region by selector', {
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
       {left: 8, top: 81, width: 304, height: 184, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
+    )
+  },
+})
+
+test('should send floating region by selector with vg', {
+  page: 'Default',
+  vg: true,
+  config: {baselineName: 'TestCheckWindowWithFloatingBySelector_Fluent_VG'},
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
+    eyes.check({
+      floatingRegions: [
+        {
+          region: '#overflowing-div',
+          maxUpOffset: 3,
+          maxDownOffset: 3,
+          maxLeftOffset: 20,
+          maxRightOffset: 30,
+        },
+      ],
+    })
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].imageMatchSettings.floating[0],
+      {left: 8, top: 80, width: 304, height: 185, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
     )
   },
 })
