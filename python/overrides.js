@@ -1,75 +1,83 @@
 module.exports = {
-    'should handle check of stale element in frame if selector is preserved': {skipEmit: true, skip: true},
-    'should extract text from regions': {skip: true},						//assertion error - actual "Header l: Hello world!" instead of "Header 1: Hello world!"
-    'check region by selector in frame multiple times with scroll stitching': {skip: true},	//problems in SDK to check multiple times
-    'check region by selector in overflowed frame with scroll stitching': {skip: true},		//OutOfBoundsError: Region [Region(20, 708, 450 x 282, CONTEXT_RELATIVE)] is out of screenshot bounds [Region(0, 0, 700 x 460, SCREENSHOT_AS_IS)]
-    'check region by selector in overflowed frame with vg': {skip: true},			//Unable to locate element: {"method":"css selector","selector":"img"}
-    'check frame after manual switch to frame with css stitching classic': {skip: true},	//Stale element, but with driver2 it works with diffs
-    'check frame after manual switch to frame with scroll stitching classic': {skip: true},	//Stale element, but with driver2 it works with diffs
-    'check frame after manual switch to frame with vg': {skip: true},				//diffs
-    'check frame after manual switch to frame with vg classic': {skip: true},			//diffs
-    'check region by native selector': {config: {branchName: 'current_python'}},		//diffs if compare to common baseline - wrong scale
-    'check region by selector in frame in frame fully with scroll stitching': {skip: true},	//diffs
-    'check hovered region by element with css stitching': {skip: true},			 // diffs if compare to common baseline   {config: {branchName: 'current_python'}},
-    'check hovered region by element with scroll stitching': {skip: true},			//OutOfBoundsError: Region [Region(67, 0, 191 x 29, CONTEXT_RELATIVE)] is out of screenshot bounds [Region(0, 0, 685 x 460, SCREENSHOT_AS_IS)]
-    //'check region by selector in overflowed frame after manual scroll with css stitching': {skip: true},	//Stale element
-    'check region by selector in overflowed frame after manual scroll with scroll stitching': {skip: true},	//Stale element
-    'check regions by coordinates in frame with css stitching': {skip: true},		//Unable to locate element: {"method":"css selector","selector":"#modal2"}
-    'check regions by coordinates in frame with scroll stitching': {skip: true},	//Unable to locate element: {"method":"css selector","selector":"#modal2"}
-    'check regions by coordinates in frame with vg': {skip: true},			//diffs
-    'should hide and restore scrollbars with scroll stitching': {skip: true},		//diff
-    'should hide and restore scrollbars with vg': {skip: true},				// Unable to locate element: {"method":"css selector","selector":"#inner-frame-div"}
-    'should send floating region by coordinates in frame with vg': {skip: true},	//diffs
-    'should not send dom': {skip: true},						//diffs - info["actualAppOutput"][0]["image"]["hasDom"] == False,    assert True == False
-    'should send dom on ie': {skip: true},						//diffs - assert info["actualAppOutput"][0]["image"]["hasDom"] == True   assert False == True
-    'should send dom on edge legacy': {skip: true},					//eyes.open(driver)   -  EyesError: eyes.open_base() failed
-    'should set viewport size on edge legacy': {skip: true},				//EyesError: Failed to set the viewport size
-    'check window after manual scroll on safari 11': {skip: true},			//diffs
-    'check window after manual scroll with vg': {skip: true},				//diffs
-    'should send accessibility regions by selector with css stitching': {skip: true},		//Index error. [imageMatchSettings][accessibility] is empty...
-    'should send accessibility regions by selector with scroll stitching': {skip: true},	//Index error. [imageMatchSettings][accessibility] is empty...
-    'check window fully on android chrome emulator on desktop page': {skip: true},		//diffs
-    'check window with layout breakpoints': {skip: true},				//layout breakpoints are not implemented
-    'check window with layout breakpoints in config': {skip: true},			//layout breakpoints are not implemented
-    'check window on page with sticky header with vg': {skip: true},			//diffs
-    'check window fully with custom scroll root with css stitching': {skip: true},	//diffs
-    'check window fully with fixed scroll root element': {config: {branchName: 'current_python'}}, // diffs if compare to common baseline
-    'check scrollable modal region by selector fully with scroll stitching': {skip: true},	//diffs
-    'check window fully and frame in frame fully with vg': {skip: true},		//diffs
-    'check window fully on page with sticky header with scroll stitching': {skip: true},	//diffs
-    'check scrollable modal region by selector fully with css stitching': {skip: true},		//diffs
-    'check regions by coordinates in overflowed frame with vg': {skip: true},			//diffs
-    'check region by selector fully with scroll stitching': {skip: true},			//diffs
-    'check region in frame hidden under top bar fully with scroll stitching': {skip: true},	//diffs
-    'check region in frame hidden under top bar fully with css stitching': {skip: true},	//diffs
-    'check region by selector in frame fully with vg classic': {skip: true},			//Unable to locate element '#inner-frame-div'
-    'check region by selector in frame fully with vg': {skip: true},				//Unable to locate element '#inner-frame-div'
-    'check region by selector in frame fully with scroll stitching classic': {skip: true},	//diffs
-    'check region by selector in frame fully with scroll stitching': {skip: true},		//diffs
-    'check region by selector in overflowed frame fully with scroll stitching': {skip: true},	//diffs
-    'check region by selector in overflowed frame fully with css stitching': {skip: true},	//diffs
-    'check region fully after scroll non scrollable element with scroll stitching': {skip: true},	//diffs
-    'check region by selector fully on page with sticky header with scroll stitching': {skip: true},	//diffs
-    'check regions by coordinates in overflowed frame with scroll stitching': {skip: true},	// Unable to locate element: "#modal3"
-    'check regions by coordinates in overflowed frame with css stitching': {skip: true},	// Unable to locate element: "#modal3"
-    'check region by coordinates in frame fully with vg': {skip: true},				//diffs
-    'check region by selector after manual scroll with scroll stitching': {skip: true},		//diffs
-    'check region by selector after manual scroll with css stitching': {skip: true},		//diffs
-    'check frame with scroll stitching classic': {skip: true},					//diffs
-    'check frame with scroll stitching': {skip: true},						//diffs
-    'check frame with css stitching classic': {skip: true},					//diffs
-    'check frame with css stitching': {skip: true},						//diffs
-    'check frame with vg classic': {skip: true},						//diffs
-    'check frame with vg': {skip: true},							//diffs
-    'check region by coordinates in frame with scroll stitching': {skip: true},			//diffs
-    'check region by coordinates in frame with css stitching': {skip: true},			//diffs
-    'check region by coordinates in frame with vg': {skip: true},				//diffs
-    'check frame fully with css stitching': {config: {branchName: 'current_ruby'}},		//diffs if compare to common baseline
-    'check frame in frame fully with scroll stitching': {skip: true},				//diffs
-    'check frame in frame fully with css stitching': {skip: true},				//diffs
-    'check frame in frame fully with vg': {skip: true},						//diffs
-    'check frame fully with scroll stitching': {skip: true},					//diffs
-    'check frame fully with vg': {skip: true},							//diffs
+    // Failing checks
+    'appium android check region with ignore region': {skip: true}, // new test error
+    'appium android check window': {skip: true}, // new test error
+    'appium iOS check region with ignore region': {skip: true}, // new test error
+    'appium iOS check region': {config: {branchName: 'current_python'}}, // new test error ?!
+    'appium iOS check window': {skip: true}, // new test error
+    'check frame after manual switch to frame with css stitching classic': {skip: true}, // different frame scroll positions
+    'check frame after manual switch to frame with scroll stitching classic': {skip: true}, // incorrect offsets and scrolling positions, missing parts
+    'check frame after manual switch to frame with vg classic': {skip: true}, // first check captures default content instead of frame
+    'check frame fully with css stitching': {config: {branchName: 'current_ruby'}}, // different font and border styles
+    'check frame fully with vg': {skip: true},  // font rendering difference
+    'check frame in frame fully with vg': {skip: true}, // new test error
+    'check frame with css stitching': {skip: true}, // scrollbars are missing
+    'check frame with scroll stitching classic': {skip: true},// scrollbars are missing
+    'check frame with scroll stitching': {skip: true}, // scrollbars are missing
+    'check frame with vg classic': {skip: true},  // default content is captured instead of a frame
+    'check frame with vg': {skip: true}, // default content is captured instead of a frame
+    'check region by coordinates in frame fully with vg': {skip: true},  // different region is captured
+    'check region by coordinates in frame with css stitching': {skip: true}, // different size, offset, missing scrollbars
+    'check region by coordinates in frame with scroll stitching': {skip: true}, // different size, offset, missing scrollbars
+    'check region by coordinates in frame with vg': {skip: true}, // default content is captured instead of a frame
+    'check region by native selector': {config: {branchName: 'current_python'}}, // new test error ?!
+    'check region by selector after manual scroll with css stitching': {skip: true}, // only part of element is captured
+    'check region by selector fully on page with sticky header with scroll stitching': {skip: true}, // repeated header is stitched in different position, both are ugly it's stitching algo difference
+    'check region by selector fully with scroll stitching': {skip: true}, // bad stitching, incorrect region repeated
+    'check region by selector in frame fully on firefox legacy': {skip: true}, // bad stitching, repeated 1st piece
+    'check region by selector in frame fully with scroll stitching classic': {skip: true},  // bad stitching, repeated 1st piece
+    'check region by selector in frame fully with scroll stitching': {skip: true}, // bad stitching, repeated 1st piece
+    'check region by selector in frame in frame fully with scroll stitching': {skip: true}, // bad stitching, repeated 1st piece
+    'check region by selector in frame multiple times with scroll stitching': {skip: true}, // bad stitching, repeated 1st piece
+    'check region by selector in overflowed frame fully with css stitching': {skip: true},  // only part of the element is captured
+    'check region by selector in overflowed frame fully with scroll stitching': {skip: true}, // only part of the region with wrong offset
+    'check region in frame hidden under top bar fully with css stitching': {skip: true}, // transparent header is repeated over stitched image
+    'check region in frame hidden under top bar fully with scroll stitching': {skip: true}, // slightly offsetted
+    'check regions by coordinates in frame with vg': {skip: true}, // lots of white renders
+    'check regions by coordinates in overflowed frame with vg': {skip: true}, // lots of white renders
+    'check scrollable modal region by selector fully with css stitching': {skip: true}, // bad stitching, incorrect region repeated
+    'check scrollable modal region by selector fully with scroll stitching': {skip: true}, // only piece is captured, incorrect offset
+    'check window after manual scroll on safari 11': {skip: true}, // incorrect scroll position
+    'check window after manual scroll with vg': {skip: true}, // whole page is rendered instead of viewport
+    'check window fully and frame in frame fully with vg': {skip: true}, // default content is captured instead of a frame
+    'check window fully on android chrome emulator on desktop page': {skip: true}, // incorrect pixel ratio when stitching
+    'check window fully on page with sticky header with scroll stitching': {skip: true}, // repeated header is stitched in different position, both are ugly it's stitching algo difference
+    'check window fully with custom scroll root with css stitching': {skip: true}, // one piece is captured instead of whole page
+    'check window fully with fixed scroll root element': {config: {branchName: 'current_python'}}, // different chunks of stitching
+    'check window on page with sticky header with vg': {skip: true}, // whole page is rendered instead of viewport
+    'should hide and restore scrollbars with scroll stitching': {skip: true}, // bad stitching, repeated 1st piece
+    'should send floating region by coordinates in frame with vg': {skip: true}, // default content is captured instead of a frame
+
+    // SDK errors and failed assertions
+    'check hovered region by element with css stitching': {skip: true}, // AttributeError: move_to requires a WebElement
+    'check hovered region by element with scroll stitching': {skip: true}, // AttributeError: move_to requires a WebElement
+    'check region by selector in frame fully with vg classic': {skip: true}, // Unable to locate element '#inner-frame-div'
+    'check region by selector in frame fully with vg': {skip: true}, // Unable to locate element '#inner-frame-div'
+    'check region by selector in overflowed frame after manual scroll with scroll stitching': {skip: true}, // OutOfBoundsError: Region [Region(20, 708, 450 x 282, CONTEXT_AS_IS)] is out of screenshot bounds [Region(0, 0, 700 x 460, SCREENSHOT_AS_IS)]
+    'check region by selector in overflowed frame with scroll stitching': {skip: true}, // OutOfBoundsError: Region [Region(20, 708, 450 x 282, CONTEXT_AS_IS)] is out of screenshot bounds [Region(0, 0, 700 x 460, SCREENSHOT_AS_IS)]
+    'check region by selector in overflowed frame with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"img"}
+    'check regions by coordinates in frame with css stitching': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"#modal2"}
+    'check regions by coordinates in frame with scroll stitching': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"#modal2"}
+    'check regions by coordinates in overflowed frame with css stitching': {skip: true}, // Unable to locate element: "#modal3"
+    'check regions by coordinates in overflowed frame with scroll stitching': {skip: true}, // Unable to locate element: "#modal3"
+    'should hide and restore scrollbars with vg': {skip: true}, // Unable to locate element: {"method":"css selector","selector":"#inner-frame-div"}
+    'should not fail if scroll root is stale on android': {skip: true}, // Couldn't set viewport size
+    'should not send dom': {skip: true}, // info["actualAppOutput"][0]["image"]["hasDom"] == False,    assert True == False
+    'should send accessibility regions by selector with css stitching': {skip: true}, //Index error. [imageMatchSettings][accessibility] is empty...
+    'should send accessibility regions by selector with scroll stitching': {skip: true}, //Index error. [imageMatchSettings][accessibility] is empty...
+    'should send custom batch properties': {skip: true}, // assert len(info["startInfo"]["batchInfo"]["properties"]) == 1, None  assert 0 == 1
+    'should send dom on edge legacy': {skip: true}, // Couldn't set viewport size
+    'should send dom on ie': {skip: true}, // assert info["actualAppOutput"][0]["image"]["hasDom"] == True   assert False == True
+    'should set viewport size on edge legacy': {skip: true}, // EyesError: Failed to set the viewport size, 1px off
+
+    // Test code errors
+    'check window with layout breakpoints in config': {skip: true}, // incorrect test code
+    'check window with layout breakpoints': {skip: true}, // incorrect test code
+    'should extract text from regions': {skip: true},  // incorrect test code
+
+    // Generation errors
+    'adopted styleSheets on firefox': {skipEmit: true},
+    'should handle check of stale element in frame if selector is preserved': {skipEmit: true},
     'should send dom and location when check frame fully with vg': {skipEmit: true},
     'should send dom and location when check frame fully': {skipEmit: true},
     'should send dom and location when check frame': {skipEmit: true},
@@ -87,15 +95,6 @@ module.exports = {
     'should send dom and location when check window with vg': {skipEmit: true},
     'should send dom and location when check window': {skipEmit: true},
     'should send dom of version 11': {skipEmit: true},
-    'appium android check window': {skip: true},						//assertion for ignored region fails
-    'appium android check region with ignore region': {skip: true},				//assertion for ignored region fails
-    'appium iOS check window': {skip: true},							//assertion for ignored region fails
-    'appium iOS check region with ignore region': {skip: true},					//assertion for ignored region fails
-    'appium iOS check region': {config: {branchName: 'current_python'}},			//wrong  scale
-    'should not fail if scroll root is stale on android': {skip: true},				//Couldn't set viewport size
-    'check region by selector in frame fully on firefox legacy': { skip: true },		//diffs
-    'should send custom batch properties': {skip: true},					//assertion fail - assert 0 == 1
-	'adopted styleSheets on firefox': {skipEmit: true},
     'check region by selector within shadow dom with vg': {skipEmit: true},
-	'check region by element within shadow dom with vg': {skipEmit: true},
+  	'check region by element within shadow dom with vg': {skipEmit: true},
 }
