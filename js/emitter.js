@@ -42,10 +42,10 @@ module.exports = function(tracker, test) {
   addHook('deps', `const assert = require('assert')`)
   addHook('deps', `const {getTestInfo, getTestDom} = require('@applitools/test-utils')`)
 
-  if (process.env.SPEC_DRIVER_PATH) addHook('deps', `const spec = require(path.resolve(process.cwd(), '${process.env.SPEC_DRIVER_PATH}'))`)
-  else addHook('deps', `const spec = require(path.resolve(process.cwd(), './dist/spec-driver'))`)
+  if (process.env.SPEC_DRIVER) addHook('deps', `const spec = require('${process.env.SPEC_DRIVER}')`)
+  else addHook('deps', `const spec = require(path.resolve('./dist/spec-driver'))`)
 
-  if (process.env.SETUP_EYES_PATH) addHook('deps', `const setupEyes = require(path.resolve(process.cwd(), '${process.env.SETUP_EYES_PATH}'))`)
+  if (process.env.SETUP_EYES) addHook('deps', `const setupEyes = require('${process.env.SETUP_EYES}'))`)
   else addHook('deps', `const setupEyes = require('@applitools/test-utils/src/setup-eyes')`)
 
   if (!process.env.NO_SDK) addHook('deps', `const sdk = require(process.cwd())`)
