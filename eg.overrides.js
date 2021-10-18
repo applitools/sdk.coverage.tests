@@ -173,6 +173,8 @@ module.exports = {
     'adopted styleSheets on chrome': { executionGrid: true},
     'variant id': { executionGrid: true},
     'variant id with vg': { executionGrid: true},
+    'check region by selector within shadow dom with vg': { executionGrid: true},
+	'check region by element within shadow dom with vg': { executionGrid: true},
     // Doesn't supported on EG
     'adopted styleSheets on firefox': { executionGrid: false},
     'appium iOS check window': { executionGrid: false},
