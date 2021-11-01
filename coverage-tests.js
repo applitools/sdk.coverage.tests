@@ -955,7 +955,7 @@ test('should send ignore region by the same selector as target region with vg', 
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
-      {left: 0, top: 0, width: 304, height: 185},
+      {left: 0, top: 0, width: 304, height: 184},
     )
   },
 })
