@@ -931,23 +931,8 @@ test('should send ignore region by the same selector as target region', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent_VG'}},
   },
-  test({eyes, assert, helpers}) {
-    eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({region: '#overflowing-div-image', ignoreRegions: ['#overflowing-div-image']})
-    const result = eyes.close()
-    const info = helpers.getTestInfo(result)
-    assert.equal(
-      info.actualAppOutput[0].imageMatchSettings.ignore[0],
-      {left: 0, top: 0, width: 304, height: 184},
-    )
-  },
-})
-
-test('should send ignore region by the same selector as target region with vg', {
-  page: 'Default',
-  vg: true,
-  config: {baselineName: 'TestCheckElementWithIgnoreRegionBySameElement_Fluent_VG'},
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({region: '#overflowing-div-image', ignoreRegions: ['#overflowing-div-image']})
