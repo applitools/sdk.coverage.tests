@@ -201,12 +201,11 @@ def execution_grid():
             return addCommand(python`${element}.send_keys(${keys})`)
         },
         scrollIntoView(element, align) {
-            console.log('scroll into view Need to be implemented')
-            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
+			let alignTemp = (align) ? align : false
+            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp});`)
             return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
         },
         hover(element, offset) {
-            console.log('hover Need to be implemented')
             if (openPerformed) return addCommand(python`hover = ActionChains(eyes_driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
             return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
@@ -247,6 +246,17 @@ def execution_grid():
                 `eyes_driver = eyes.open(driver)`)
         },
         check(checkSettings) {
+			if(checkSettings !== undefined && checkSettings.visualGridOptions)
+			{
+				addCommand(`conf = eyes.get_configuration()`)
+				var options = checkSettings.visualGridOptions
+				for (var key of Object.keys(options))
+				{
+					let value = ((typeof options[key]) === "boolean") ? capitalizeFirstLetter(options[key]) : options[key]
+					addCommand(`conf.set_visual_grid_options(VisualGridOption("${key}", ${value}))`)
+				}
+				addCommand(`eyes.set_configuration(conf)`)
+			}
             if (test.api === 'classic') {
                 if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
                     let nm = ((checkSettings) && (checkSettings.name)) ? checkSettings.name : undefined
