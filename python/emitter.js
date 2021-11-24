@@ -53,7 +53,7 @@ module.exports = function (tracker, test) {
     }
     addHook('deps', `from test import *`)
     addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
-    addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName`)
+    addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
