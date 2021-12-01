@@ -167,7 +167,7 @@ def execution_grid():
             let drv = "driver"
             if (openPerformed) drv = "eyes_driver"
             if (selector.type) {
-                let command = `${find_commands[selector.type]}`
+                let command = `.${find_commands[selector.type]}`
                 return addCommand(python`` + drv + command + `(\"${selector.selector}\")`)
             }
             return addCommand(python`` + drv + `.find_element(` + parseSelectorByType(selector) + `)`)
