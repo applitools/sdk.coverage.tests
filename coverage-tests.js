@@ -1155,7 +1155,7 @@ test('should send region by selector in padded page', {
     const info = helpers.getTestInfo(result)
     assert.equal(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 0, top: 81, width: 1084, height: 679}
+      {left: 0, top: 59, width: 1084, height: 679}
     )
   }
 })
@@ -1754,7 +1754,7 @@ test('appium android check window', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {left: 136, top: 237, width: 90, height: 48},
+        {left: 135, top: 236, width: 90, height: 48},
     )
   },
 })
@@ -1775,7 +1775,7 @@ test('appium android check region with ignore region', {
     )
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[1],
-        {left: 0, top: 21, width: 360, height: 234},
+        {left: 0, top: 22, width: 360, height: 234},
     )
   },
 })
