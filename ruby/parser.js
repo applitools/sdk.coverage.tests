@@ -20,13 +20,21 @@ function checkSettings(cs, driver, native) {
     if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
     if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
-    if (cs.scrollRootElement ) throw new Error("Scroll root option not implemented in the ruby SDK")
+    if (cs.scrollRootElement )  element += scrollRootElement(cs.scrollRootElement)
     if (cs.ignoreDisplacements !== undefined) options += `.ignore_displacements(${cs.ignoreDisplacements})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
+    if (cs.layoutBreakpoints ) options += `.layout_breakpoints(${serialize(cs.layoutBreakpoints)})`
     if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
-    if (cs.isFully) options += '.fully';
+    if (cs.isFully !== undefined) options += `.fully(${serialize(cs.isFully)})`;
+    if (cs.visualGridOptions) options += `.visual_grid_options(polyfillAdoptedStyleSheets: ${cs.visualGridOptions.polyfillAdoptedStyleSheets})`
+    if (cs.hooks) options += hooks(cs.hooks);
     if (cs.name) name = `'${cs.name}', `;
     return name + ruby + element + options
+
+    function hooks(obj){
+        const hooks = Object.keys(obj).map(key => `${key}: ${serialize(obj[key])}`).join(',')
+        return `.hooks(${hooks})`
+    }
 
     function frames(arr) {
         return arr.reduce((acc, val) => acc + `${frame(val)}`, '')
@@ -45,7 +53,16 @@ function checkSettings(cs, driver, native) {
             }
         }
         function printSelector(val) {
-            return serialize((val && val.isRef) ? val : ref(`@driver.find_element(css: '${val}')`))
+            let selector;
+            if(val && val.isRef){
+                selector = val;
+            } else if (isSelector(val)) {
+                // Might need to add mapping for selector's types if they won't match for ruby
+                selector = ref(`'${val.selector}'`)
+            } else {
+                selector = ref(`'${val}'`)
+            }
+            return serialize(selector)
         }
     }
 
@@ -99,6 +116,10 @@ function checkSettings(cs, driver, native) {
 
     function layoutRegions(regions) {
         return regions.map(region => `.layout(${regionParameter(region)})`)
+    }
+
+    function scrollRootElement(scrollRootElement) {
+        return `.scroll_root_element(${regionParameter(scrollRootElement)})`
     }
 }
 
@@ -162,7 +183,7 @@ function serialize(value) {
     } else if (typeof value === 'undefined' || value === null) {
         stringified = 'nil'
     } else if (typeof value === 'string') {
-        stringified = `'${value}'`
+        stringified = `'${value.replace(/'/ig, `\\'`)}'`
     } else if (isSelector(value)) {
         stringified = selectors[value.type](value.selector)
     } else if (typeof value === 'object') {

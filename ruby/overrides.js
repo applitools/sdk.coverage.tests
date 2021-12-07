@@ -165,7 +165,7 @@ module.exports = {
     'should not fail if scroll root is stale on android': {skipEmit: true},
     'check region by selector in frame fully on firefox legacy': { skipEmit: true },
     'adopted styleSheets on chrome': {skipEmit: true},
-	'adopted styleSheets on firefox': {skipEmit: true},
+	//'adopted styleSheets on firefox': {skipEmit: true},
     'variant id with vg': {skip: true},
     // Scroll root option not implemented in the ruby SDK
     'should send dom and location when check region by selector fully with custom scroll root with vg': {skipEmit: true},

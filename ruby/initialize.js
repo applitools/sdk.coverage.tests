@@ -4,7 +4,7 @@ const {wrapSelector} = require('./util')
 
 
 module.exports = function (tracker, test) {
-    const {addSyntax, addCommand, addHook} = tracker
+    const {addSyntax, addCommand, addHook, addExpression} = tracker
     addSyntax('var', variable)
     addSyntax('getter', getter)
     addSyntax('call', call)
@@ -177,9 +177,22 @@ module.exports = function (tracker, test) {
         getViewportSize() {
             return addCommand(ruby`@eyes.get_viewport_size`)
         },
-        locate() {
-            return addCommand(ruby`raise 'Eyes locate method havent been implemented'`)
+        locate(visualLocator) {
+            return addCommand(ruby`@eyes.locate({locator_names: ${visualLocator.locatorNames}})`)
         },
+        extractText(regions) {
+            return addCommand(ruby`@eyes.extract_text(${regions})`).type({
+                type: 'Array'
+            })
+        },
+        extractTextRegions(settings) {
+            return addCommand(ruby`@eyes.extract_text_regions(${settings})`).type({
+                type: 'Hash',
+                items: {
+                    type: 'Array'
+                }
+            })
+        }
     }
 
     const assert = {
@@ -253,8 +266,15 @@ module.exports = function (tracker, test) {
             })
         },
         getDom(results, domId) {
-            return addCommand(ruby`get_dom(${results}, ${domId})`).ref('dom')
-        }
+            return addCommand(ruby`get_dom(${results}, ${domId})`).methods({
+                getNodesByAttribute: (dom, name) => addExpression(ruby`get_nodes_by_attribute(${dom}, ${name})`).type('Array')
+            }).ref('dom')
+        },
+        math: {
+            round(number) {
+                return addCommand(ruby`(${number}).round`)
+            },
+        },
     }
 
     return {helpers, driver, eyes, assert}
