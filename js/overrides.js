@@ -5,8 +5,6 @@ module.exports = {
      */
     'check region in frame hidden under top bar fully with css stitching': {skip: true},
     'check region in frame hidden under top bar fully with scroll stitching': {skip: true},
-    // Rendered image isn't fully
-    'check frame fully with vg': {skip: true},
     /// Updating baselines to JS
     // Window
     'check window fully on android chrome emulator on desktop page': {config: {branchName: 'universal-sdk'}}, // was skipped
@@ -35,6 +33,7 @@ module.exports = {
     'check frame with css stitching': {config: {branchName: 'universal-sdk'}}, // was v2 and skipped
     'check frame with scroll stitching': {config: {branchName: 'universal-sdk'}}, // was v2
     'check frame after manual switch to frame with vg classic': {config: {branchName: 'universal-sdk'}}, // was no-fully-by-default
+    'check frame fully with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     // Assertion
     'should send floating region by selector with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send ignore region by selector with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
