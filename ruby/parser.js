@@ -29,6 +29,7 @@ function checkSettings(cs, driver, native) {
     if (cs.visualGridOptions) options += `.visual_grid_options(polyfillAdoptedStyleSheets: ${cs.visualGridOptions.polyfillAdoptedStyleSheets})`
     if (cs.hooks) options += hooks(cs.hooks);
     if (cs.name) name = `'${cs.name}', `;
+    if (cs.matchLevel) options += `.match_level(${serialize(cs.matchLevel)})`
     return name + ruby + element + options
 
     function hooks(obj){
