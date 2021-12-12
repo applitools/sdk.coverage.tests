@@ -11,8 +11,10 @@ function checkSettings(cs) {
     }
     let element = ''
     let options = ''
-    if (cs.frames === undefined && cs.region === undefined) element = '.window()'
-    else {
+    element = '.window()'
+    if (cs.scrollRootElement) element += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
+    //if (cs.frames === undefined && cs.region === undefined) element = '.window()'
+    if (cs.frames !== undefined && cs.region !== undefined) {
         if (cs.frames) element += frames(cs.frames)
         if (cs.region) element += region(cs.region)
     }
