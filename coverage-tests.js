@@ -1434,7 +1434,8 @@ test('should send custom batch properties', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
-    const result = eyes.close();
+    // python default behaviour is to throw an error if there are no checks was performed, so changed to not throwing an exception to be able to check custom batch props
+    const result = eyes.close(false);
     const info = helpers.getTestInfo(result);
     assert.equal(info.startInfo.batchInfo.properties.length, 1)
     assert.equal(info.startInfo.batchInfo.properties[0], {name: 'custom_prop', value: 'custom value'})
