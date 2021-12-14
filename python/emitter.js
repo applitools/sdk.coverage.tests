@@ -232,17 +232,13 @@ def execution_grid():
         },
 
         open({appName, viewportSize}) {
-            let special_branch = '\n    '
-            if ((`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent')
-                || (`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
-            )
-                special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
+            let new_line = '\n    '
             let scale_mobile_app = (mobile) && (test.name.includes('iOS')) ? 'eyes.configure.set_features(Feature.SCALE_MOBILE_APP)\n    ' : ''
             let appNm = (appName) ? appName : test.config.appName
             openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
-    eyes.set_configuration(configuration)` + special_branch + scale_mobile_app +
+    eyes.set_configuration(configuration)` + new_line + scale_mobile_app +
                 `eyes_driver = eyes.open(driver)`)
         },
         check(checkSettings) {
