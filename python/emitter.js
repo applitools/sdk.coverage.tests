@@ -53,7 +53,7 @@ module.exports = function (tracker, test) {
     }
     addHook('deps', `from test import *`)
     addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
-    addHook('deps', `from applitools.common import StitchMode, MatchLevel`)
+    addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
@@ -167,7 +167,7 @@ def execution_grid():
             let drv = "driver"
             if (openPerformed) drv = "eyes_driver"
             if (selector.type) {
-                let command = `${find_commands[selector.type]}`
+                let command = `.${find_commands[selector.type]}`
                 return addCommand(python`` + drv + command + `(\"${selector.selector}\")`)
             }
             return addCommand(python`` + drv + `.find_element(` + parseSelectorByType(selector) + `)`)
@@ -201,12 +201,11 @@ def execution_grid():
             return addCommand(python`${element}.send_keys(${keys})`)
         },
         scrollIntoView(element, align) {
-            console.log('scroll into view Need to be implemented')
-            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
+			let alignTemp = (align) ? align : false
+            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp});`)
             return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
         },
         hover(element, offset) {
-            console.log('hover Need to be implemented')
             if (openPerformed) return addCommand(python`hover = ActionChains(eyes_driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
             return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
@@ -233,20 +232,27 @@ def execution_grid():
         },
 
         open({appName, viewportSize}) {
-            let special_branch = '\n    '
-            if ((`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent')
-                || (`${test.config.baselineName}` === 'TestCheckOverflowingRegionByCoordinates_Fluent_Scroll')
-            )
-                special_branch = '\n    eyes.configure.branch_name = \"master_python\"\n    '
+            let new_line = '\n    '
             let scale_mobile_app = (mobile) && (test.name.includes('iOS')) ? 'eyes.configure.set_features(Feature.SCALE_MOBILE_APP)\n    ' : ''
             let appNm = (appName) ? appName : test.config.appName
             openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
-    eyes.set_configuration(configuration)` + special_branch + scale_mobile_app +
+    eyes.set_configuration(configuration)` + new_line + scale_mobile_app +
                 `eyes_driver = eyes.open(driver)`)
         },
         check(checkSettings) {
+			if(checkSettings !== undefined && checkSettings.visualGridOptions)
+			{
+				addCommand(`conf = eyes.get_configuration()`)
+				var options = checkSettings.visualGridOptions
+				for (var key of Object.keys(options))
+				{
+					let value = ((typeof options[key]) === "boolean") ? capitalizeFirstLetter(options[key]) : options[key]
+					addCommand(`conf.set_visual_grid_options(VisualGridOption("${key}", ${value}))`)
+				}
+				addCommand(`eyes.set_configuration(conf)`)
+			}
             if (test.api === 'classic') {
                 if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
                     let nm = ((checkSettings) && (checkSettings.name)) ? checkSettings.name : undefined
