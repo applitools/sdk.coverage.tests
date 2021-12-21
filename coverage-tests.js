@@ -640,8 +640,7 @@ test('check region by selector in overflowed frame fully', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
     eyes.check({
       region: '#list',
-      scrollRootElement: 'body',
-      frames: [{frame: 'frame-list', scrollRootElement: 'body'}],
+      frames: ['frame-list'],
       isFully: true,
     })
     eyes.close()
