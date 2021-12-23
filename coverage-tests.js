@@ -1154,7 +1154,7 @@ test('should send region by selector in padded page', {
     const info = helpers.getTestInfo(result)
     assert.equal(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 0, top: 59, width: 1084, height: 679}
+      {left: 8, top: 59, width: 1084, height: 679}
     )
   }
 })

@@ -3,13 +3,13 @@ module.exports = {
      *  Fails because of the difference between SCREEN SIZE and LAYOUT VIEWPORT SIZE.
      *  We should use screen.width/screen.height for cropping/scaling and innerWidth/innerHeight to understand element location related to the viewport
      */
-    'check region in frame hidden under top bar fully with css stitching': {skip: true},
-    'check region in frame hidden under top bar fully with scroll stitching': {skip: true},
+    // 'check region in frame hidden under top bar fully with css stitching': {skip: true},
+    // 'check region in frame hidden under top bar fully with scroll stitching': {skip: true},
 
     // Test have diffs after JS update
-    'check window fully on page with sticky header with scroll stitching': {skip: true},
-    'check window fully on android chrome emulator on desktop page': {skip: true},
-    'check region by selector fully on page with sticky header with scroll stitching': {skip: true},
+    // 'check window fully on page with sticky header with scroll stitching': {skip: true},
+    // 'check window fully on android chrome emulator on desktop page': {skip: true},
+    // 'check region by selector fully on page with sticky header with scroll stitching': {skip: true},
 
     /// Updating baselines to JS
     // Window
