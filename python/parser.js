@@ -27,6 +27,7 @@ function checkSettings(cs) {
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
     if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
+    if (cs.hooks) options += handleHooks(cs.hooks)
     if (cs.isFully) options += '.fully()'
     if (cs.name) options += `.with_name(${cs.name})`
     return name + target + element + options
@@ -216,6 +217,9 @@ const call = ({target, args}) => {
 }
 const returnSyntax = ({value}) => {
     return `return ${value};`
+}
+function handleHooks(hooks) {
+    if ("beforeCaptureScreenshot" in hooks) return '.before_render_screenshot_hook(\"' + `${hooks.beforeCaptureScreenshot}` + '\")'
 }
 
 module.exports = {

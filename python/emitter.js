@@ -114,6 +114,15 @@ def app():
         addHook('deps', 'from applitools.common.ultrafastgrid import DesktopBrowserInfo, IosDeviceInfo, ChromeEmulationInfo, ScreenOrientation')
         addHook('beforeEach', python`    conf.add_browser(${{value: test.config.browsersInfo, type: 'BrowsersInfo'}})`)
     }
+    if ("batch" in test.config) {
+        if ("id" in test.config.batch) {
+            addHook('deps', 'from datetime import datetime')
+            addHook('beforeEach', python`    conf.batch.id = ${test.config.batch.id}`)
+        }
+        if ("properties" in test.config.batch) {
+            addHook('beforeEach', python`    conf.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
+        }
+    }
 
 
     addHook('beforeEach', python`    return conf`)
