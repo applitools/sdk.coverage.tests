@@ -1,6 +1,7 @@
 module.exports = {
     // Test have diffs after JS update
-    // 'check window fully on android chrome emulator on desktop page': {skip: true},
+    'check window fully on android chrome emulator on desktop page': {skip: true}, // require a better understanding of how we handle it
+
     /// Updating baselines to JS
     // Window
     'check window two times with vg classic': {config: {branchName: 'universal-sdk'}}, // was skipped
