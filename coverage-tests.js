@@ -1579,7 +1579,7 @@ test('should fail check of stale element', {
 test('should handle check of stale element if selector is preserved', {
   features: ['webdriver', 'cached-selectors'],
   test({driver, eyes}) {
-    driver.visit('http://localhost:5000/TestPages/RefreshDomPage/auto-refresh')
+    driver.visit('https://applitools.github.io/TestPages/RefreshDomPage/auto-refresh')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
     const element = driver.findElement('#inner-img')
     driver.click('#refresh-button')
