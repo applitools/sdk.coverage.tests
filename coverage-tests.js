@@ -1577,8 +1577,7 @@ test('should fail check of stale element', {
 })
 
 test('should handle check of stale element if selector is preserved', {
-  skip: true,
-  features: ['webdriver'],
+  features: ['webdriver', 'cached-selectors'],
   test({driver, eyes}) {
     driver.visit('http://localhost:5000/TestPages/RefreshDomPage/auto-refresh')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
@@ -1590,8 +1589,7 @@ test('should handle check of stale element if selector is preserved', {
 })
 
 test('should handle check of stale element in frame if selector is preserved', {
-  skip: true,
-  features: ['webdriver'],
+  features: ['webdriver', 'cached-selectors'],
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage/iframe')
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
@@ -1701,9 +1699,14 @@ test('check region in frame hidden under top bar fully', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckElementInFrameHiddenUnderTopBar_Fully_Fluent_Scroll'}},
   },
-  test({eyes}) {
+  test({eyes, config}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({frames: ['[name="frame1"]'], region: '#div1', isFully: true})
+    eyes.check({
+      frames: ['[name="frame1"]'],
+      region: '#div1',
+      scrollRootElement: config.stitchMode === 'Scroll' ? 'body' : undefined,
+      isFully: true,
+    })
     eyes.close()
   }
 })
