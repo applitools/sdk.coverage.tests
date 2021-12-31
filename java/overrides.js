@@ -50,6 +50,10 @@ module.exports = {
     'appium android check window': {skip: true}, //wrong ignore region ticket 2396
     'appium android check region with ignore region': {skip: true}, //wrong ignore region region ticket 2396
     'appium iOS check region with ignore region': {skip: true}, //wrong ignore region region ticket 2396
+	
+	'check window fully on page with horizontal scroll with css stitching': {skip: true}, //Could not start a new session
+	'check window fully on page with horizontal scroll with scroll stitching': {skip: true}, //Could not start a new session
+	'appium android check region': {skip: true}, //InvalidSelectorException: Locator Strategy 'class' is not supported for this session
 
     'should send dom and location when check window': {skipEmit: true},
     'should send dom and location when check window with vg': {skipEmit: true},
