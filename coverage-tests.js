@@ -1785,7 +1785,7 @@ test('appium android check region', {
   features: ['native-selectors'],
   test: ({eyes}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({region: {type: TYPE.ID, selector: 'click_me_btn'}})
+    eyes.check({region: {type: TYPE.CLASSNAME, selector: 'android.widget.Button'}})
     eyes.close()
   },
 })
