@@ -22,6 +22,7 @@ function checkSettings(cs) {
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
     if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
+    if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
     if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
@@ -91,6 +92,10 @@ function ignoreRegions(arr) {
 }
 function layoutRegions(arr){
     return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '')
+}
+function layoutBreakpoints(arr){
+    if (Array.isArray(arr)) return `.layoutBreakpoints(` + arr.join(',') + `)`
+    return `.layoutBreakpoints(True)`
 }
 function floatingRegions(arr) {
     return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``)

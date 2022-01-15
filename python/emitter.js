@@ -104,8 +104,14 @@ module.exports = function (tracker, test) {
     }
     if (test.config.browsersInfo) {
         addHook('deps', 'from applitools.common.ultrafastgrid import DesktopBrowserInfo, IosDeviceInfo, ChromeEmulationInfo, ScreenOrientation')
-        addHook('beforeEach', python`    conf.add_browser(${{value: test.config.browsersInfo, type: 'BrowsersInfo'}})`)
+		addHook('beforeEach', python`    ${{value: test.config.browsersInfo, type: 'BrowsersInfo'}}`)
     }
+	if (test.config.layoutBreakpoints) {
+		if (test.config.layoutBreakpoints.length == 2){
+		addHook('beforeEach', python`    conf.set_layout_breakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]})`)
+		}
+		else addHook('beforeEach', python`    conf.set_layout_breakpoints(True)`)
+	}
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
             addHook('deps', 'from datetime import datetime')
