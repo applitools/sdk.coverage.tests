@@ -58,7 +58,7 @@ test('check window', {
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
-    eyes.check({isFully: true})
+    eyes.check({isFully: false})
     eyes.close()
   },
 })
@@ -853,7 +853,7 @@ test('should send ignore region by selector', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({ignoreRegions: ['#overflowing-div']})
+    eyes.check({ignoreRegions: ['#overflowing-div'], isFully: false})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
@@ -1003,6 +1003,7 @@ test('should send floating region by coordinates', {
       floatingRegions: [
         {region: {left: 10, top: 10, width: 20, height: 20}, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
       ],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
@@ -1031,6 +1032,7 @@ test('should send floating region by selector', {
           maxRightOffset: 30,
         },
       ],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
@@ -1113,7 +1115,8 @@ test('should send accessibility regions by selector', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({
-      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}]
+      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
