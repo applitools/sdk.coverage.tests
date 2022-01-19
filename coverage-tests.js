@@ -84,7 +84,7 @@ test('check window after manual scroll', {
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowAfterScroll_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowAfterScroll_VG'}},
 
-    'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver']},
+    'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver', 'jsonwire']},
     'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver']}
   },
   test({driver, eyes}) {
