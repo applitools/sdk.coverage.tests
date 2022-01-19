@@ -58,7 +58,7 @@ test('check window', {
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
-    eyes.check()
+    eyes.check({isFully: false})
     eyes.close()
   },
 })
@@ -77,6 +77,23 @@ test('check window fully', {
   },
 })
 
+test('check window with default fully', {
+  page: 'Default',
+  variants: {
+    'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'CheckWindowDefaultFully'}},
+    'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'CheckWindowDefaultFully_Scroll'}},
+    'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'CheckWindowDefaultFully_VG'}},
+    'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'CheckWindowDefaultFully'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'CheckWindowDefaultFully_Scroll'}},
+    'with vg': {vg: true, config: {baselineName: 'CheckWindowDefaultFully_VG'}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
+    eyes.check()
+    eyes.close()
+  },
+})
+
 test('check window after manual scroll', {
   page: 'Default',
   variants: {
@@ -90,7 +107,7 @@ test('check window after manual scroll', {
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
     driver.executeScript('window.scrollBy(0, 350)')
-    eyes.check()
+    eyes.check({isFully: false})
     eyes.close()
   },
 })
@@ -104,8 +121,8 @@ test('check window two times', {
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
-    eyes.check({name: 'first'})
-    eyes.check({name: 'second'})
+    eyes.check({name: 'first', isFully: false})
+    eyes.check({name: 'second', isFully: false})
     eyes.close()
   },
 })
@@ -123,7 +140,7 @@ test('check window with layout breakpoints', {
   test({eyes, driver, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
     const expectedViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}').type('Map<String, Number>')
-    eyes.check({layoutBreakpoints: [500, 1000]})
+    eyes.check({layoutBreakpoints: [500, 1000], isFully: false})
     eyes.close()
     const actualViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}').type('Map<String, Number>')
     assert.equal(actualViewportSize, expectedViewportSize)
@@ -143,7 +160,7 @@ test('check window with layout breakpoints in config', {
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check()
+    eyes.check({isFully: false})
     eyes.close()
   }
 })
@@ -157,7 +174,7 @@ test('check window on page with sticky header', {
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Page With Header', viewportSize})
-    eyes.check()
+    eyes.check({isFully: false})
     eyes.close()
   },
 })
@@ -332,9 +349,9 @@ test('check frame after manual switch to frame', {
     const frame = driver.findElement('[name="frame1"]')
     driver.switchToFrame(frame)
     eyes.check({frames: ['frame1-1']})
-    eyes.check()
+    eyes.check({isFully: false})
     driver.executeScript('document.body.style.background = "red"')
-    eyes.check()
+    eyes.check({isFully: false})
     eyes.close()
   }
 })
@@ -836,7 +853,7 @@ test('should send ignore region by selector', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({ignoreRegions: ['#overflowing-div']})
+    eyes.check({ignoreRegions: ['#overflowing-div'], isFully: false})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
@@ -986,6 +1003,7 @@ test('should send floating region by coordinates', {
       floatingRegions: [
         {region: {left: 10, top: 10, width: 20, height: 20}, maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
       ],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
@@ -1014,6 +1032,7 @@ test('should send floating region by selector', {
           maxRightOffset: 30,
         },
       ],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
@@ -1096,7 +1115,8 @@ test('should send accessibility regions by selector', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({
-      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}]
+      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
