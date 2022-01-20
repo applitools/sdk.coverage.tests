@@ -282,8 +282,8 @@ def execution_grid():
             }
         },
         checkWindow(tag, matchTimeout, stitchContent) {
-            let Tag = !tag ? `` : `tag="${tag}"`
-            let MatchTimeout = !matchTimeout ? `` : `,match_timeout=${matchTimeout}`
+            let Tag = !tag ? `None` : `tag="${tag}"`
+            let MatchTimeout = !matchTimeout ? `` : `, match_timeout=${matchTimeout}`
             let fully = (stitchContent === undefined) ? `` : `, fully=${capitalizeFirstLetter(stitchContent)}`
             return addCommand(python`eyes.check_window(` + Tag + MatchTimeout + fully + `)`)
         },
