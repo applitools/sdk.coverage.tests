@@ -869,7 +869,7 @@ test('should send ignore region by selector with vg', {
   config: {baselineName: 'TestCheckWindowWithIgnoreBySelector_Fluent_VG'},
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({ignoreRegions: ['#overflowing-div']})
+    eyes.check({ignoreRegions: ['#overflowing-div'], isFully: false})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
@@ -1059,6 +1059,7 @@ test('should send floating region by selector with vg', {
           maxRightOffset: 30,
         },
       ],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
@@ -1146,7 +1147,8 @@ test('should send accessibility regions by selector with vg', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({
-      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}]
+      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}],
+      isFully: false,
     })
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
