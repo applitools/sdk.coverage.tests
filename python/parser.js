@@ -28,7 +28,7 @@ function checkSettings(cs) {
     if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.hooks) options += handleHooks(cs.hooks)
-    if (cs.isFully !== undefined) options += `.fully(${cs.isFully.toUpperCase()})`
+    if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
     if (cs.name) options += `.with_name(${cs.name})`
     return name + target + element + options
 }
