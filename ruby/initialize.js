@@ -150,7 +150,17 @@ module.exports = function (tracker, test) {
 
         },
         checkWindow(tag, matchTimeout, stitchContent) {
-            addCommand(ruby`@eyes.check_window(tag: ${tag}, timeout: ${matchTimeout}, stitchContent: ${stitchContent})`)
+            const tagTimeout = tag !== undefined && matchTimeout !== undefined
+            const timeoutStitch = matchTimeout !== undefined && stitchContent !== undefined
+            const tagStitch = tag !== undefined && matchTimeout === undefined && stitchContent !== undefined
+            addCommand(construct`@eyes.check_window(`
+                .extra`${tag}`
+                .addIf(tagTimeout)`, `
+                .extra`${matchTimeout}`
+                .addIf((timeoutStitch) || (tagStitch))`, `
+                .extra`${stitchContent}`
+                .add`)`
+                .build(''))
         },
         checkFrame(element, matchTimeout, tag) {
             addCommand(ruby`@eyes.check_frame(frame: ${frameSelector(element)}, timeout: ${matchTimeout}, tag: ${tag})`)
