@@ -4,6 +4,7 @@ module.exports = {
   emitter: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/emitter.js',
   overrides: [
     'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/overrides.js',
+    'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/js-overrides.js',
     ...(process.env.APPLITOOLS_TEST_REMOTE === 'eg' ? ['https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/eg.overrides.js'] : []),
   ],
   template:
