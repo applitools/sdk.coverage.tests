@@ -1875,7 +1875,7 @@ test('adopted styleSheets on chrome', {
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({fully: false})
+    eyes.check({isFully: false})
     eyes.close()
   }
 })
@@ -1890,12 +1890,12 @@ test('adopted styleSheets on firefox', {
   },
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({fully: false})
+    eyes.check({isFully: false})
     assert.throws(() => eyes.close())
     // TODO assert test is aborted
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({fully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
-    eyes.check({fully: false, visualGridOptions: {polyfillAdoptedStyleSheets: false}})
+    eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
+    eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: false}})
     eyes.close()
   }
 })
@@ -1908,7 +1908,7 @@ test('variant id', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({fully: false, variationGroupId: 'variant-id'})
+    eyes.check({isFully: false, variationGroupId: 'variant-id'})
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
