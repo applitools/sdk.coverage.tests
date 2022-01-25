@@ -40,7 +40,8 @@ config({
     PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
     OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
-    ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html'
+    ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html',
+    LazyLoad: 'https://applitools.github.io/demo/TestPages/LazyLoad/'
   },
 })
 
