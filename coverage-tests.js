@@ -1890,4 +1890,17 @@ test('variant id', {
   }
 })
 
+test('lazy load page as part of check', {
+  page: 'LazyLoad',
+  variants: {
+    'with classic': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: true})
+    eyes.close()
+  },
+})
+
 // #endregion
