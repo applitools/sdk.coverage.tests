@@ -1893,7 +1893,7 @@ test('variant id', {
 test('lazy load page with default options', {
   page: 'LazyLoad',
   variants: {
-    'with classic': {config: {baselineName: 'LazyLoad'}},
+    '': {config: {baselineName: 'LazyLoad'}},
     'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
   },
   test({eyes, assert, helpers}) {
@@ -1906,7 +1906,7 @@ test('lazy load page with default options', {
 test('lazy load page with user provided options', {
   page: 'LazyLoad',
   variants: {
-    'with classic': {config: {baselineName: 'LazyLoad'}},
+    '': {config: {baselineName: 'LazyLoad'}},
     'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
   },
   test({eyes, assert, helpers}) {
