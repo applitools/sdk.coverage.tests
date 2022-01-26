@@ -1890,7 +1890,7 @@ test('variant id', {
   }
 })
 
-test('lazy load page as part of check', {
+test('lazy load page with default options', {
   page: 'LazyLoad',
   variants: {
     'with classic': {config: {baselineName: 'LazyLoad'}},
@@ -1898,7 +1898,24 @@ test('lazy load page as part of check', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({isFully: true, lazyLoad: true})
+    eyes.check({isFully: true, lazyLoad: {}})
+    eyes.close()
+  },
+})
+
+test('lazy load page with user provided options', {
+  page: 'LazyLoad',
+  variants: {
+    'with classic': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       scrollLength: 500,
+       waitingTime: 300,
+       pageHeight: 10000, 
+    }})
     eyes.close()
   },
 })
