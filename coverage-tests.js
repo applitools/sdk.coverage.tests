@@ -1903,7 +1903,7 @@ test('lazy load page with default options', {
   },
 })
 
-test('lazy load page with user provided options', {
+test('lazy load page with all options specified', {
   page: 'LazyLoad',
   variants: {
     '': {config: {baselineName: 'LazyLoad'}},
@@ -1914,6 +1914,51 @@ test('lazy load page with user provided options', {
     eyes.check({isFully: true, lazyLoad: {
        scrollLength: 500,
        waitingTime: 300,
+       pageHeight: 10000, 
+    }})
+    eyes.close()
+  },
+})
+
+test('lazy load page with one option specified - scrollLength', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       scrollLength: 500,
+    }})
+    eyes.close()
+  },
+})
+
+test('lazy load page with one option specified - waitingTime', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       waitingTime: 300,
+    }})
+    eyes.close()
+  },
+})
+
+test('lazy load page with one option specified - pageHeight', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
        pageHeight: 10000, 
     }})
     eyes.close()
