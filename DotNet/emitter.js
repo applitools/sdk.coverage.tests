@@ -366,7 +366,8 @@ module.exports = function (tracker, test) {
 				let MatchTimeout = !checkSettings.timeout ? `` : `match_timeout:${checkSettings.timeout}`
 				let Tag = !checkSettings.name ? `` : `tag:"${checkSettings.name}"`
 				if (Tag !== `` && MatchTimeout !== ``) Tag = `, ` + Tag
-				let isFully = !checkSettings.isFully ? `` : `, fully:"${checkSettings.isFully}"`
+				let isFully = (checkSettings.isFully === undefined) ? `` : `fully:${checkSettings.isFully}`
+				if (isFully !== `` && Tag !== ``) isFully = `, ` + isFully
 				return addCommand(dot_net`eyes.CheckWindow(` + MatchTimeout + Tag + isFully + `);`)
 			}
 		},
