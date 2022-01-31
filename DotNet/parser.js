@@ -10,9 +10,17 @@ function checkSettings(cs, mobile = false) {
 	}
 	let element = ''
 	let options = ''
+	let scrollImplemented = false
 	if (cs.frames === undefined && cs.region === undefined) element = '.Window()'
 	else {
-		if (cs.frames) element += frames(cs.frames)
+		if (cs.frames) {
+			let cs_keys = Object.keys(cs)
+			if ((cs.scrollRootElement) && (cs_keys.indexOf('frames') > cs_keys.indexOf('scrollRootElement'))) {
+				element += `.Window()` + scrollRootElement(cs.scrollRootElement)
+				scrollImplemented = true
+			}
+			element += frames(cs.frames)
+		}
 		if (cs.region) {
 			if (cs.region.type) element += region(cs.region, cs.region.type, mobile)
 			else element += region(cs.region, undefined, mobile)
@@ -20,7 +28,7 @@ function checkSettings(cs, mobile = false) {
 	}
 	if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions, mobile)
 	if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
-	if (cs.scrollRootElement) options += scrollRootElement(cs.scrollRootElement)
+	if ((cs.scrollRootElement) && (!scrollImplemented)) options += scrollRootElement(cs.scrollRootElement)
 	if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions[0].region, cs.accessibilityRegions[0].type)
 	if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
 	if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`
