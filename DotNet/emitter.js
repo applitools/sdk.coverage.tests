@@ -145,7 +145,7 @@ module.exports = function (tracker, test) {
         eyes.SetConfiguration(configuration);`)
 	}
 	if ("browsersInfo" in test.config) {
-		addHook('beforeEach', dot_net`Applitools.Selenium.IConfiguration config = eyes.GetConfiguration();`)
+		addHook('beforeEach', dot_net`var config = eyes.GetConfiguration();`)
 		if ("name" in test.config.browsersInfo[0]) {
 			let browserType = 'BrowserType.CHROME'
 			switch (`${test.config.browsersInfo[0].name}`) {
