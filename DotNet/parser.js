@@ -14,8 +14,7 @@ function checkSettings(cs, mobile = false) {
 	if (cs.frames === undefined && cs.region === undefined) element = '.Window()'
 	else {
 		if (cs.frames) {
-			let cs_keys = Object.keys(cs)
-			if ((cs.scrollRootElement) && (cs_keys.indexOf('frames') > cs_keys.indexOf('scrollRootElement'))) {
+			if (cs.scrollRootElement) {
 				element += `.Window()` + scrollRootElement(cs.scrollRootElement)
 				scrollImplemented = true
 			}
@@ -34,6 +33,7 @@ function checkSettings(cs, mobile = false) {
 	if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`
 	if (cs.sendDom !== undefined) options += `.SendDom(${cs.sendDom})`
 	if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
+	if (cs.hooks) options += handleHooks(cs.hooks)
 	if ((cs.isFully === true) || (cs.fully === true)) { options += '.Fully()' } else if ((cs.isFully === false) || (cs.fully === false)) { options += '.Fully(false)' }
 	if (cs.name) options += `.WithName(${cs.name})`
 	if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`
@@ -189,6 +189,9 @@ function expectParser(expected) {
 		expected = "\"" + expected + "\""
 		return expected
 	}
+}
+function handleHooks(hooks) {
+    if ("beforeCaptureScreenshot" in hooks) return '.BeforeRenderScreenshotHook(\"' + `${hooks.beforeCaptureScreenshot}` + '\")'
 }
 
 module.exports = {
