@@ -103,6 +103,7 @@ module.exports = function (tracker, test) {
 		addHook('deps', `using OpenQA.Selenium.Remote;`)
 		addHook('deps', `using System.Collections.Generic;`)
 		addHook('deps', `using System;`)
+		addHook('deps', `using System.Linq;`)
 	}
 	if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
@@ -137,6 +138,14 @@ module.exports = function (tracker, test) {
 	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
 	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
 	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`eyes.IsDisabled = ${test.config.isDisabled};`)
+	if ("batch" in test.config) {
+		if ("id" in test.config.batch) {
+			addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
+		}
+		if ("properties" in test.config.batch) {
+			addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
+		}
+	}
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)) {
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
