@@ -71,6 +71,7 @@ module.exports = function (tracker, test) {
 	let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
 	let openPerformed = false
+	let confVisualGridOptionCreated = false
 	
 	
 	addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
@@ -140,7 +141,7 @@ module.exports = function (tracker, test) {
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
 		addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
-        Applitools.Selenium.Configuration configuration = eyes.GetConfiguration();
+        var configuration = eyes.GetConfiguration();
         configuration.SetAccessibilityValidation(settings);
         eyes.SetConfiguration(configuration);`)
 	}
@@ -338,6 +339,19 @@ module.exports = function (tracker, test) {
 			addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
 		},
 		check(checkSettings = {}) {
+			if(checkSettings !== undefined && checkSettings.visualGridOptions)
+			{
+				if (!confVisualGridOptionCreated) {
+					addCommand(`var conf = eyes.GetConfiguration();`)
+					confVisualGridOptionCreated = true
+				}
+				var options = checkSettings.visualGridOptions
+				for (var key of Object.keys(options))
+				{
+					addCommand(`conf.SetVisualGridOptions(new VisualGridOption("${key}", "${options[key]}"));`)
+				}
+				addCommand(`eyes.SetConfiguration(conf);`)
+			}
 			if (test.api !== 'classic') {
 				return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
 			} else if (checkSettings.region) {
@@ -423,7 +437,7 @@ module.exports = function (tracker, test) {
 				command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>().Or.InstanceOf<EyesException>().With.InnerException.With.InstanceOf<${insert(check())}>());`
 			}
 			else {
-				command = dot_net`Assert.That(() => {${func}}, Throws.Exception);`
+				command = dot_net`Assert.That(() => {${func};}, Throws.Exception);`
 			}
 			addCommand(command)
 		},
@@ -526,7 +540,9 @@ function setUpWithEmulators(test, addHook) {
 				addHook('beforeEach', dot_net`initEyes("desktop", ScreenOrientation.Portrait);`)
 				break;
 			default:
-				throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				//throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Portrait);`)
+				break;
 		}
 	}
 	else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
