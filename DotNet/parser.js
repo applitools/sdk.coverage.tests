@@ -154,6 +154,10 @@ function parseAssertActual(actual) {
 		})
 		return result
 	}
+	if ((elements[2] !== undefined) && (elements[2].includes("batchInfo"))) {
+		if (elements[4].includes("length")) elements[4] = "Count()"
+		if (elements[4].includes('0')) elements[4] = "First()"
+	}
 	elements.forEach(element => {
 		if (result === "") { result = result + element; return; }
 		element = element.replace(/"/g, "")
@@ -186,6 +190,7 @@ function expectParser(expected) {
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
 		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
 		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
+		if (expected.hasOwnProperty('name') && expected.hasOwnProperty('value')) return `new PropertyData(\"${expected.name}\", \"${expected.value}\")`
 		expected = "\"" + expected + "\""
 		return expected
 	}
