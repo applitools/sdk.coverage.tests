@@ -120,7 +120,7 @@ def app():
             addHook('beforeEach', python`    conf.batch.id = ${test.config.batch.id}`)
         }
         if ("properties" in test.config.batch) {
-            addHook('beforeEach', python`    conf.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
+            addHook('beforeEach', python`    conf.batch.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
         }
     }
 
