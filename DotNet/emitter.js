@@ -550,7 +550,7 @@ function setUpWithEmulators(test, addHook) {
 				break;
 			default:
 				//throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
-				addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Portrait);`)
+				addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Landscape);`)
 				break;
 		}
 	}
