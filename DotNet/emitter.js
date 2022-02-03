@@ -357,7 +357,7 @@ module.exports = function (tracker, test) {
 				var options = checkSettings.visualGridOptions
 				for (var key of Object.keys(options))
 				{
-					addCommand(`conf.SetVisualGridOptions(new VisualGridOption("${key}", "${options[key]}"));`)
+					addCommand(`conf.SetVisualGridOptions(new VisualGridOption("${key}", ${options[key]}));`)
 				}
 				addCommand(`eyes.SetConfiguration(conf);`)
 			}
