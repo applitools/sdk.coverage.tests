@@ -560,7 +560,7 @@ function setUpWithEmulators(test, addHook) {
 function setUpBrowsers(test, addHook) {
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false) ? false : true
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true) ? true : false
-	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? true : false // localeCompare returns 0 when the strings are equal
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('SCROLL')) ? true : false // localeCompare returns 0 when the strings are equal
 	let executionGrid = ("executionGrid" in test) && test.executionGrid
 	if (("env" in test) && ("browser" in test.env)) {
 		switch (test.env.browser) {
