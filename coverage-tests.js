@@ -1919,7 +1919,7 @@ test('check window on mobile', {
   variants: {
     'web android': {
       env: {
-        device: 'Pixel 3a XL'
+        device: 'Pixel 3a XL',
         browser: 'chrome',
       },
       page: 'HelloWorld',
@@ -1927,21 +1927,21 @@ test('check window on mobile', {
     },
     'native android': {
       env: {
-        device: 'Pixel 3a XL'
+        device: 'Pixel 3a XL',
         app: 'https://applitools.jfrog.io/artifactory/Examples/android/1.3/app-debug.apk',
       },
       config: {baselineName: 'check window on mobile native android'}
     },
     'web ios': {
       env: {
-        device: 'iPhone XS'
+        device: 'iPhone XS',
         browser: 'safari',
       },
       page: 'HelloWorld',
       config: {baselineName: 'check window on mobile web ios'}},
     'native ios': {
       env: {
-        device: 'iPhone XS'
+        device: 'iPhone XS',
         app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip',
       },
       config: {baselineName: 'check window on mobile native ios'}
