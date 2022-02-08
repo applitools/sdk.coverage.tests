@@ -1928,7 +1928,7 @@ test('check window on mobile', {
     'native android': {
       env: {
         device: 'Pixel 3a XL',
-        app: 'https://applitools.jfrog.io/artifactory/Examples/android/1.3/app-debug.apk',
+        app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-hello-world.apk',
       },
       config: {baselineName: 'check window on mobile native android'}
     },
@@ -1938,7 +1938,8 @@ test('check window on mobile', {
         browser: 'safari',
       },
       page: 'HelloWorld',
-      config: {baselineName: 'check window on mobile web ios'}},
+      config: {baselineName: 'check window on mobile web ios'}
+    },
     'native ios': {
       env: {
         device: 'iPhone XS',
