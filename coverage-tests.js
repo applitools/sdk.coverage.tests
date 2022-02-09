@@ -55,21 +55,19 @@ test('check window', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_VG'}},
-    'web android': {
+    'on mobile web android': {
       env: {
         device: 'Pixel 3a XL',
         browser: 'chrome',
       },
       page: 'HelloWorld',
-      config: {baselineName: 'check window on mobile web android'}
     },
-    'web ios': {
+    'on mobile web ios': {
       env: {
         device: 'iPhone XS',
         browser: 'safari',
       },
       page: 'HelloWorld',
-      config: {baselineName: 'check window on mobile web ios'}
     },
   },
   test({eyes}) {
