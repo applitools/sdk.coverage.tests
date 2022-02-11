@@ -1940,7 +1940,7 @@ test('lazy load page with all options specified', {
     eyes.check({isFully: true, lazyLoad: {
        scrollLength: 500,
        waitingTime: 300,
-       pageHeight: 10000, 
+       maxAmountToScroll: 10000, 
     }})
     eyes.close()
   },
@@ -1976,7 +1976,7 @@ test('lazy load page with one option specified - waitingTime', {
   },
 })
 
-test('lazy load page with one option specified - pageHeight', {
+test('lazy load page with one option specified - maxAmountToScroll', {
   page: 'LazyLoad',
   variants: {
     '': {config: {baselineName: 'LazyLoad'}},
@@ -1985,7 +1985,7 @@ test('lazy load page with one option specified - pageHeight', {
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: true, lazyLoad: {
-       pageHeight: 10000, 
+       maxAmountToScroll: 10000, 
     }})
     eyes.close()
   },
