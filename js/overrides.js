@@ -1,8 +1,4 @@
 module.exports = {
-    // these tests failing because of a grid issue, re: https://trello.com/c/xFla7AkQ/906-shadow-dom-rendering-issue
-    'check region by element within shadow dom with vg': {skip: true},
-    'check region by selector within shadow dom with vg': {skip: true},
-
     // Test have diffs after JS update
     'check window fully on android chrome emulator on desktop page': {skip: true}, // require a better understanding of how we handle it
 
