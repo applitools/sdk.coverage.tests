@@ -196,7 +196,7 @@ module.exports = function (tracker, test) {
     },
     check(checkSettings) {
       if(test.api === 'classic') {
-          if (checkSettings.frames === undefined && checkSettings.region === undefined) {
+          if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
             if (checkSettings === undefined) {
               eyes.checkWindow()
             } else {
