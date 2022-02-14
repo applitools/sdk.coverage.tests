@@ -1,11 +1,11 @@
 'use strict'
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
-const {capitalizeFirstLetter} = require('./util')
+const {capitalizeFirstLetter, isEmpty} = require('./util')
 
 function checkSettings(cs, native) {
     let java = `Target`
-    if (cs === undefined) {
+    if (cs === undefined || isEmpty(cs)) {
         return java + '.window()'
     }
     let element = ''
