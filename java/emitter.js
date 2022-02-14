@@ -196,8 +196,12 @@ module.exports = function (tracker, test) {
     },
     check(checkSettings) {
       if(test.api === 'classic') {
-          if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
-            eyes.checkWindow(checkSettings.tag, checkSettings.matchTimeout, checkSettings.isFully )
+          if (checkSettings.frames === undefined && checkSettings.region === undefined) {
+            if (checkSettings === undefined) {
+              eyes.checkWindow()
+            } else {
+              eyes.checkWindow(checkSettings.tag, checkSettings.matchTimeout, checkSettings.isFully )
+            }
           } else if (checkSettings.frames && checkSettings.region) {
             eyes.checkRegionInFrame(checkSettings.frames, checkSettings.region, checkSettings.matchTimeout, checkSettings.tag, checkSettings.isFully)
           } else if (checkSettings.frames) {
