@@ -220,8 +220,8 @@ module.exports = function (tracker, test) {
             const commands = []
             commands.push(java`eyes.checkWindow(`)
             if (matchTimeout) commands.push(java`${matchTimeout}, `)
-            if (tag) commands.push(java`${tag || ''}`)
-            if (stitchContent) commands.push(java`, ${stitchContent}`)
+            commands.push(java`${tag || ''}`)
+            if (stitchContent !== undefined) commands.push(java`, ${stitchContent}`)
             commands.push(java`);`)
             addCommand([commands.join('')])
         },
