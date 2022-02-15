@@ -163,9 +163,13 @@ function parseObject(object) {
 
 function getter({target, key, type}) {
     // console.log(`target: ${target} , key: ${key}, type: ${JSON.stringify(type, null, 3)}, typeOfKey: ${typeof key}, isArray: ${Array.isArray(key)}`)
-    if (typeof type === 'undefined') return `${target}.${key}`
-    else if (types[type.name]) return types[type.name].get(target, key)
-    else throw new Error(`Haven't implement type ${JSON.stringify(type)}`)
+    try {
+        if (typeof type === 'undefined') return `${target}.${key}`
+        else if (types[type.name]) return types[type.name].get(target, key)
+        else throw new Error(`Haven't implement type ${JSON.stringify(type)}`)
+    } catch (err) {
+     throw new Error(`type:=${JSON.stringify(type)}\n error:=${err}`)
+    }
 }
 
 function mapTypes(type) {

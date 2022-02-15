@@ -16,7 +16,7 @@ const imageMatchSettings = {
     },
 }
 module.exports = function (tracker, test) {
-    const {addSyntax, addCommand, addHook} = tracker
+    const {addSyntax, addCommand, addHook, addExpression} = tracker
 
     function argumentCheck(actual, ifUndefined) {
         return (typeof actual === 'undefined') ? ifUndefined : actual
@@ -145,7 +145,11 @@ module.exports = function (tracker, test) {
             return addCommand(java`((JavascriptExecutor) getDriver()).executeScript(${script}${extraParameters(args)});`)
         },
         switchToFrame(selector) {
-            addCommand(java`getDriver().switchTo().frame(${selector});`)
+            if(selector === null) {
+                addCommand(java`getDriver().switchTo().defaultContent();`)
+            } else {
+                addCommand(java`getDriver().switchTo().frame(${selector});`)
+            }
         },
         switchToParentFrame() {
             addCommand(java`getDriver().switchTo().parentFrame();`)
@@ -358,6 +362,7 @@ module.exports = function (tracker, test) {
         },
         throws(func, check) {
             let command
+            let res = func()
             if (check) {
                 command = java`Assert.assertThrows(${insert(check())} , new Assert.ThrowingRunnable(){
           public void run() {${func}}
@@ -386,7 +391,15 @@ module.exports = function (tracker, test) {
                             schema: {
                                 image: {
                                     type: 'Image',
-                                    schema: {hasDom: 'Boolean', location: "Location"},
+                                    schema: {
+                                        hasDom: 'Boolean', location: {
+                                            type: 'Location',
+                                            schema: {
+                                                x: 'Number',
+                                                y: 'Number'
+                                            }
+                                        }
+                                    },
                                 },
                                 imageMatchSettings: imageMatchSettings,
                                 knownVariantId: {
@@ -426,9 +439,24 @@ module.exports = function (tracker, test) {
                 getNodesByAttribute: (dom, attr) => addCommand(java`getNodesByAttributes(${dom}, ${attr});`).type({
                     type: 'List<JsonNode>',
                     schema: {length: {rename: 'size'}},
-                    items: {type: 'JsonNode', recursive: true}
+                    items: {
+                        type: 'JsonNode', schema: {
+                            rect: {
+                                type: 'rect',
+                                schema: {
+                                    top: 'Number',
+                                    left: 'Number'
+                                }
+                            }
+                        }, recursive: true
+                    }
                 })
             })
+        },
+        math: {
+            round(number) {
+                return addExpression(java`Math.round(${number})`)
+            }
         }
     }
 

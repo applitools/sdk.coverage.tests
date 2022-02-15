@@ -107,7 +107,9 @@ const types = {
         constructor: (value) => `AccessibilityGuidelinesVersion.${value}`
     },
     "Location": {
-        constructor: (value) => `new Location(${value.x}, ${value.y})`
+        constructor: (value) => `new Location(${value.x}, ${value.y})`,
+        name: () => `Location`,
+        get: simpleGetter,
     },
     "BrowsersInfo": {
         constructor: (value) => {
@@ -134,6 +136,10 @@ const types = {
     "TestResultContainer": {
         name: () => `TestResultContainer`,
         get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key)
+    },
+    "rect": {
+        name: () => 'Rect',
+        get: (target, key) => `${target}.get("${key}").asInt()`,
     }
 }
 module.exports = types
