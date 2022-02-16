@@ -1,6 +1,6 @@
 'use strict'
 const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
-const {capitalizeFirstLetter} = require('./util')
+const {capitalizeFirstLetter, toLowerSnakeCase} = require('./util')
 const find_commands = require('./mapping/find_commands')
 const types = require('./mapping/types')
 
@@ -19,15 +19,18 @@ function directString(String) {
 
 module.exports = function (tracker, test) {
     const {addSyntax, addCommand, addHook, withScope, addType} = tracker
-
     function findElementFunc(element) {
         if (element.isRef) return element
         else return driver.findElement(element)
     }
+    let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
+    if(emulator) {
+        test.meta.native = false;
+        test.meta.mobile = false;
+    }
 
-    let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
-    let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
-    let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
+    let mobile = test.meta.mobile
+    let legacy = test.env && (test.env.legacy === true)
     let openPerformed = false
 
     addType('JsonNode', {
@@ -67,22 +70,7 @@ module.exports = function (tracker, test) {
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
     addSyntax('return', ({value}) => `return ${value}`)
 
-    if (mobile) {
-        let device = (test.env.device == "Samsung Galaxy S8") ? "Samsung Galaxy S8 FHD GoogleAPI Emulator" : test.env.device
-        addHook('beforeEach', python`@pytest.fixture(scope="function")
-def dev():
-    return ${device}
-        `)
-        addHook('beforeEach', python`@pytest.fixture(scope="function")
-def app():
-    return ${test.env.app}
-        `)
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        let desired_caps = (test.config.baselineName.includes("iOS")) ? 'ios_desired_capabilities' : 'android_desired_capabilities'
-        addHook('beforeEach', python`def desired_caps(` + desired_caps + `, request, dev, app):`)
-        addHook('beforeEach', python`    return ` + desired_caps)
-        addHook('beforeEach', python`\n`)
-    } else {
+    if (!mobile) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def eyes_runner_class():`)
         if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
@@ -128,10 +116,35 @@ def app():
     addHook('beforeEach', python`    return conf`)
     addHook('beforeEach', python`\n`)
 
-    if (mobile) setUpMobileNative(test, addHook)
-    else {
-        if (emulator) setUpWithEmulators(test, addHook)
-        else setUpBrowsers(test, addHook)
+    if (mobile) {
+        if(test.env.app) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def app():`)
+            addHook('beforeEach', python`    return ${test.env.app}\n`)
+        }
+        if(test.env.browser) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def browser_name():`)
+            addHook('beforeEach', python`    return ${test.env.browser}\n`)
+        }
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(test.env.device))}):`)
+        addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(test.env.device))}\n`)
+    }
+    else if (emulator) {
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
+        addHook('beforeEach', python`    return chrome_emulator\n`)
+    } else if (test.env && test.env.browser){
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(test.env.browser))}):`)
+        addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(test.env.browser))}\n`)
+    }
+
+    if (legacy) {
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def legacy():`)
+        addHook('beforeEach', python`    return True\n`)
     }
 
     if (test.executionGrid) {
