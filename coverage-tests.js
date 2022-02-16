@@ -1891,7 +1891,7 @@ test('adopted styleSheets on firefox', {
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: false})
-    assert.throws(() => eyes.close())
+    assert.throws(() => void eyes.close())
     // TODO assert test is aborted
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})

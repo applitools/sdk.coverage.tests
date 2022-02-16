@@ -1,4 +1,5 @@
 'use strict'
+const types = require('./mapping/types')
 const {checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv} = require('./parser')
 const {capitalizeFirstLetter} = require('./util')
 const imageMatchSettings = {
@@ -74,6 +75,11 @@ module.exports = function (tracker, test) {
 
     addHook('deps', `package coverage.generic;`)
     addHook('deps', ``)
+    // Dirty emulator workaround
+    if(test.env && test.env.device === "Android 8.0 Chrome Emulator") {
+        test.meta.native = false;
+        test.env.browser = "chrome";
+    }
     // Selenium
     if (test.meta.native) {
         addHook('deps', `import coverage.NativeSetup;`)
@@ -356,13 +362,11 @@ module.exports = function (tracker, test) {
         notEqual(actual, expected, message) {
             addCommand(java`Assert.assertNotEquals(${actual}, ${expected}${extraParameter(message)});`)
         },
-        instanceOf() {
-            // As for java there is no need to check class of the returned value, it class present in the method declaration
-            throw Error('instanceOf not implemented in Java')
+        instanceOf(object, typeName) {
+            addCommand(java`Assert.assertTrue(${object} instanceof ${insert(types[typeName].name())});`)
         },
         throws(func, check) {
             let command
-            let res = func()
             if (check) {
                 command = java`Assert.assertThrows(${insert(check())} , new Assert.ThrowingRunnable(){
           public void run() {${func}}
