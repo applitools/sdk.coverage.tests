@@ -12,7 +12,12 @@ function checkSettings(cs, native) {
     let options = ''
     if (cs.frames === undefined && cs.region === undefined) element = '.window()'
     else {
-        if (cs.frames) element += frames(cs.frames)
+        if (cs.frames){
+            if(cs.scrollRootElement){
+               element += `.window().scrollRootElement(${printSelector(cs.scrollRootElement)})`
+            }
+            element += frames(cs.frames)
+        }
         if (cs.region) element += region(cs.region)
     }
     if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
@@ -29,6 +34,11 @@ function checkSettings(cs, native) {
         options += '.fully()'
     } else if (cs.isFully === false) {
         options += '.fully(false)'
+    }
+    if(cs.visualGridOptions) {
+        const VGOptionsKeys = Object.keys(cs.visualGridOptions);
+        const vgOptions = VGOptionsKeys.map(key => `new VisualGridOption("${key}", ${cs.visualGridOptions[key]})`).join(', ')
+        options += `.visualGridOptions(${vgOptions})`
     }
     if (cs.variationGroupId) options += `.variationGroupId("${cs.variationGroupId}")`
     return java + element + options
