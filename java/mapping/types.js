@@ -139,7 +139,7 @@ const types = {
     },
     "rect": {
         name: () => 'Rect',
-        get: (target, key) => `${target}.get("${key}").asInt()`,
+        get: (target, key) => `${target}.get("${key}").asDouble()`,
     }
 }
 module.exports = types
