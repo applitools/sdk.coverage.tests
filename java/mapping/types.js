@@ -140,6 +140,9 @@ const types = {
     "rect": {
         name: () => 'Rect',
         get: (target, key) => `${target}.get("${key}").asDouble()`,
-    }
+    },
+	"PageCoverageInfo": {
+		get: simpleGetter
+	}
 }
 module.exports = types

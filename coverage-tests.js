@@ -1674,8 +1674,8 @@ test('should not check if disabled', {
 test('pageCoverage data is correct', {
   page: 'Simple',
   variants: {
+    '': { vg: false, config: {isVg: false} },
     'with vg': { vg: true, config: {isVg: true} },
-    'with classic': { vg: false, config: {isVg: false} },
   },
   test({ eyes, assert, helpers, config }) {
     // isVg = a temporary way to pass variant type (vg or not) to results
@@ -1689,7 +1689,7 @@ test('pageCoverage data is correct', {
         info.actualAppOutput[0].pageCoverageInfo.pageId,
         'my-page', 'pageId match'
     )
-    assert.equal(
+     assert.equal(
         info.actualAppOutput[0].pageCoverageInfo.width,
         958, 'Page width match'
     )

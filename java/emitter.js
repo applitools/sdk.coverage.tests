@@ -2,7 +2,7 @@
 const types = require('./mapping/types')
 const {checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv} = require('./parser')
 const {capitalizeFirstLetter} = require('./util')
-const imageMatchSettings = {
+const ImageMatchSettings = {
     type: 'ImageMatchSettings',
     schema: {
         ignoreDisplacements: 'BooleanObject',
@@ -15,6 +15,13 @@ const imageMatchSettings = {
         },
         layout: {type: 'Array', items: 'Region'}
     },
+}
+const Location = {
+    type: 'Location',
+    schema: {
+        x: 'Number',
+        y: 'Number'
+    }
 }
 module.exports = function (tracker, test) {
     const {addSyntax, addCommand, addHook, addExpression} = tracker
@@ -126,7 +133,7 @@ module.exports = function (tracker, test) {
         const defaultMatchSettings = test.config.defaultMatchSettings
         Object.keys(defaultMatchSettings)
             .forEach(property => addHook('beforeEach',
-                java`set${insert(capitalizeFirstLetter(property))}(${{value: defaultMatchSettings[property], ...imageMatchSettings.schema[property]}});`))
+                java`set${insert(capitalizeFirstLetter(property))}(${{value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property]}});`))
     }
     if (test.config.layoutBreakpoints) {
         addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
@@ -396,18 +403,22 @@ module.exports = function (tracker, test) {
                                 image: {
                                     type: 'Image',
                                     schema: {
-                                        hasDom: 'Boolean', location: {
-                                            type: 'Location',
-                                            schema: {
-                                                x: 'Number',
-                                                y: 'Number'
-                                            }
-                                        }
+                                        hasDom: 'Boolean',
+                                        location: Location
                                     },
                                 },
-                                imageMatchSettings: imageMatchSettings,
+                                imageMatchSettings: ImageMatchSettings,
                                 knownVariantId: {
                                     type: 'String'
+                                },
+                                pageCoverageInfo: {
+                                    type: 'PageCoverageInfo',
+                                    schema: {
+                                        pageId: 'String',
+                                        width: 'Number',
+                                        height: 'Number',
+                                        imagePositionInPage: Location
+                                    }
                                 }
                             }
                         },

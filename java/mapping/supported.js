@@ -15,7 +15,8 @@ const CHECK_SETTINGS_OPTIONS = [
     'visualGridOptions',
     'variationGroupId',
     'hooks',
-    'timeout']
+    'timeout',
+	'pageId']
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'
 ]
