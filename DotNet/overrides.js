@@ -65,4 +65,6 @@ module.exports = {
 	'adopted styleSheets on firefox': {skipEmit: true},
 	'check region by selector within shadow dom with vg': {skipEmit: true},
 	'check region by element within shadow dom with vg': {skipEmit: true},
+	'pageCoverage data is correct': {skipEmit: true},
+    'pageCoverage data is correct with vg': {skipEmit: true},
 }

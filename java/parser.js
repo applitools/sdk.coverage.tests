@@ -32,7 +32,7 @@ function checkSettings(cs, native) {
     if (cs.timeout) options += `.timeout(${serialize(cs.timeout)})`;
     if (cs.sendDom !== undefined) options += `.sendDom(${serialize(cs.sendDom)})`;
     if (cs.matchLevel) options += `.matchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
-    if (cs.name) options += `.withName(${cs.name})`;
+    if (cs.name) options += `.withName("${cs.name}")`;
     if (cs.layoutBreakpoints) options += `.layoutBreakpoints(${cs.layoutBreakpoints})`;
     if (cs.isFully === true) {
         options += '.fully()';
@@ -51,6 +51,9 @@ function checkSettings(cs, native) {
             options += `.beforeRenderScreenshotHook("${cs.hooks.beforeCaptureScreenshot}")`;
         }
     }
+	if (cs.pageId) {
+		options += `.pageId("${cs.pageId}")`;
+	}
     return java + element + options;
 
     // check settings
