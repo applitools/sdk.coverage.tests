@@ -1673,16 +1673,11 @@ test('should not check if disabled', {
 
 test('pageCoverage data is correct', {
   page: 'Simple',
-  variants: {
-    '': { vg: false, config: {isVg: false} },
-    'with vg': { vg: true, config: {isVg: true} },
-  },
-  test({ eyes, assert, helpers, config }) {
-    // isVg = a temporary way to pass variant type (vg or not) to results
+  test({ eyes, assert, helpers }) {
     eyes.open({ appName: 'Applitools Eyes SDK', viewportSize });
     eyes.check({ isFully: true, pageId: 'my-page' });
     eyes.check({ isFully: true, region: '#overflowing-div > img:nth-child(22)', pageId: 'my-page' });
-    eyes.check({ isFully: true, region: {width: 200, height: 150, x: 10, y: 15}, pageId: 'my-page1' });
+    eyes.check({ isFully: true, region: {width: 200, height: 150, left: 10, top: 15}, pageId: 'my-page1' });
     const result = eyes.close(false);
     const info = helpers.getTestInfo(result);
     assert.equal(
@@ -1703,7 +1698,7 @@ test('pageCoverage data is correct', {
     )
     assert.equal(
         info.actualAppOutput[1].pageCoverageInfo.imagePositionInPage,
-        {x: config.isVg ? 641 : 636, y: config.isVg ? 1297 : 1292}, 'Selector match'
+        {x:  636, y:  1292}, 'Selector match'
     )
     assert.equal(
         info.actualAppOutput[2].pageCoverageInfo.imagePositionInPage,
@@ -1711,6 +1706,44 @@ test('pageCoverage data is correct', {
     )
   },
 });
+
+test('pageCoverage data is correct with vg', {
+  page: 'Simple',
+  vg: true,
+  test({ eyes, assert, helpers }) {
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize });
+    eyes.check({ isFully: true, pageId: 'my-page' });
+    eyes.check({ isFully: true, region: '#overflowing-div > img:nth-child(22)', pageId: 'my-page' });
+    eyes.check({ isFully: true, region: {width: 200, height: 150, left: 10, top: 15}, pageId: 'my-page1' });
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.pageId,
+        'my-page', 'pageId match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.width,
+        958, 'Page width match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.height,
+        3540, 'Page height match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage,
+        {x: 0, y: 0}, 'Full page'
+    )
+    assert.equal(
+        info.actualAppOutput[1].pageCoverageInfo.imagePositionInPage,
+        {x: 641 , y:  1297 }, 'Selector match'
+    )
+    assert.equal(
+        info.actualAppOutput[2].pageCoverageInfo.imagePositionInPage,
+        {x: 10, y: 15}, 'Region match'
+    )
+  },
+});
+
 test('should return test results from close', {
   variants: {
     'with passed classic test': {page: 'Randomizable', config: {baselineName: 'TestCloseReturnsTestResults_Passed_ClassicRunner'}},

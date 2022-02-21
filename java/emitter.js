@@ -67,8 +67,8 @@ module.exports = function (tracker, test) {
         else return driver.findElement(element)
     }
 
-    function extraParameter(param, addToEnd = true) {
-        return (typeof param === 'undefined') ? emptyValue() : (addToEnd) ? `, ${param}` : `${param}, `
+    function assertMessage(param, addToEnd = true) {
+        return (typeof param === 'undefined') ? emptyValue() : (addToEnd) ? insert(`, "${param}"`) : insert(`"${param}", `)
     }
 
     function extraParameters(params) {
@@ -354,20 +354,20 @@ module.exports = function (tracker, test) {
         equal(actual, expected, message) {
             if (expected.isRef) {
                 const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
-                addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${extraParameter(message)});`)
+                addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
             } else {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {
-                    addCommand(java`Assert.assertEquals(${actual}.asText(""), ${expected}${extraParameter(message)});`)
+                    addCommand(java`Assert.assertEquals(${actual}.asText(""), ${expected}${assertMessage(message)});`)
                 } else if (type !== 'Map') {
-                    addCommand(java`Assert.assertEquals(${actual}, ${addType(expected, type)}${extraParameter(message)});`)
+                    addCommand(java`Assert.assertEquals(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
                 } else {
-                    addCommand(java`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${extraParameter(message)});`)
+                    addCommand(java`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
                 }
             }
         },
         notEqual(actual, expected, message) {
-            addCommand(java`Assert.assertNotEquals(${actual}, ${expected}${extraParameter(message)});`)
+            addCommand(java`Assert.assertNotEquals(${actual}, ${expected}${assertMessage(message)});`)
         },
         instanceOf(object, typeName) {
             addCommand(java`Assert.assertTrue(${object} instanceof ${insert(types[typeName].name())});`)
@@ -386,7 +386,7 @@ module.exports = function (tracker, test) {
             addCommand(command)
         },
         ok(arg, message) {
-            addCommand(java`Assert.assertNotNull(${arg}${extraParameter(message)});`)
+            addCommand(java`Assert.assertNotNull(${arg}${assertMessage(message)});`)
         }
     }
 
