@@ -415,9 +415,12 @@ module.exports = function (tracker, test) {
                                     type: 'PageCoverageInfo',
                                     schema: {
                                         pageId: 'String',
-                                        width: 'Number',
-                                        height: 'Number',
-                                        imagePositionInPage: Location
+                                        width: 'Long',
+                                        height: 'Long',
+                                        imagePositionInPage: {
+                                            rename: 'location',
+                                            ...Location
+                                        }
                                     }
                                 }
                             }

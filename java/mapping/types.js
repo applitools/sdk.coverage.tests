@@ -82,6 +82,10 @@ const types = {
         constructor: (value) => `${JSON.stringify(value)}L`,
         name: () => `Number`,
     },
+    "Long": {
+        constructor: (value) => `new Long(${JSON.stringify(value)})`,
+        name: () => `Long`,
+    },
     "Image": {
         get: simpleGetter,
     },
