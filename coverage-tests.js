@@ -55,6 +55,20 @@ test('check window', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_VG'}},
+    'on mobile web android': {
+      env: {
+        device: 'Pixel 3a XL',
+        browser: 'chrome',
+      },
+      page: 'HelloWorld',
+    },
+    'on mobile web ios': {
+      env: {
+        device: 'iPhone XS',
+        browser: 'safari',
+      },
+      page: 'HelloWorld',
+    },
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
