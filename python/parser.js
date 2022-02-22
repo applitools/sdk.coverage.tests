@@ -80,8 +80,9 @@ function parseSelector(selector) {
     return string
 }
 
-function region(region) {
-    return `.region(${regionParameter(region)})`
+function region(region_param) {
+	if ((typeof region_param === "object") && ("shadow" in region_param)) return `.shadow(${regionParameter(region_param)})${region(region_param.shadow)}`
+    return `.region(${regionParameter(region_param)})`
 }
 
 function ignoreRegions(arr) {
@@ -116,7 +117,7 @@ function regionParameter(region) {
             string = `${JSON.stringify(region)}`
             break;
         case "object":
-            string = parseObject(region.type ? region : {value: region, type:'Region'})
+            string = parseObject(region.type ? region : (region.shadow ? region : {value: region, type:'Region'}))
             break;
         case "undefined":
             string = 'None'
@@ -169,7 +170,8 @@ function serialize(value) {
 
 function parseObject(object) {
     if (object.selector) {
-        return selectors[object.type](JSON.stringify(object.selector))
+        if (object.type !== undefined) return selectors[object.type](JSON.stringify(object.selector))
+        else return '"' + object.selector + '"'
     } else if (object.type) {
         const typeBuilder = types[object.type]
         if (typeBuilder) {
