@@ -1640,6 +1640,7 @@ test('should handle check of stale element in frame if selector is preserved', {
   },
 })
 
+// @deprecated - should be replaced with "should return aborted tests in getAllTestResults"
 test('should abort if not closed', {
   variants: {
     '': {vg: false},
@@ -2000,6 +2001,53 @@ test('variant id', {
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
   }
+})
+
+test('should abort after close', {
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({driver, eyes, assert}) {
+    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
+    eyes.open({appName: 'Test Abort After Close'})
+    eyes.check()
+    eyes.close(false)
+    const abortResult = eyes.abort()
+    assert.equal(abortResult, null)
+  },
+})
+
+test('should abort unclosed tests', {
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({driver, eyes, assert}) {
+    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
+    eyes.open({appName: 'Test Abort After Close'})
+    eyes.check()
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+    assert.equal(results.getAllResults()[0].getTestResults().getIsAborted(), true)
+  },
+})
+
+test('should return aborted tests in getAllTestResults', {
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({driver, eyes, assert}) {
+    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
+    eyes.open({appName: 'Test Abort After Close'})
+    eyes.check()
+    const abortResult = eyes.abort()
+    assert.equal(abortResult.getIsAborted(), true)
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+    assert.equal(results.getAllResults()[0].getTestResults().getIsAborted(), true)
+  },
 })
 
 // #endregion
