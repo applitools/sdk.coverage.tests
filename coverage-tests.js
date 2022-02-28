@@ -1640,20 +1640,6 @@ test('should handle check of stale element in frame if selector is preserved', {
   },
 })
 
-// @deprecated - should be replaced with "should return aborted tests in getAllTestResults"
-test('should abort if not closed', {
-  variants: {
-    '': {vg: false},
-    'with vg': {vg: true},
-  },
-  test({driver, eyes}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
-    eyes.open({appName: 'Test Abort', viewportSize: {width: 1200, height: 800}})
-    eyes.check()
-    eyes.abort()
-  },
-})
-
 test('should throw if no checkpoints before close', {
   page: 'Default',
   config: {baselineName: 'TestGetAllTestResults'},
