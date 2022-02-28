@@ -2001,5 +2001,14 @@ test('variant id', {
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
   }
 })
-
+test('AUTproxy should proxy resources test manually only', {
+  vg: true,
+  config: {autProxy: {proxy: {url:'localhost:8888', isHttpOnly: true}, domains: ['example.com'], AUTProxyMode: 'Block'}},
+  test({driver, eyes, assert}) {
+    driver.visit('https://demo.applitools.com/app.html')
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
+    eyes.check({isFully: true, disableBrowserFetching: true})
+    assert.throws(() => void eyes.close(false))
+  },
+})
 // #endregion

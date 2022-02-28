@@ -99,4 +99,5 @@ module.exports = {
   	'check region by element within shadow dom with vg': {skipEmit: true},
     'pageCoverage data is correct': {skipEmit: true},
     'pageCoverage data is correct with vg': {skipEmit: true},
+    'AUTproxy should proxy resources test manually only': {skipEmit: true},
 }

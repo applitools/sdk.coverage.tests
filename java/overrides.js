@@ -76,4 +76,5 @@ module.exports = {
 	'adopted styleSheets on firefox': {skipEmit: true},
 	'check region by selector within shadow dom with vg': {skipEmit: true},
 	'check region by element within shadow dom with vg': {skipEmit: true},
+	'AUTproxy should proxy resources test manually only': {skipEmit: true},
 }

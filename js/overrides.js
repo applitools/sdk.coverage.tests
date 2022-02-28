@@ -35,4 +35,6 @@ module.exports = {
     'should send ignore region by selector with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send floating region by coordinates with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send accessibility regions by selector with vg': {config: {branchName: 'universal-sdk'}}, // was v1
+
+    'AUTproxy should proxy resources test manually only': {skip: true},
 }
