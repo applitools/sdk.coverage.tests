@@ -101,5 +101,6 @@ module.exports = {
     'pageCoverage data is correct with vg': {skipEmit: true},
     'should abort after close': {skipEmit: true},
     'should abort unclosed tests': {skipEmit: true},
-    'should return aborted tests in getAllTestResults': {skipEmit: true}
+    'should return aborted tests in getAllTestResults': {skipEmit: true},
+    'should return browserInfo in getAllTestResults': {skipEmit: true}
 }
