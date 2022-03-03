@@ -1990,13 +1990,13 @@ test('variant id', {
 })
 
 test('should abort after close', {
+  page: 'Default',
   variants: {
     '': {vg: false},
     'with vg': {vg: true},
   },
-  test({driver, eyes, assert}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
-    eyes.open({appName: 'Test Abort After Close'})
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check()
     eyes.close(false)
     const abortResult = eyes.abort()
@@ -2005,13 +2005,13 @@ test('should abort after close', {
 })
 
 test('should abort unclosed tests', {
+  page: 'Default',
   variants: {
     '': {vg: false},
     'with vg': {vg: true},
   },
-  test({driver, eyes, assert}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
-    eyes.open({appName: 'Test Abort After Close'})
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check()
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults().length, 1)
@@ -2020,19 +2020,49 @@ test('should abort unclosed tests', {
 })
 
 test('should return aborted tests in getAllTestResults', {
+  page: 'Default',
   variants: {
     '': {vg: false},
     'with vg': {vg: true},
   },
-  test({driver, eyes, assert}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
-    eyes.open({appName: 'Test Abort After Close'})
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check()
     const abortResult = eyes.abort()
     assert.equal(abortResult.getIsAborted(), true)
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults().length, 1)
     assert.equal(results.getAllResults()[0].getTestResults().getIsAborted(), true)
+  },
+})
+
+test('should return browserInfo in getAllTestResults', {
+  page: 'Default',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 800, height: 600},
+      {name: 'firefox', width: 640, height: 480},
+      {chromeEmulationInfo: {deviceName: 'Pixel 4 XL'}},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    const testResults = eyes.close(false)
+    assert.equal(testResults.status, 'Passed')
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 3)
+    assert.equal(results.getAllResults()[0].browserInfo.name, 'chrome')
+    assert.equal(results.getAllResults()[0].browserInfo.width, 800)
+    assert.equal(results.getAllResults()[0].browserInfo.height, 600)
+    assert.equal(results.getAllResults()[0].testResults.status, 'Passed')
+    assert.equal(results.getAllResults()[1].browserInfo.name, 'firefox')
+    assert.equal(results.getAllResults()[1].browserInfo.width, 640)
+    assert.equal(results.getAllResults()[1].browserInfo.height, 480)
+    assert.equal(results.getAllResults()[1].testResults.status, 'Unresolved')
+    assert.equal(results.getAllResults()[2].browserInfo.chromeEmulationInfo.deviceName, 'Pixel 4 XL')
+    assert.equal(results.getAllResults()[2].testResults.status, 'Passed')
   },
 })
 
