@@ -275,7 +275,7 @@ module.exports = function (tracker, test) {
             return addCommand(java`eyes.close(${argumentCheck(throwEx, true)});`).type({type: 'TestResults'})
         },
         abort() {
-            return addCommand(java`eyes.abort();`)
+            return addCommand(java`eyes.abort();`).type({type: 'TestResults'})
         },
         getViewportSize() {
             return addCommand(java`eyes.getViewportSize();`).type({
@@ -352,7 +352,9 @@ module.exports = function (tracker, test) {
 
     const assert = {
         equal(actual, expected, message) {
-            if (expected.isRef) {
+            if (expected === null) {
+                addCommand(java`Assert.assertNull(${actual}${assertMessage(message)});`)
+            } else if (expected.isRef) {
                 const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
                 addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
             } else {
