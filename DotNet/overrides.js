@@ -67,4 +67,7 @@ module.exports = {
 	'check region by element within shadow dom with vg': {skipEmit: true},
 	'pageCoverage data is correct': {skipEmit: true},
     'pageCoverage data is correct with vg': {skipEmit: true},
+	'should abort after close': {skipEmit: true},
+	'should abort unclosed tests': {skipEmit: true},
+	'should return aborted tests in getAllTestResults': {skipEmit: true}
 }
