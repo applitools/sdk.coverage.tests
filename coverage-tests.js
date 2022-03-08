@@ -2015,7 +2015,7 @@ test('should abort unclosed tests', {
     eyes.check()
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults().length, 1)
-    assert.equal(results.getAllResults()[0].testResults.getIsAborted(), true)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, true)
   },
 })
 
@@ -2032,7 +2032,7 @@ test('should return aborted tests in getAllTestResults', {
     assert.equal(abortResult.getIsAborted(), true)
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults().length, 1)
-    assert.equal(results.getAllResults()[0].testResults.getIsAborted(), true)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, true)
   },
 })
 
