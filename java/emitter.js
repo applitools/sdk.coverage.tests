@@ -23,6 +23,14 @@ const Location = {
         y: 'Number'
     }
 }
+
+const TestResults = {
+    type: "TestResults",
+    schema: {
+        isAborted: "Boolean"
+    }
+}
+
 module.exports = function (tracker, test) {
     const {addSyntax, addCommand, addHook, addExpression} = tracker
 
@@ -83,7 +91,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `package coverage.generic;`)
     addHook('deps', ``)
     // Dirty emulator workaround
-    if(test.env && test.env.device === "Android 8.0 Chrome Emulator") {
+    if (test.env && test.env.device === "Android 8.0 Chrome Emulator") {
         test.meta.native = false;
         test.env.browser = "chrome";
     }
@@ -158,7 +166,7 @@ module.exports = function (tracker, test) {
             return addCommand(java`((JavascriptExecutor) getDriver()).executeScript(${script}${extraParameters(args)});`)
         },
         switchToFrame(selector) {
-            if(selector === null) {
+            if (selector === null) {
                 addCommand(java`getDriver().switchTo().defaultContent();`)
             } else {
                 addCommand(java`getDriver().switchTo().frame(${selector});`)
@@ -200,7 +208,24 @@ module.exports = function (tracker, test) {
                     getAllResults: (target) => addCommand(java`${target}.getAllResults();`).type({
                         type: 'Array',
                         items: {
-                            type: 'TestResultContainer'
+                            type: 'TestResultContainer',
+                            schema: {
+                                testResults: TestResults,
+                                browserInfo: {
+                                    type: "BrowserInfo",
+                                    schema: {
+                                        name: "String",
+                                        height: "int",
+                                        width: "int",
+                                        chromeEmulationInfo: {
+                                            type: "ChromeEmulationInfo",
+                                            schema: {
+                                                deviceName: "String"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     })
                 })
@@ -272,10 +297,10 @@ module.exports = function (tracker, test) {
             addCommand([commands.join('')])
         },
         close(throwEx) {
-            return addCommand(java`eyes.close(${argumentCheck(throwEx, true)});`).type({type: 'TestResults'})
+            return addCommand(java`eyes.close(${argumentCheck(throwEx, true)});`).type(TestResults)
         },
         abort() {
-            return addCommand(java`eyes.abort();`).type({type: 'TestResults'})
+            return addCommand(java`eyes.abort();`).type(TestResults)
         },
         getViewportSize() {
             return addCommand(java`eyes.getViewportSize();`).type({
@@ -352,6 +377,7 @@ module.exports = function (tracker, test) {
 
     const assert = {
         equal(actual, expected, message) {
+            console.log(`Expected = ${expected}`)
             if (expected === null) {
                 addCommand(java`Assert.assertNull(${actual}${assertMessage(message)});`)
             } else if (expected.isRef) {

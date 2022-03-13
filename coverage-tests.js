@@ -2029,7 +2029,7 @@ test('should return aborted tests in getAllTestResults', {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check()
     const abortResult = eyes.abort()
-    assert.equal(abortResult.getIsAborted(), true)
+    assert.equal(abortResult.isAborted, true)
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults().length, 1)
     assert.equal(results.getAllResults()[0].testResults.isAborted, true)
