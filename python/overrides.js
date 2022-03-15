@@ -99,6 +99,7 @@ module.exports = {
   	'check region by element within shadow dom with vg': {skipEmit: true},
     'pageCoverage data is correct': {skipEmit: true},
     'pageCoverage data is correct with vg': {skipEmit: true},
+    'appium iOS check window with scroll and pageCoverage': { skipEmit: true },
     'should abort after close': {skipEmit: true},
     'should abort unclosed tests': {skipEmit: true},
     'should abort unclosed tests with vg': {skipEmit: true},

@@ -1907,6 +1907,31 @@ test('appium iOS check window', {
   },
 })
 
+test('appium iOS check window with scroll and pageCoverage', {
+  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
+  config: { baselineName: 'Appium_iOS_CheckWindow_with_scroll' },
+  features: ['native-selectors'],
+  test: ({ driver, eyes, helpers, assert }) => {
+    driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view' })
+    eyes.open({ appName: 'Applitools Eyes SDK' })
+    eyes.check({ pageId: 'my-page', isFully: true })
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.pageId,
+      'my-page', 'pageId match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.width,
+      335, 'Page width match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.height,
+      1500, 'Page height match'
+    )
+  },
+})
+
 test('appium iOS check region with ignore region', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
