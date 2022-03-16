@@ -1907,7 +1907,7 @@ test('appium iOS check window', {
   },
 })
 
-test('appium iOS check window with scroll and pageCoverage', {
+test('appium iOS check fully window with scroll and pageCoverage', {
   env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
   config: { baselineName: 'Appium_iOS_CheckWindow_with_scroll' },
   features: ['native-selectors'],
@@ -1928,6 +1928,39 @@ test('appium iOS check window with scroll and pageCoverage', {
     assert.equal(
       info.actualAppOutput[0].pageCoverageInfo.height,
       1500, 'Page height match'
+    )
+  },
+})
+
+test('appium iOS check window region with scroll and pageCoverage', {
+  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
+  config: { baselineName: 'Appium_iOS_CheckWindow_with_region_scroll' },
+  features: ['native-selectors'],
+  test: ({ driver, eyes, helpers, assert }) => {
+    driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view with nested table' })
+    eyes.open({ appName: 'Applitools Eyes SDK' })
+    eyes.check({ pageId: 'my-page', isFully: false, region: { type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeTable'" } })
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.pageId,
+      'my-page', 'pageId match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.width,
+      335, 'Page width match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.height,
+      690, 'Page height match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage.x,
+      20, 'Image position x match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage.y,
+      84, 'Image position y match'
     )
   },
 })
