@@ -2066,4 +2066,21 @@ test('should return browserInfo in getAllTestResults', {
   },
 })
 
+test('should return all tests for getAllTestResults', {
+  page: 'Default',
+  vg: true,
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check()
+    eyes.close()
+    eyes.open({appName: 'Applitools Eyes SDK', testName: 'ShouldReturnAllTestsForGetAllTestResults2'})
+    eyes.check()
+    eyes.close()
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 2)
+    assert.equal(results.getAllResults()[0].getTestResults()._results.name, 'ShouldReturnAllTestsForGetAllTestResults')
+    assert.equal(results.getAllResults()[1].getTestResults()._results.name, 'ShouldReturnAllTestsForGetAllTestResults2')
+  },
+})
+
 // #endregion
