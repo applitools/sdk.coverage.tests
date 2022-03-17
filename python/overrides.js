@@ -12,6 +12,9 @@ module.exports = {
     // Failing on the universal server 1.10 and lower
     // check on new universal server version
     "check window on mobile web android": {skip: true},
+  
+    'should waitBeforeCapture in open': { skipEmit: true },
+    'should waitBeforeCapture in check': { skipEmit: true },
 
     // TODO verify and enable
     'should send agentRunId': {skipEmit: true},
