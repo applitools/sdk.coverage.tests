@@ -42,5 +42,6 @@ module.exports = {
     // REQUEST: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"manager":{"applitools-ref-id":"4e73260e-70b8-49aa-a5d2-369246ded3b3"},"throwErr":false}}
     // RESPONSE: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"result":{"results":[],"passed":0,"unresolved":0,"failed":0,"exceptions":0,"mismatches":0,"missing":0,"matches":0}}}
     'check window on mobile web android': {skip: true},
-
+    'should waitBeforeCapture in open': { skipEmit: true },
+    'should waitBeforeCapture in check': { skipEmit: true },
 }

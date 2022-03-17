@@ -180,4 +180,6 @@ module.exports = {
     'should return aborted tests in getAllTestResults': {skipEmit: true},
     'should return aborted tests in getAllTestResults with vg': {skipEmit: true},
     'should return browserInfo in getAllTestResults': {skipEmit: true},
+    'should waitBeforeCapture in open': { skipEmit: true },
+    'should waitBeforeCapture in check': { skipEmit: true },
 }
