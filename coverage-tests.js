@@ -2066,7 +2066,7 @@ test('should return browserInfo in getAllTestResults', {
   },
 })
 
-test('should waitBeforeCapture eyesOpen', {
+test('should waitBeforeCapture in open', {
   vg: true,
   config: {
     layoutBreakpoints: true,
@@ -2082,7 +2082,7 @@ test('should waitBeforeCapture eyesOpen', {
     eyes.close()
   },
 })
-test('should waitBeforeCapture eyesCheck', {
+test('should waitBeforeCapture in check', {
   vg: true,
   config: {
     browsersInfo: [
