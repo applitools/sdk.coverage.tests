@@ -5,7 +5,13 @@ function capitalizeFirstLetter(string) {
 function toLowerSnakeCase(string){
     return string.toString().replaceAll(" ", "_").replaceAll("-", "_").toLowerCase()
 }
+
+function fromCamelCaseToSnakeCase(string) {
+    return string.replace(/([A-Z])/g, '_$1').toLowerCase()
+}
+
 module.exports = {
     capitalizeFirstLetter,
-    toLowerSnakeCase
+    toLowerSnakeCase,
+    fromCamelCaseToSnakeCase
 }

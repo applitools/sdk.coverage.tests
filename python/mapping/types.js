@@ -1,7 +1,7 @@
 const iosDeviceName = require('./iosDeviceName')
 const deviceName = require('./deviceName')
-const {capitalizeFirstLetter} = require('../util')
-const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
+const {capitalizeFirstLetter, fromCamelCaseToSnakeCase} = require('../util')
+const simpleGetter = (target, key) => `${target}.${fromCamelCaseToSnakeCase(key)}`
 const types = {
     "Map": {
         constructor: (value, generic) => {
@@ -12,7 +12,7 @@ const types = {
             return `new HashMap<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
     {{ ${Object.keys(value).map(key => `put(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
         },
-        get: (target, key) => `${target}.get("${key}")`,
+        get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
         name: (type) => {
             const key = type.generic[0].name
@@ -42,6 +42,15 @@ const types = {
     },
     "TestResults": {
         name: () => 'TestResults',
+        get: simpleGetter,
+    },
+    "TestResultsSummary": {
+        name: () => `TestResultsSummary`,
+        get: simpleGetter,
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: simpleGetter,
     },
     "Element": {
         name: () => 'WebElement',
