@@ -43,4 +43,7 @@ module.exports = {
     // RESPONSE: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"result":{"results":[],"passed":0,"unresolved":0,"failed":0,"exceptions":0,"mismatches":0,"missing":0,"matches":0}}}
     'check window on mobile web android': {skip: true},
 
+    // TODO verify and enable
+    'should send agentRunId': {skipEmit: true},
+
 }

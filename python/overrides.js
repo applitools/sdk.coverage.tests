@@ -12,4 +12,7 @@ module.exports = {
     // Failing on the universal server 1.10 and lower
     // check on new universal server version
     "check window on mobile web android": {skip: true},
+
+    // TODO verify and enable
+    'should send agentRunId': {skipEmit: true},
 }
