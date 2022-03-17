@@ -2066,11 +2066,10 @@ test('should return browserInfo in getAllTestResults', {
   },
 })
 
-// #endregion
 test('should waitBeforeCapture eyesOpen', {
   vg: true,
   config: {
-    layoutBreakPoints: true,
+    layoutBreakpoints: true,
     waitBeforeCapture: 2000,
     browsersInfo: [
       { name: 'chrome', width: 1200, height: 800 },
@@ -2095,9 +2094,10 @@ test('should waitBeforeCapture eyesCheck', {
     eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
     eyes.check({
       isFully: true,
-      layoutBreakPoints: true,
+      layoutBreakpoints: true,
       waitBeforeCapture: 2000,
     })
     eyes.close()
   },
 })
+// #endregion
