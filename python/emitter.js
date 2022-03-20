@@ -65,6 +65,7 @@ module.exports = function (tracker, test) {
         if (key.startsWith('length')) return `len(${target})`
         if ((type !== undefined) && (type !== null) && (type.name === 'JsonNode')) return `${target}[${key}]`
         if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (!isNaN(key))) return `${target}[${key}]`
+        if (type && types[type.name]) return types[type.name].get(target, key)
         else return `${target}["${key}"]`
     })
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
@@ -249,7 +250,36 @@ def execution_grid():
 
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(python`eyes._runner.get_all_test_results(${throwEx})`)
+                return addCommand(python`eyes._runner.get_all_test_results(${throwEx})`).type('TestResultsSummary').methods({
+                    getAllResults: (target) => addCommand(python`${target}.all_results`).type({
+                        type: 'Array',
+                        items: {
+                            type: 'TestResultContainer',
+                            schema: {
+                                testResults: {
+                                    type: "TestResults",
+                                    schema: {
+                                        isAborted: "Boolean"
+                                    }
+                                },
+                                browserInfo: {
+                                    type: "BrowserInfo",
+                                    schema: {
+                                        name: "String",
+                                        height: "int",
+                                        width: "int",
+                                        chromeEmulationInfo: {
+                                            type: "ChromeEmulationInfo",
+                                            schema: {
+                                                deviceName: "String"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    })
+                })
             },
         },
 
@@ -359,7 +389,7 @@ def execution_grid():
             return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
         },
         abort() {
-            return addCommand(python`eyes.abort`)
+            return addCommand(python`eyes.abort()`)
         },
         locate(visualLocatorSettings) {
             let names = `${visualLocatorSettings.locatorNames}`
@@ -430,6 +460,7 @@ def execution_grid():
 
     const assert = {
         equal(actual, expected, message) {
+            if (expected === null) return addCommand(python`assert ${actual} is None`)
             if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())
             if (((typeof expected) === 'string') && (expected === 'true')) return addCommand(python`assert ${actual} == ${expected}, ${message}`)
             if (expected.hasOwnProperty('applitools_title')) return addCommand(python`assert ${actual} == Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`)
@@ -464,40 +495,7 @@ def execution_grid():
 
     const helpers = {
         getTestInfo(result) {
-            return addCommand(python`get_test_info(eyes.api_key, ${result})`).type({
-                type: 'TestInfo',
-                schema: {
-                    actualAppOutput: {
-                        type: 'Array',
-                        items: {
-                            type: 'AppOutput',
-                            schema: {
-                                image: {
-                                    type: 'Image',
-                                    schema: {hasDom: 'Boolean'},
-                                },
-                                imageMatchSettings: {
-                                    type: 'ImageMatchSettings',
-                                    schema: {
-                                        ignoreDisplacements: 'Boolean',
-                                        ignore: {type: 'Array', items: 'Region'},
-                                        floating: {type: 'Array', items: 'FloatingRegion'},
-                                        accessibility: {type: 'Array', items: 'AccessibilityRegion'},
-                                        accessibilitySettings: {
-                                            type: 'AccessibilitySettings',
-                                            schema: {
-                                                level: 'AccessibilityLevel',
-                                                version: 'AccessibilityGuidelinesVersion'
-                                            },
-                                        },
-                                        layout: {type: 'Array', items: 'Region'}
-                                    },
-                                },
-                            }
-                        },
-                    },
-                },
-            })
+            return addCommand(python`get_test_info(eyes.api_key, ${result})`)
         },
         getDom(result, domId) {
             return addCommand(python`get_dom(${result}, ${domId})`).type({type: 'JsonNode'}).methods({

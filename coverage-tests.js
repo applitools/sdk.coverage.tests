@@ -2124,4 +2124,59 @@ test('should return browserInfo in getAllTestResults', {
   },
 })
 
+test('should waitBeforeCapture in open', {
+  vg: true,
+  config: {
+    layoutBreakpoints: true,
+    waitBeforeCapture: 2000,
+    browsersInfo: [
+      { name: 'chrome', width: 1200, height: 800 },
+    ]
+  },
+  test({ driver, eyes }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
+    eyes.check({isFully: true})
+    eyes.close()
+  },
+})
+test('should waitBeforeCapture in check', {
+  vg: true,
+  config: {
+    browsersInfo: [
+      { name: 'chrome', width: 1200, height: 800 },
+    ]
+  },
+  test({ driver, eyes }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
+    eyes.check({
+      isFully: true,
+      layoutBreakpoints: true,
+      waitBeforeCapture: 2000,
+    })
+    eyes.close()
+  },
+})
+
+test('should send agentRunId', {
+  page: 'Default',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 400, height: 400},
+      {name: 'chrome', width: 500, height: 500}
+    ]
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
+    eyes.check({fully: false});
+    eyes.close(false)
+    const resultSummary = eyes.runner.getAllTestResults(false)
+    const info1 = helpers.getTestInfo(resultSummary.getAllResults()[0].testResults);
+    const info2 = helpers.getTestInfo(resultSummary.getAllResults()[1].testResults); 
+    assert.ok(info1.startInfo.agentRunId)
+    assert.equal(info1.startInfo.agentRunId, info2.startInfo.agentRunId)
+  },
+})
 // #endregion
