@@ -473,6 +473,9 @@ module.exports = function (tracker, test) {
                 })
             })
         },
+        hasErrorMessage(error, msg) {
+            return addExpression(java`${error.message} === ${msg}`)
+        },
         math: {
             round(number) {
                 return addExpression(java`Math.round(${number})`)

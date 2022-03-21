@@ -280,6 +280,9 @@ module.exports = function (tracker, test) {
                 getNodesByAttribute: (dom, name) => addExpression(ruby`get_nodes_by_attribute(${dom}, ${name})`).type('Array')
             }).ref('dom')
         },
+        hasErrorMessage(error, msg) {
+            return addCommand(ruby`${error.message} === ${msg}`)
+        },
         math: {
             round(number) {
                 return addCommand(ruby`(${number}).round`)

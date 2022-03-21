@@ -1659,6 +1659,20 @@ test('should throw if target frame is not found', {
   }
 })
 
+test('should throw if target element not found', {
+  page: 'HelloWorld',
+  test({ eyes, assert, helpers }) {
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    assert.throws(
+      () => void eyes.check({
+        region: '.non-existing-element',
+      }),
+      error => helpers.hasErrorMessage(error, 'Element not found!')
+    )
+    eyes.abort()
+  }
+})
+
 test('should not check if disabled', {
   page: 'HelloWorldDiff',
   config: {isDisabled: true, baselineName: 'hello world'},

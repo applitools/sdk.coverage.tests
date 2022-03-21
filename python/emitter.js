@@ -502,6 +502,9 @@ def execution_grid():
                 getNodesByAttribute: (dom, name) => addCommand(python`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
             })
         },
+        hasErrorMessage(error, msg) {
+            return addCommand(python`${error.message} === ${msg}`)
+        },
         math: {
             round(number) {
                 return addCommand(python`round(${number})`)
