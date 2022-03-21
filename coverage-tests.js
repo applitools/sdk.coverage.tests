@@ -1915,7 +1915,7 @@ test('appium iOS check fully window with scroll and pageCoverage', {
     driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view' })
     eyes.open({ appName: 'Applitools Eyes SDK' })
     eyes.check({ pageId: 'my-page', isFully: true })
-    const result = eyes.close(close)
+    const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].pageCoverageInfo.pageId,
@@ -1940,7 +1940,7 @@ test('appium iOS check window region with scroll and pageCoverage', {
     driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view with nested table' })
     eyes.open({ appName: 'Applitools Eyes SDK' })
     eyes.check({ pageId: 'my-page', isFully: false, region: { type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeTable'" } })
-    const result = eyes.close(close)
+    const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].pageCoverageInfo.pageId,
