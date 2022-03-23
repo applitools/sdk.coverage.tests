@@ -99,6 +99,9 @@ module.exports = function (tracker, test) {
         let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
         addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `))`)
     }
+    if ("waitBeforeCapture" in test.config) {
+        addHook('beforeEach', python`    conf.set_wait_before_capture(${test.config.waitBeforeCapture})`)
+    }
     if (test.config.browsersInfo) {
         addHook('deps', 'from applitools.common.ultrafastgrid import DesktopBrowserInfo, IosDeviceInfo, ChromeEmulationInfo, ScreenOrientation')
         addHook('beforeEach', python`    conf.add_browser(${{value: test.config.browsersInfo, type: 'BrowsersInfo'}})`)

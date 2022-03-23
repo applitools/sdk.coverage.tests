@@ -30,6 +30,7 @@ function checkSettings(cs) {
     if (cs.hooks) options += handleHooks(cs.hooks)
     if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
     if (cs.name) options += `.with_name(${cs.name})`
+    if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     return name + target + element + options
 }
 
