@@ -107,12 +107,13 @@ module.exports = function (tracker, test) {
 		addHook('beforeEach', python`    ${{value: test.config.browsersInfo, type: 'BrowsersInfo'}}`)
     }
 	if (test.config.layoutBreakpoints) {
-		addHook('beforeEach', python`    conf.set_layout_breakpoints(True)`)
-		if (test.config.layoutBreakpoints.length == 2){
-		addHook('beforeEach', python`    conf.set_layout_breakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]})`)
-		}
-		//else addHook('beforeEach', python`    conf.set_layout_breakpoints(True)`)
-	}
+        if (Array.isArray(test.config.layoutBreakpoints)) {
+            addHook('beforeEach', python`    conf.set_layout_breakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]})`)
+        }
+        else {
+            addHook('beforeEach', python`    conf.set_layout_breakpoints(True)`)
+        }
+    }
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
             addHook('deps', 'from datetime import datetime')
