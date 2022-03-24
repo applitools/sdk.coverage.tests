@@ -1640,19 +1640,6 @@ test('should handle check of stale element in frame if selector is preserved', {
   },
 })
 
-test('should abort if not closed', {
-  variants: {
-    '': {vg: false},
-    'with vg': {vg: true},
-  },
-  test({driver, eyes}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
-    eyes.open({appName: 'Test Abort', viewportSize: {width: 1200, height: 800}})
-    eyes.check()
-    eyes.abort()
-  },
-})
-
 test('should throw if no checkpoints before close', {
   page: 'Default',
   config: {baselineName: 'TestGetAllTestResults'},
@@ -1920,6 +1907,64 @@ test('appium iOS check window', {
   },
 })
 
+test('appium iOS check fully window with scroll and pageCoverage', {
+  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
+  config: { baselineName: 'Appium_iOS_CheckWindow_with_scroll' },
+  features: ['native-selectors'],
+  test: ({ driver, eyes, helpers, assert }) => {
+    driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view' })
+    eyes.open({ appName: 'Applitools Eyes SDK' })
+    eyes.check({ pageId: 'my-page', isFully: true })
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.pageId,
+      'my-page', 'pageId match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.width,
+      335, 'Page width match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.height,
+      1500, 'Page height match'
+    )
+  },
+})
+
+test('appium iOS check window region with scroll and pageCoverage', {
+  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
+  config: { baselineName: 'Appium_iOS_CheckWindow_with_region_scroll' },
+  features: ['native-selectors'],
+  test: ({ driver, eyes, helpers, assert }) => {
+    driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view with nested table' })
+    eyes.open({ appName: 'Applitools Eyes SDK' })
+    eyes.check({ pageId: 'my-page', isFully: false, region: { type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeTable'" } })
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.pageId,
+      'my-page', 'pageId match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.width,
+      335, 'Page width match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.height,
+      690, 'Page height match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage.x,
+      20, 'Image position x match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage.y,
+      84, 'Image position y match'
+    )
+  },
+})
+
 test('appium iOS check region with ignore region', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
@@ -2001,14 +2046,137 @@ test('variant id', {
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
   }
 })
-test('AUTproxy should proxy resources test manually only', {
+
+test('should abort after close', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check()
+    eyes.close(false)
+    const abortResult = eyes.abort()
+    assert.equal(abortResult, null)
+  },
+})
+
+test('should abort unclosed tests', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check()
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, true)
+  },
+})
+
+test('should return aborted tests in getAllTestResults', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check()
+    const abortResult = eyes.abort()
+    assert.equal(abortResult.getIsAborted(), true)
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, true)
+  },
+})
+
+test('should return browserInfo in getAllTestResults', {
+  page: 'Default',
   vg: true,
-  config: {autProxy: {proxy: {url:'localhost:8888', isHttpOnly: true}, domains: ['example.com'], AUTProxyMode: 'Block'}},
-  test({driver, eyes, assert}) {
-    driver.visit('https://demo.applitools.com/app.html')
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
-    eyes.check({isFully: true, disableBrowserFetching: true})
-    assert.throws(() => void eyes.close(false))
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 800, height: 600},
+      {name: 'firefox', width: 640, height: 480},
+      {chromeEmulationInfo: {deviceName: 'Pixel 4 XL'}},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    const testResults = eyes.close(false)
+    assert.equal(testResults.status, 'Passed')
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 3)
+    assert.equal(results.getAllResults()[0].browserInfo.name, 'chrome')
+    assert.equal(results.getAllResults()[0].browserInfo.width, 800)
+    assert.equal(results.getAllResults()[0].browserInfo.height, 600)
+    assert.equal(results.getAllResults()[0].testResults.status, 'Passed')
+    assert.equal(results.getAllResults()[1].browserInfo.name, 'firefox')
+    assert.equal(results.getAllResults()[1].browserInfo.width, 640)
+    assert.equal(results.getAllResults()[1].browserInfo.height, 480)
+    assert.equal(results.getAllResults()[1].testResults.status, 'Unresolved')
+    assert.equal(results.getAllResults()[2].browserInfo.chromeEmulationInfo.deviceName, 'Pixel 4 XL')
+    assert.equal(results.getAllResults()[2].testResults.status, 'Passed')
+  },
+})
+
+test('should waitBeforeCapture in open', {
+  vg: true,
+  config: {
+    layoutBreakpoints: true,
+    waitBeforeCapture: 2000,
+    browsersInfo: [
+      { name: 'chrome', width: 1200, height: 800 },
+    ]
+  },
+  test({ driver, eyes }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
+    eyes.check({isFully: true})
+    eyes.close()
+  },
+})
+test('should waitBeforeCapture in check', {
+  vg: true,
+  config: {
+    browsersInfo: [
+      { name: 'chrome', width: 1200, height: 800 },
+    ]
+  },
+  test({ driver, eyes }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
+    eyes.check({
+      isFully: true,
+      layoutBreakpoints: true,
+      waitBeforeCapture: 2000,
+    })
+    eyes.close()
+  },
+})
+
+test('should send agentRunId', {
+  page: 'Default',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 400, height: 400},
+      {name: 'chrome', width: 500, height: 500}
+    ]
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
+    eyes.check({fully: false});
+    eyes.close(false)
+    const resultSummary = eyes.runner.getAllTestResults(false)
+    const info1 = helpers.getTestInfo(resultSummary.getAllResults()[0].testResults);
+    const info2 = helpers.getTestInfo(resultSummary.getAllResults()[1].testResults); 
+    assert.ok(info1.startInfo.agentRunId)
+    assert.equal(info1.startInfo.agentRunId, info2.startInfo.agentRunId)
   },
 })
 // #endregion
