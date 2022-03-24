@@ -47,6 +47,9 @@ module.exports = {
 
     'should waitBeforeCapture in open': { skipEmit: true },
     'should waitBeforeCapture in check': { skipEmit: true },
+    'should waitBeforeCapture with breakpoints in check': { skipEmit: true },
+    'should waitBeforeCapture with breakpoints in open': { skipEmit: true },
+    'should be empty if page delayed by 1500': { skipEmit: true },
       
     // TODO verify and enable
     'should send agentRunId': {skipEmit: true},
