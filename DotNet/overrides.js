@@ -77,6 +77,7 @@ module.exports = {
   'should return browserInfo in getAllTestResults': {skipEmit: true},
   'should waitBeforeCapture in open': {skipEmit: true},
   'should waitBeforeCapture in check': {skipEmit: true},
+	'AUTproxy should proxy resources test manually only': { skipEmit: true },
 
 	// TODO verify and enable
   'should send agentRunId': {skipEmit: true},
