@@ -93,9 +93,12 @@ function ignoreRegions(arr) {
 function layoutRegions(arr){
     return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '')
 }
-function layoutBreakpoints(arr){
-    if (Array.isArray(arr)) return `.layout_breakpoints(` + arr.join(',') + `)`
-    return `.layout_breakpoints(True)`
+function layoutBreakpoints(arg){
+    if (Array.isArray(arg)) {
+        return python`.layout_breakpoints(*${arg})`
+    } else {
+        return python`.layout_breakpoints(${arg})`
+    }
 }
 function floatingRegions(arr) {
     return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``)
