@@ -398,10 +398,10 @@ def execution_grid():
         },
         close(throwEx = true) {
             let isThrow = throwEx.toString()
-            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
+            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`).type('TestResults')
         },
         abort() {
-            return addCommand(python`eyes.abort()`)
+            return addCommand(python`eyes.abort()`).type('TestResults')
         },
         locate(visualLocatorSettings) {
             let names = `${visualLocatorSettings.locatorNames}`

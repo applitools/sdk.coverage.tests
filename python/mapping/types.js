@@ -42,7 +42,7 @@ const types = {
     },
     "TestResults": {
         name: () => 'TestResults',
-        get: simpleGetter,
+        get: (target, key) => key === `status` ? `${target}.status.value` : simpleGetter(target, key),
     },
     "TestResultsSummary": {
         name: () => `TestResultsSummary`,
