@@ -2054,7 +2054,7 @@ test('should abort after close', {
     'with vg': {vg: true},
   },
   test({eyes, assert}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check()
     eyes.close(false)
     const abortResult = eyes.abort()
@@ -2069,7 +2069,7 @@ test('should abort unclosed tests', {
     'with vg': {vg: true},
   },
   test({eyes, assert}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check()
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults().length, 1)
@@ -2084,7 +2084,7 @@ test('should return aborted tests in getAllTestResults', {
     'with vg': {vg: true},
   },
   test({eyes, assert}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check()
     const abortResult = eyes.abort()
     assert.equal(abortResult.getIsAborted(), true)
