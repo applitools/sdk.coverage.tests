@@ -112,10 +112,10 @@ const types = {
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
-                if(render.name) return `DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
-                else if (render.iosDeviceInfo) return `IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
-                else if (render.chromeEmulationInfo) return `ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
-            }).join(', ')
+                if(render.name) return `conf.add_browser(DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()}))`
+                else if (render.iosDeviceInfo) return `conf.add_browser(IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]}))`
+                else if (render.chromeEmulationInfo) return `conf.add_browser(ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT))`
+            }).join('\n    ')
         },
     },
 }
