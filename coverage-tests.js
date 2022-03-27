@@ -2124,7 +2124,7 @@ test('should return browserInfo in getAllTestResults', {
   },
 })
 
-test('should waitBeforeCapture in open', {
+test('should waitBeforeCapture with breakpoints in open', {
   vg: true,
   config: {
     layoutBreakpoints: true,
@@ -2140,7 +2140,7 @@ test('should waitBeforeCapture in open', {
     eyes.close()
   },
 })
-test('should waitBeforeCapture in check', {
+test('should waitBeforeCapture with breakpoints in check', {
   vg: true,
   config: {
     browsersInfo: [
@@ -2154,6 +2154,47 @@ test('should waitBeforeCapture in check', {
       isFully: true,
       layoutBreakpoints: true,
       waitBeforeCapture: 2000,
+    })
+    eyes.close()
+  },
+})
+
+test('should waitBeforeCapture in open', {
+  vg: true,
+  config: {
+    waitBeforeCapture: 2000,
+  },
+  test({ driver, eyes }) {
+    // 'delay' (in queryString) is the time in milliseconds until image is visible in html (default is 1000)
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1000')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({ isFully: true })
+    eyes.close()
+  },
+})
+
+test('should waitBeforeCapture in check', {
+  vg: true,
+  test({ driver, eyes }) {
+    // 'delay' (in queryString) is the time in milliseconds until image is visible in html (default is 1000)
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1000')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({
+      isFully: true,
+      waitBeforeCapture: 2000,
+    })
+    eyes.close()
+  },
+})
+
+test('should be empty if page delayed by 1500', {
+  vg: true,
+  test({ driver, eyes }) {
+    // 'delay' (in queryString) is the time in milliseconds until image is visible in html (default is 1000)
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1500')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({
+      isFully: true
     })
     eyes.close()
   },
