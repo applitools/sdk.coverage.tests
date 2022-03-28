@@ -118,5 +118,19 @@ const types = {
             }).join('\n    ')
         },
     },
+    "BrowserInfo": {
+        get: (target, key) => {
+            if (key === 'name') {
+                return `${target}.browser_type.value`
+            } else if (key === 'chromeEmulationInfo') {
+                return `${target}`
+            } else {
+                return simpleGetter(target, key)
+            }
+        },
+    },
+    "ChromeEmulationInfo": {
+        get: (target, key) => key === 'deviceName' ? `${target}.device_name.value` : simpleGetter(target, key),
+    }
 }
 module.exports = types
