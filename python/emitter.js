@@ -1,6 +1,6 @@
 'use strict'
 const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
-const {capitalizeFirstLetter, toLowerSnakeCase} = require('./util')
+const {capitalizeFirstLetter, fromCamelCaseToSnakeCase, toLowerSnakeCase} = require('./util')
 const find_commands = require('./mapping/find_commands')
 const types = require('./mapping/types')
 
@@ -61,7 +61,7 @@ module.exports = function (tracker, test) {
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
-        if (key.startsWith('get')) return `${target}.${key.slice(3).toLowerCase()}`
+        if (key.startsWith('get')) return `${target}.${fromCamelCaseToSnakeCase(key).slice(4)}`
         if (key.startsWith('length')) return `len(${target})`
         if ((type !== undefined) && (type !== null) && (type.name === 'JsonNode')) return `${target}[${key}]`
         if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (!isNaN(key))) return `${target}[${key}]`
@@ -401,9 +401,7 @@ def execution_grid():
             return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`).type('TestResults')
         },
         abort() {
-            return addCommand(python`eyes.abort()`).type('TestResults').methods({
-                getIsAborted: (target) => addCommand(python`${target}.is_aborted`)
-            })
+            return addCommand(python`eyes.abort()`).type('TestResults')
         },
         locate(visualLocatorSettings) {
             let names = `${visualLocatorSettings.locatorNames}`
