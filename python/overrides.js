@@ -2,7 +2,7 @@ module.exports = {
     // fails in selenium4 only due to legacy driver being used
     'check window after manual scroll on safari 11': {skip: true},
 
-    // Shadow emitter not implemented
+    // fails on chrome>=96
     'check region by element within shadow dom with vg': {skip: true},
 
     // Stale element are not handled by python binding
@@ -20,7 +20,6 @@ module.exports = {
     'should be empty if page delayed by 1500': { skipEmit: true },
 
     // TODO verify and enable
-    'should send agentRunId': {skipEmit: true},
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
 }
