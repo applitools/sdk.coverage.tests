@@ -1533,7 +1533,6 @@ test('should extract text from regions without a hint', {
   test({driver, eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const text = eyes.extractText([
-      {target: {left: 10, top: 405, width: 210, height: 22}},
       {target: {x: 10, y: 405, width: 210, height: 22}},
       {target: {x: 10, y: 405, width: 210, height: 22}, hint: ''},
     ])
