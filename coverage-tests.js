@@ -1527,6 +1527,21 @@ test('should extract text from regions', {
   },
 })
 
+test('should extract text from regions without a hint', {
+  page: 'OCR',
+  config: {stitchMode: 'CSS'},
+  test({driver, eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    const text = eyes.extractText([
+      {target: {x: 10, y: 405, width: 210, height: 22}},
+      {target: {x: 10, y: 405, width: 210, height: 22}, hint: ''},
+    ])
+    eyes.close(false)
+    assert.equal(text[0], 'imagination be your guide.')
+    assert.equal(text[1], 'imagination be your guide.')
+  },
+})
+
 test('should extract text regions from image', {
   page: 'OCR',
   test({eyes, assert}) {
