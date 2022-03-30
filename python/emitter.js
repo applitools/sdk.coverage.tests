@@ -418,7 +418,7 @@ def execution_grid():
                 if (typeof (region.target) === "string") {
                     commands.push(python`[By.CSS_SELECTOR, ${region.target}])`)
                 } else if (typeof (region.target) === "object") {
-                    commands.push(python`Region(${region.target.left}, ${region.target.top}, ${region.target.width}, ${region.target.height}))`)
+                    commands.push(python`Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
                 } else {
                     commands.push(python`${region.target})`)
                 }

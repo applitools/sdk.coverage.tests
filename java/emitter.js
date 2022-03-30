@@ -302,7 +302,7 @@ module.exports = function (tracker, test) {
                 if (typeof (region.target) === "string") {
                     commands.push(java`By.cssSelector(${region.target}))`)
                 } else if (typeof (region.target) === "object") {
-                    commands.push(java`new Region(${region.target.left}, ${region.target.top}, ${region.target.width}, ${region.target.height}))`)
+                    commands.push(java`new Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
                 } else {
                     commands.push(java`${region.target})`)
                 }

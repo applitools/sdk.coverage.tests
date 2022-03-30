@@ -32,6 +32,7 @@ module.exports = {
 	'check window after manual scroll on safari 11': { skip: true },   //NoSuchWindowException : A request to use a window could not be satisfied because the window could not be found
 	'should extract text from regions': { skipEmit: true },   //test not implemented yet. It exists for JS only now
 	'should extract text regions from image': {skipEmit: true},   // Not implemented yet
+	'should extract text from regions without a hint': { skipEmit: true }, // skipping since the other OCR tests are skipped
 	// can be quick fixed
 	'check region by native selector': { skip: true }, //To fit in existing baseline for C# should have test name "Appium_Android_CheckRegion"
 	'check frame in frame fully with vg': { skip: true },  //baseline NEW. Need compare with JS tests, maybe add baseline.
