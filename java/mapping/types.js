@@ -45,9 +45,6 @@ const types = {
         get: (target, key) => `${target}.get(${Number.isInteger(Number(key)) ? key : `"${key}"`})`,
         name: () => 'JsonNode'
     },
-    "TestResults": {
-        name: () => 'TestResults',
-    },
     "Element": {
         name: () => 'WebElement',
         get: simpleGetter,
@@ -64,7 +61,10 @@ const types = {
             return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`}
     },
     "Array": {
-        get: (target, key) => `${target}[${key}]`,
+        get: (target, key) => {
+            if(key === 'length') return `${target}.length`
+            else return `${target}[${key}]`
+        },
         name: (arr) => `${arr.items.type}[]`,
     },
     "Boolean": {
@@ -141,12 +141,20 @@ const types = {
         name: () => `TestResultContainer`,
         get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key)
     },
+    "TestResults": {
+        name: () => `TestResults`,
+        get: (target, key) => key.startsWith('is') ? `${target}.${key}()` : simpleGetter(target, key)
+    },
     "rect": {
         name: () => 'Rect',
         get: (target, key) => `${target}.get("${key}").asDouble()`,
     },
 	"PageCoverageInfo": {
 		get: simpleGetter
-	}
+	},
+	"BrowserInfo": {
+        name: () => `BrowserInfo`,
+        get: simpleGetter
+    }
 }
 module.exports = types
