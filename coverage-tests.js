@@ -284,6 +284,40 @@ test('check window fully on android chrome emulator', {
   },
 })
 
+test('check window UFG native', {
+  variants: {
+    'on ios': {
+      env: {
+        device: 'iPhone 12',
+        app: 'https://applitools.jfrog.io/artifactory/Examples/DuckDuckGo-instrumented.app.zip',
+        injectUFGLib: true,
+      },
+      config: {
+        browsersInfo: [
+          {iosDeviceInfo: {deviceName: 'iPhone 12', iosVersion: 'latest'}}
+        ]
+      }
+    },
+    'on android': {
+      env: {
+        device: 'Pixel 3 XL',
+        app: 'https://applitools.jfrog.io/artifactory/Examples/ufg-native-example.apk',
+      },
+      config: {
+        browsersInfo: [
+          {androidDeviceInfo: {deviceName: 'Pixel 4 XL', androidVersion: 'latest'}}
+        ]
+      }
+    }
+  },
+  vg: true,
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check()
+    eyes.close()
+  },
+})
+
 // #endregion
 
 // #region CHECK FRAME
