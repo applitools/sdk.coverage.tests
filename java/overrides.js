@@ -53,6 +53,6 @@ module.exports = {
       
     // TODO verify and enable
     'should send agentRunId': {skipEmit: true},
-    'appium iOS nav bar check regio': {skipEmit: true},
+    "appium iOS nav bar check regio": {skipEmit: true},
 
 }
