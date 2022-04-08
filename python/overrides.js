@@ -12,15 +12,14 @@ module.exports = {
     // Failing on the universal server 1.10 and lower
     // check on new universal server version
     "check window on mobile web android": {skip: true},
-  
-    'should waitBeforeCapture in open': { skipEmit: true },
-    'should waitBeforeCapture in check': { skipEmit: true },
-    'should waitBeforeCapture with breakpoints in check': { skipEmit: true },
-    'should waitBeforeCapture with breakpoints in open': { skipEmit: true },
+
     'should be empty if page delayed by 1500': { skipEmit: true },
+
+    // OCR algo has changed
+    "should extract text from regions": {skip: true},
 
     // TODO verify and enable
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
-    "appium iOS nav bar check regio": {skipEmit: true},
+    "appium iOS nav bar check region": {skipEmit: true},
 }
