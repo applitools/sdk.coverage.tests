@@ -16,7 +16,7 @@ function checkSettings(cs) {
     //if (cs.frames === undefined && cs.region === undefined) element = '.window()'
     if (cs.frames !== undefined || cs.region !== undefined) {
         if (cs.frames) element += frames(cs.frames)
-        if (cs.region) element += region(cs.region)
+        if (cs.region) element += region(cs.region, true)
     }
     if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
@@ -82,9 +82,13 @@ function parseSelector(selector) {
     return string
 }
 
-function region(region_param) {
-	if ((typeof region_param === "object") && ("shadow" in region_param)) return `.shadow(${regionParameter(region_param)})${region(region_param.shadow)}`
-    return `.region(${regionParameter(region_param)})`
+function region(region_param, first_call) {
+	if ((typeof region_param === "object") && ("shadow" in region_param)) {
+        let callChain = `.shadow(${regionParameter(region_param)})${region(region_param.shadow, false)}`
+        return first_call ? `.region(TargetPath${callChain})` : callChain
+    } else {
+        return `.region(${regionParameter(region_param)})`
+    }
 }
 
 function ignoreRegions(arr) {
