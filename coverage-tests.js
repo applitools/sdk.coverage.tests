@@ -2235,4 +2235,14 @@ test('should send agentRunId', {
     assert.equal(info1.startInfo.agentRunId, info2.startInfo.agentRunId)
   },
 })
+
+test('appium iOS nav bar check region', {
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/awesomeswift.zip'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: 'name == \"Awesome Swift\" AND type == \"XCUIElementTypeNavigationBar\"'}})
+    const result = eyes.close()
+  },
+})
 // #endregion
