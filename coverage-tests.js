@@ -2235,4 +2235,14 @@ test('should send agentRunId', {
     assert.equal(info1.startInfo.agentRunId, info2.startInfo.agentRunId)
   },
 })
+
+test('should send Agent Id', {
+  page: 'Default',
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Agent Id', viewportSize});
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(info.startInfo.AgentId, "currentSdkAgentId")
+  },
+})
 // #endregion
