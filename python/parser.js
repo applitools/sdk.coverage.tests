@@ -83,7 +83,7 @@ function parseSelector(selector) {
 }
 
 function region(region_param, first_call) {
-	if ((typeof region_param === "object") && ("shadow" in region_param)) {
+    if ((typeof region_param === "object") && ("shadow" in region_param)) {
         let callChain = `.shadow(${regionParameter(region_param)})${region(region_param.shadow, false)}`
         return first_call ? `.region(TargetPath${callChain})` : callChain
     } else {
