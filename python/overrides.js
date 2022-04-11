@@ -18,5 +18,4 @@ module.exports = {
     // TODO verify and enable
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
-    "appium iOS nav bar check region": {skipEmit: true},
 }
