@@ -15,9 +15,6 @@ module.exports = {
 
     'should be empty if page delayed by 1500': { skipEmit: true },
 
-    // OCR algo has changed
-    "should extract text from regions": {skip: true},
-
     // TODO verify and enable
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
