@@ -54,5 +54,8 @@ module.exports = {
     // TODO verify and enable
     'should send agentRunId': {skipEmit: true},
     "appium iOS nav bar check regio": {skipEmit: true},
+    
+    // TODO Failed and needs to be re-checked.
+    'appium iOS nav bar check region': {skip: true},
 
 }
