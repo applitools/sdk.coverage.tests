@@ -2241,7 +2241,7 @@ test('appium iOS nav bar check region', {
   features: ['native-selectors'],
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: 'name == \"Awesome Swift\" AND type == \"XCUIElementTypeNavigationBar\"'}})
+    eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: 'name == \"Awesome Swift\" AND type == \"XCUIElementTypeNavigationBar\"'}, isFully: false})
     const result = eyes.close()
   },
 })
