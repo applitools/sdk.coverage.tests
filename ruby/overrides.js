@@ -45,5 +45,11 @@ module.exports = {
     'should waitBeforeCapture with breakpoints in check': { skipEmit: true },
     'should waitBeforeCapture with breakpoints in open': { skipEmit: true },
     'should be empty if page delayed by 1500': { skipEmit: true },
+
+    // TODO verify and enable
     "appium iOS nav bar check regio": {skipEmit: true},
+    'appium android landscape mode check window andorid 7': {skip: true},
+    'appium android landscape mode check region android 7': {skip: true},
+    'appium android landscape mode check window andorid 10': {skip: true},
+    'appium android landscape mode check region android 10': {skip: true}
 }
