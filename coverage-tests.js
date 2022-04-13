@@ -314,6 +314,7 @@ test('check window UFG native', {
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check()
+    eyes.check()
     eyes.close()
   },
 })
