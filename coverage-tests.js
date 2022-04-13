@@ -2246,7 +2246,11 @@ test('appium iOS nav bar check region', {
   },
 })
 
-test('appium android landscape mode check window andorid 7', {
+test('appium android landscape mode check window', {
+  variants: {
+    'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
+    'on andorid 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
+  },
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2254,7 +2258,11 @@ test('appium android landscape mode check window andorid 7', {
     const result = eyes.close()
   },
 })
-test('appium android landscape mode check region android 7', {
+test('appium android landscape mode check region', {
+  variants: {
+    'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
+    'on andorid 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
+  },
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2262,20 +2270,5 @@ test('appium android landscape mode check region android 7', {
     const result = eyes.close()
   },
 })
-test('appium android landscape mode check window andorid 10', {
-  env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
-  test: ({driver, eyes, helpers, assert}) => {
-    eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({isFully: false})
-    const result = eyes.close()
-  },
-})
-test('appium android landscape mode check region android 10', {
-  env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
-  test: ({driver, eyes, helpers, assert}) => {
-    eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({region: {type: TYPE.XPATH, selector: '//android.widget.CheckBox[1]'}, isFully: false})
-    const result = eyes.close()
-  },
-})
+
 // #endregion

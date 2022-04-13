@@ -57,10 +57,8 @@ module.exports = {
     
     // TODO Failed and needs to be re-checked.
     'appium iOS nav bar check region': {skip: true},
-    "appium android landscape mode check window andorid 7": {skip: true},
-    "appium android landscape mode check region android 7": {skip: true},
-    "appium android landscape mode check window andorid 10": {skip: true},
-    "appium android landscape mode check region android 10": {skip: true}
+    "appium android landscape mode check window": {skip: true},
+    "appium android landscape mode check region": {skip: true},
 
 
 }
