@@ -85,4 +85,6 @@ module.exports = {
 	// TODO verify and enable
   'should send agentRunId': {skipEmit: true},
   "appium iOS nav bar check regio": {skipEmit: true},
+  "appium android landscape mode check window": {skip: true},
+  "appium android landscape mode check region": {skip: true},
 }
