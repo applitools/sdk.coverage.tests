@@ -2249,7 +2249,7 @@ test('appium iOS nav bar check region', {
 test('appium android landscape mode check window', {
   variants: {
     'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
-    'on andorid 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
+    'on android 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
   },
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
   test: ({driver, eyes, helpers, assert}) => {
@@ -2261,7 +2261,7 @@ test('appium android landscape mode check window', {
 test('appium android landscape mode check region', {
   variants: {
     'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
-    'on andorid 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
+    'on android 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
   },
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
   test: ({driver, eyes, helpers, assert}) => {
