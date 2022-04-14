@@ -59,6 +59,8 @@ module.exports = {
     'appium iOS nav bar check region': {skip: true},
     "appium android landscape mode check window": {skip: true},
     "appium android landscape mode check region": {skip: true},
-
+    
+    // Emitter failure
+    "appium android landscape mode check region on android 7": {skipEmit: true},
 
 }
