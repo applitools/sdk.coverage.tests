@@ -62,5 +62,6 @@ module.exports = {
     
     // Emitter failure
     "appium android landscape mode check region on android 7": {skipEmit: true},
+    "should work with beforeCaptureScreenshot hook": {skip: true}
 
 }

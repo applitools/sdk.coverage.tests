@@ -2271,4 +2271,21 @@ test('appium android landscape mode check region', {
   },
 })
 
+test('should work with beforeCaptureScreenshot hook', {
+page: 'HelloWorld',
+  variants: {
+  'with vg': {vg: true},
+  },
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 800, height: 600}
+    ]
+  },
+  test: ({driver, eyes, helpers, assert}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: true, hooks: {beforeCaptureScreenshot: `document.body.style.backgroundColor = 'gold'`}})
+    eyes.close()
+  }
+})
+
 // #endregion
