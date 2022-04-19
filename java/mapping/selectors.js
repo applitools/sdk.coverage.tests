@@ -7,4 +7,5 @@ module.exports = {
     "androidViewTag": (selector) => `MobileBy.AndroidViewTag(${selector})`,
     "-ios predicate string": (selector) => `MobileBy.iOSNsPredicateString(${selector})`,
     "-ios class chain": (selector) => `MobileBy.iOSClassChain(${selector})`,
+    "xpath": (selector) => `By.xpath(${selector})`,
 }
