@@ -130,6 +130,11 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', python`\n`)
 
     if (mobile) {
+        if(test.env.orientation) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def orientation():`)
+            addHook('beforeEach', python`    return ${test.env.orientation}\n`)
+        }
         if(test.env.app) {
             addHook('beforeEach', python`@pytest.fixture(scope="function")`)
             addHook('beforeEach', python`def app():`)
