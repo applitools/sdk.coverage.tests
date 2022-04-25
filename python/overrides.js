@@ -13,8 +13,6 @@ module.exports = {
     // check on new universal server version
     "check window on mobile web android": {skip: true},
 
-    'should be empty if page delayed by 1500': { skipEmit: true },
-
     // TODO verify and enable
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
