@@ -14,8 +14,6 @@ module.exports = {
     "check window on mobile web android": {skip: true},
 
     // TODO verify and enable
-    'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
-    'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
     "appium android landscape mode check window on android 7": {skipEmit: true},
     "appium android landscape mode check window on android 10": {skipEmit: true},
     "appium android landscape mode check region on android 7": {skipEmit: true},
