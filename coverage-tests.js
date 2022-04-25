@@ -2044,6 +2044,8 @@ test('adopted styleSheets on firefox', {
     eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
     eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: false}})
     eyes.close()
+    const summary = eyes.runner.getAllTestResults(false)
+    assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,24), `failed to render screenshot`)
   }
 })
 
