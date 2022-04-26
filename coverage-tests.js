@@ -2044,8 +2044,6 @@ test('adopted styleSheets on firefox', {
     eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
     eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: false}})
     eyes.close()
-    const summary = eyes.runner.getAllTestResults(false)
-    assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,24), `failed to render screenshot`)
   }
 })
 
@@ -2287,6 +2285,27 @@ page: 'HelloWorld',
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({isFully: true, hooks: {beforeCaptureScreenshot: `document.body.style.backgroundColor = 'gold'`}})
     eyes.close()
+  }
+})
+
+test('Should return exception in TestResultsSummary', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'firefox', width: 640, height: 480},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: false})
+    assert.throws(() => void eyes.close())
+    // TODO assert test is aborted
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
+    eyes.close(false)
+    const summary = eyes.runner.getAllTestResults(false)
+    assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
   }
 })
 
