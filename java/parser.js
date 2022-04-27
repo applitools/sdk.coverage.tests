@@ -2,6 +2,7 @@
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 const {capitalizeFirstLetter, isEmpty} = require('./util')
+const {checkOptions} = require("../util")
 const {CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS} = require('./mapping/supported')
 
 
@@ -129,13 +130,6 @@ function checkSettings(cs, native) {
                 throw new Error(`Region parameter of the unimplemented type was used:  ${JSON.stringify(region)}`);
         }
         return string
-    }
-
-    function checkOptions(actual, supported) {
-        const actualOptions = Object.keys(actual);
-        actualOptions.forEach(option => {
-            if (!supported.includes(option)) throw new Error(`Emitter need update to support check settings option: ${option}`);
-        })
     }
 
 }
