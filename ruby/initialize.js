@@ -108,7 +108,30 @@ module.exports = function (tracker, test) {
         },
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(ruby`@eyes.runner.get_all_test_results(${throwEx})`)
+                return addCommand(ruby`@runner.get_all_test_results(${throwEx})`).methods({
+                    getAllResults: (target) => addCommand(ruby`${target}.all_results`).type({
+                        type: 'Array',
+                        items: {
+                            type: 'TestResultContainer',
+                            schema: {
+                                browserInfo: {
+                                    type: "BrowserInfo",
+                                    schema: {
+                                        name: "String",
+                                        height: "int",
+                                        width: "int",
+                                        chromeEmulationInfo: {
+                                            type: "ChromeEmulationInfo",
+                                            schema: {
+                                                deviceName: "String"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    })
+                })
             }
         },
         open({appName, testName, viewportSize}) {

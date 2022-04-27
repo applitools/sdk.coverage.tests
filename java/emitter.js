@@ -27,7 +27,8 @@ const Location = {
 const TestResults = {
     type: "TestResults",
     schema: {
-        isAborted: "Boolean"
+        isAborted: "Boolean",
+        status: "String",
     }
 }
 
@@ -377,6 +378,8 @@ module.exports = function (tracker, test) {
 
     const assert = {
         equal(actual, expected, message) {
+            console.log(actual)
+            console.log(expected)
             if (expected === null) {
                 addCommand(java`Assert.assertNull(${actual}${assertMessage(message)});`)
             } else if (expected.isRef) {

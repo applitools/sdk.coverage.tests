@@ -2226,7 +2226,7 @@ test('should send agentRunId', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
-    eyes.check({fully: false});
+    eyes.check({isFully: false});
     eyes.close(false)
     const resultSummary = eyes.runner.getAllTestResults(false)
     const info1 = helpers.getTestInfo(resultSummary.getAllResults()[0].testResults);
