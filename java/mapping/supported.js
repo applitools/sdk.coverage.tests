@@ -29,6 +29,7 @@ const ENV_PROPERTIES = [
     'legacy',
     'executionGrid',
     'orientation',
+    'args', // Need to add in the future
 ]
 module.exports = {
     CHECK_SETTINGS_OPTIONS,
