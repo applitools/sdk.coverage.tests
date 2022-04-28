@@ -14,6 +14,4 @@ module.exports = {
     "appium android landscape mode check window on android 10": {skipEmit: true},
     "appium android landscape mode check region on android 7": {skipEmit: true},
     "appium android landscape mode check region on android 10": {skipEmit: true},
-    // OCR is broken again
-    "should extract text regions from image": {skip: true},
 }
