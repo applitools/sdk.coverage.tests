@@ -2197,9 +2197,9 @@ test('should waitBeforeCapture in check', {
     eyes.check({name: "session opening is finished", isFully: false})
     // 'delay' (in queryString) is the time in milliseconds until image is visible in html (default is 1000)
     driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1000')
-    eyes.check({name: "should be blank", isFully: true})
-    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1000')
     eyes.check({name: "should show smurf", isFully: true, waitBeforeCapture: 2000})
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1000')
+    eyes.check({name: "should be blank", isFully: true})
     eyes.close()
   },
 })
