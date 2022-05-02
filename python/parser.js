@@ -4,10 +4,10 @@ const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 
 function checkSettings(cs) {
-    let name = `'', `
+    let name = ''
     let target = `Target`
     if(cs === undefined){
-        return name + target + '.window()'
+        return target + '.window()'
     }
     let element = ''
     let options = ''
@@ -31,7 +31,7 @@ function checkSettings(cs) {
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.hooks) options += handleHooks(cs.hooks)
     if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
-    if (cs.name) options += `.with_name(${cs.name})`
+    if (cs.name) name = python`${cs.name}, `
     if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     return name + target + element + options
 }
