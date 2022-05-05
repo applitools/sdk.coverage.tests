@@ -8,8 +8,6 @@ module.exports = {
     // Stale element are not handled by python binding
     'should handle check of stale element if selector is preserved': {skip: true},
     'should handle check of stale element in frame if selector is preserved': {skip: true},
-    // OCR is broken again
-    "should extract text regions from image": {skip: true},
 
     // Different ruby getAllTestResults returned value
     'should send agentRunId': {skip: true},
@@ -20,10 +18,4 @@ module.exports = {
     'should return aborted tests in getAllTestResults with vg': {skip: true},
     'should return browserInfo in getAllTestResults': {skip: true},
     'should be empty if page delayed by 1500': {skip: true},
-
-    "appium android landscape mode check window on android 7": {skip: true},
-    "appium android landscape mode check window on android 10": {skip: true},
-    "appium android landscape mode check region on android 7": {skip: true},
-    "appium android landscape mode check region on android 10": {skip: true},
-
 }
