@@ -1,7 +1,4 @@
 module.exports = {
-    // fails in selenium4 only due to legacy driver being used
-    'check window after manual scroll on safari 11': {skip: true},
-
     // fails on chrome>=96
     'check region by element within shadow dom with vg': {skip: true},
 
