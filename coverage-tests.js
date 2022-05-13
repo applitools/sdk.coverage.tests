@@ -2300,10 +2300,6 @@ test('Should return exception in TestResultsSummary', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: false})
     assert.throws(() => void eyes.close())
-    // TODO assert test is aborted
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
-    eyes.close(false)
     const summary = eyes.runner.getAllTestResults(false)
     assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
   }
