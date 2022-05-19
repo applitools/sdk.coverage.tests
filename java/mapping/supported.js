@@ -16,7 +16,9 @@ const CHECK_SETTINGS_OPTIONS = [
     'variationGroupId',
     'hooks',
     'timeout',
-    'pageId']
+    'pageId',
+    'waitBeforeCapture'
+]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'
 ]
