@@ -45,10 +45,6 @@ module.exports = {
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
 
-    'should waitBeforeCapture in open': { skipEmit: true },
-    'should waitBeforeCapture in check': { skipEmit: true },
-    'should waitBeforeCapture with breakpoints in check': { skipEmit: true },
-    'should waitBeforeCapture with breakpoints in open': { skipEmit: true },
     'should be empty if page delayed by 1500': { skipEmit: true },
       
     // TODO verify and enable
