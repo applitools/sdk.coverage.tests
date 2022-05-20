@@ -35,7 +35,7 @@ function checkSettings(cs, native) {
     if (cs.matchLevel) options += `.matchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
     if (cs.name) options += `.withName("${cs.name}")`;
     if (cs.layoutBreakpoints) options += `.layoutBreakpoints(${cs.layoutBreakpoints})`;
-    if (cs.waitBeforeCapture) options += `.waitBeforeCapture(${cs.waitBeforeCapture})`;
+    if (cs.waitBeforeCapture) options += `.waitBeforeCapture((double) ${cs.waitBeforeCapture})`;
     if (cs.isFully === true) {
         options += '.fully()';
     } else if (cs.isFully === false) {
