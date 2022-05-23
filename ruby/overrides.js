@@ -50,5 +50,6 @@ module.exports = {
     "appium iOS nav bar check regio": {skipEmit: true},
     "appium android landscape mode check window": {skip: true},
     "appium android landscape mode check region": {skip: true},
-    "should work with beforeCaptureScreenshot hook": {skip: true}
+    "should work with beforeCaptureScreenshot hook": {skip: true},
+    "Should return exception in TestResultsSummary": {skipEmit: true},
 }
