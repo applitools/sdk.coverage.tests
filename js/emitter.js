@@ -45,7 +45,7 @@ module.exports = function(tracker, test) {
   if (process.env.SPEC_DRIVER) addHook('deps', `const spec = require('${process.env.SPEC_DRIVER}')`)
   else addHook('deps', `const spec = require(path.resolve('./dist/spec-driver'))`)
 
-  if (process.env.SETUP_EYES) addHook('deps', `const setupEyes = require('${process.env.SETUP_EYES}'))`)
+  if (process.env.SETUP_EYES) addHook('deps', `const setupEyes = require('${process.env.SETUP_EYES}')`)
   else addHook('deps', `const setupEyes = require('@applitools/test-utils/src/setup-eyes')`)
 
   if (!process.env.NO_SDK) addHook('deps', `const sdk = require(process.cwd())`)
