@@ -2277,4 +2277,21 @@ page: 'HelloWorld',
   }
 })
 
+test('Should return exception in TestResultsSummary', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'firefox', width: 640, height: 480},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: false})
+    assert.throws(() => void eyes.close())
+    const summary = eyes.runner.getAllTestResults(false)
+    assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
+  }
+})
+
 // #endregion

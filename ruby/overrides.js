@@ -18,4 +18,6 @@ module.exports = {
     'should return aborted tests in getAllTestResults with vg': {skip: true},
     'should return browserInfo in getAllTestResults': {skip: true},
     'should be empty if page delayed by 1500': {skip: true},
+
+    "Should return exception in TestResultsSummary": {skipEmit: true},
 }

@@ -88,6 +88,7 @@ module.exports = {
   //"appium android landscape mode check window": {skip: true},
   //"appium android landscape mode check region": {skip: true},
   //"should work with beforeCaptureScreenshot hook": {skip: true},
+  "Should return exception in TestResultsSummary": {skipEmit: true},
 
   // A new added test?
   //"check window on mobile web android": {skipEmit: true}
