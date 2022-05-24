@@ -27,7 +27,8 @@ const Location = {
 const TestResults = {
     type: "TestResults",
     schema: {
-        isAborted: "Boolean"
+        isAborted: "Boolean",
+        status: "String",
     }
 }
 

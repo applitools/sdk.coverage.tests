@@ -10,7 +10,12 @@ module.exports = function (tracker, test) {
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
 
-    let native = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
+    let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
+    if(emulator) {
+        test.meta.native = false;
+        test.meta.mobile = false;
+    }
+    let native = test.meta.mobile;
     let env = {...test.env};
     if (test.executionGrid) {
         env.executionGrid = test.executionGrid;
@@ -108,7 +113,30 @@ module.exports = function (tracker, test) {
         },
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(ruby`@eyes.runner.get_all_test_results(${throwEx})`)
+                return addCommand(ruby`@runner.get_all_test_results(${throwEx})`).methods({
+                    getAllResults: (target) => addCommand(ruby`${target}.all_results`).type({
+                        type: 'Array',
+                        items: {
+                            type: 'TestResultContainer',
+                            schema: {
+                                browserInfo: {
+                                    type: "BrowserInfo",
+                                    schema: {
+                                        name: "String",
+                                        height: "int",
+                                        width: "int",
+                                        chromeEmulationInfo: {
+                                            type: "ChromeEmulationInfo",
+                                            schema: {
+                                                deviceName: "String"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    })
+                })
             }
         },
         open({appName, testName, viewportSize}) {

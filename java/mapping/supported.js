@@ -16,11 +16,23 @@ const CHECK_SETTINGS_OPTIONS = [
     'variationGroupId',
     'hooks',
     'timeout',
-	'pageId']
+    'pageId']
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'
 ]
+
+const ENV_PROPERTIES = [
+    'browser',
+    'device',
+    'app',
+    'headless',
+    'legacy',
+    'executionGrid',
+    'orientation',
+    'args', // Need to add in the future
+]
 module.exports = {
     CHECK_SETTINGS_OPTIONS,
-    CHECK_SETTINGS_HOOKS
+    CHECK_SETTINGS_HOOKS,
+    ENV_PROPERTIES
 }

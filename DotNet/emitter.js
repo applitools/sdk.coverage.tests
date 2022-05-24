@@ -429,13 +429,13 @@ module.exports = function (tracker, test) {
 			else {act = `${actual}`
 			console.log("actual = " + actual)}
 
-			let mess = message ? message : null
+			let mess = message ? `"${message}"` : null
 			addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
 		},
 
 		instanceOf(object, className, message) {
 			let classNm = `${className}`
-			let mess = message ? message : null
+			let mess = message ? `"${message}"` : null
 			let obj = object.ref()
 			addCommand(dot_net` Assert.IsInstanceOf<` + className + `>(` + obj + `, ` + mess + `);`)
 		},
@@ -474,13 +474,13 @@ module.exports = function (tracker, test) {
 				},
 			}
 			return addCommand(dot_net`TestUtils.GetSessionResults(eyes.ApiKey, ${result});`).type({
-				type: 'TestInfo',
-				schema: {
-					actualAppOutput: {
-						type: 'Array',
-						items: { type: 'AppOutput', schema: appOutputSchema },
-					},
-				},
+				// type: 'TestInfo',
+				// schema: {
+				// 	actualAppOutput: {
+				// 		type: 'Array',
+				// 		items: { type: 'AppOutput', schema: appOutputSchema },
+				// 	},
+				// },
 				type: 'String',
 				schema: {
 					actualAppOutput: {

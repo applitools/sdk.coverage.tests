@@ -86,6 +86,10 @@ const types = {
         constructor: (value) => `new Long(${JSON.stringify(value)})`,
         name: () => `Long`,
     },
+    "int": {
+        constructor: (value) => `${JSON.stringify(value)}`,
+        name: () => `int`,
+    },
     "Image": {
         get: simpleGetter,
     },
@@ -154,6 +158,10 @@ const types = {
 	},
 	"BrowserInfo": {
         name: () => `BrowserInfo`,
+        get: simpleGetter
+    },
+    "ChromeEmulationInfo": {
+        name: () => "ChromeEmulationInfo",
         get: simpleGetter
     }
 }
