@@ -277,8 +277,9 @@ test('check window fully on android chrome emulator', {
     'on mobile page with horizontal scroll': {page: 'ResolutionMobileHorizontalScroll', config: {baselineName: 'Android Emulator 8.0 Portrait scrolled_mobile fully', parentBranchName: 'default'}},
     'on desktop page': {page: 'Resolution', config: {baselineName: 'Android Emulator 8.0 Portrait desktop fully', parentBranchName: 'default'}},
   },
-  test({eyes}) {
+  test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - iOS Safari Cropping'})
+    driver.executeScript('updateData()')
     eyes.check({isFully: true})
     eyes.close()
   },
