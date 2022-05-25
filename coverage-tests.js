@@ -994,14 +994,13 @@ test('should send ignore region by the same selector as target region with vg', 
 test('should send correct ignore region if page scrolled before check', {
   page: 'CodedRegionPage',
   variants: {
-    'with css stitching': {config: {stitchMode: 'CSS'},
-    'with scroll stitching': {config: {stitchMode: 'Scroll'},
-    'with vg': {vg: true},
+    'with css stitching': {config: {stitchMode: 'CSS'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll'}},
   },
-  test({eyes, assert, helpers}) {
+  test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK', viewportSize})
     driver.click('#secondary')
-    eyes.check({ignoreRegions: ['#secondary']})
+    eyes.check({isFully: true, ignoreRegions: ['#secondary']})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
@@ -1009,7 +1008,7 @@ test('should send correct ignore region if page scrolled before check', {
       {left: 8, top: 2014, width: 56, height: 56},
     )
   },
-}
+})
 
 test('should send ignore region by selector outside of the target region', {
   page: 'Default',
