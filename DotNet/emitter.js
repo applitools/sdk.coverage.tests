@@ -67,6 +67,11 @@ function printCommitHash(webURL, branch) {
 module.exports = function (tracker, test) {
 	const { addSyntax, addCommand, addHook, withScope, addType } = tracker
 
+	// EG for UFG
+	if(test.vg && process.env.UFG_ON_EG) {
+		test.executionGrid = true;
+	}
+
 	let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
 	let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false

@@ -10,6 +10,10 @@ module.exports = function (tracker, test) {
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
 
+    // EG for UFG
+    if(test.vg && process.env.UFG_ON_EG) {
+        test.executionGrid = true;
+    }
     let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
     if(emulator) {
         test.meta.native = false;

@@ -23,6 +23,12 @@ module.exports = function (tracker, test) {
         if (element.isRef) return element
         else return driver.findElement(element)
     }
+
+    // EG for UFG
+    if(test.vg && process.env.UFG_ON_EG) {
+        test.executionGrid = true;
+    }
+
     let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
     if(emulator) {
         test.meta.native = false;

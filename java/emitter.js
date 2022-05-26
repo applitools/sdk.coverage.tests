@@ -91,6 +91,10 @@ module.exports = function (tracker, test) {
 
     addHook('deps', `package coverage.generic;`)
     addHook('deps', ``)
+    // EG for UFG
+    if(test.vg && process.env.UFG_ON_EG) {
+        test.executionGrid = true;
+    }
     // Dirty emulator workaround
     if (test.env && test.env.device === "Android 8.0 Chrome Emulator") {
         test.meta.native = false;
