@@ -2,9 +2,12 @@
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 const {isSelector, pascalToSnakeCase} = require('./util')
+const {checkOptions} = require('../util')
+const {CHECK_SETTINGS_OPTIONS} = require('./mapping/supported')
 
 function checkSettings(cs, driver, native) {
-    let ruby =  native ? `target: Applitools::Appium::Target` : `Applitools::Selenium::Target`;
+    checkOptions(cs, CHECK_SETTINGS_OPTIONS)
+    let ruby = native ? `target: Applitools::Appium::Target` : `Applitools::Selenium::Target`;
     if (cs === undefined) {
         return ruby + '.window'
     }
@@ -20,19 +23,22 @@ function checkSettings(cs, driver, native) {
     if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
     if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
-    if (cs.scrollRootElement )  element += scrollRootElement(cs.scrollRootElement)
+    if (cs.scrollRootElement) element += scrollRootElement(cs.scrollRootElement)
     if (cs.ignoreDisplacements !== undefined) options += `.ignore_displacements(${cs.ignoreDisplacements})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
-    if (cs.layoutBreakpoints ) options += `.layout_breakpoints(${serialize(cs.layoutBreakpoints)})`
+    if (cs.layoutBreakpoints) options += `.layout_breakpoints(${serialize(cs.layoutBreakpoints)})`
     if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
-    if (cs.isFully !== undefined) options += `.fully(${serialize(cs.isFully)})`;
     if (cs.visualGridOptions) options += `.visual_grid_options(polyfillAdoptedStyleSheets: ${cs.visualGridOptions.polyfillAdoptedStyleSheets})`
+    if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
+    if (cs.pageId) options += `.page_id(${serialize(cs.pageId)})`
+    if (cs.timeout !== undefined) options += `.timeout(${serialize(cs.timeout)})`
+    if (cs.isFully !== undefined) options += `.fully(${serialize(cs.isFully)})`;
     if (cs.hooks) options += hooks(cs.hooks);
     if (cs.name) name = `'${cs.name}', `;
     if (cs.matchLevel) options += `.match_level(${serialize(cs.matchLevel)})`
     return name + ruby + element + options
 
-    function hooks(obj){
+    function hooks(obj) {
         const hooks = Object.keys(obj).map(key => `${key}: ${serialize(obj[key])}`).join(',')
         return `.hooks(${hooks})`
     }
@@ -42,20 +48,23 @@ function checkSettings(cs, driver, native) {
     }
 
     function frame(val) {
-        return ( !val.isRef && val.frame) ? `.frame(${frameSelector(val.frame)})` : `.frame(${frameSelector(val)})`
+        return (!val.isRef && val.frame) ? `.frame(${frameSelector(val.frame)})` : `.frame(${frameSelector(val)})`
+
         function frameSelector(selector) {
-            if(typeof selector === 'string' && !checkCss(selector)) {
+            if (typeof selector === 'string' && !checkCss(selector)) {
                 return JSON.stringify(selector)
             } else {
                 return printSelector(selector);
             }
+
             function checkCss(string) {
                 return (string.includes('[') && string.includes(']')) || string.includes('#')
             }
         }
+
         function printSelector(val) {
             let selector;
-            if(val && val.isRef){
+            if (val && val.isRef) {
                 selector = val;
             } else if (isSelector(val)) {
                 // Might need to add mapping for selector's types if they won't match for ruby
@@ -126,11 +135,12 @@ function checkSettings(cs, driver, native) {
 
 function construct(chunks, ...values) {
     const commands = []
+
     function isPresent(values) {
         const value = (values.length > 0 && typeof values[0] !== 'undefined')
         return value && values[0].isRef ?
             values[0].ref() !== 'undefined' &&
-            values[0].ref() !== undefined:
+            values[0].ref() !== undefined :
             value
     }
 

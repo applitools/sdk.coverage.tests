@@ -2,7 +2,8 @@
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 const {capitalizeFirstLetter, isEmpty} = require('./util')
-const {CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS} = require('./mapping/supported')
+const {checkOptions} = require("../util")
+const {CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES} = require('./mapping/supported')
 
 
 function checkSettings(cs, native) {
@@ -34,6 +35,7 @@ function checkSettings(cs, native) {
     if (cs.matchLevel) options += `.matchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
     if (cs.name) options += `.withName("${cs.name}")`;
     if (cs.layoutBreakpoints) options += `.layoutBreakpoints(${cs.layoutBreakpoints})`;
+    if (cs.waitBeforeCapture) options += `.waitBeforeCapture(${cs.waitBeforeCapture})`;
     if (cs.isFully === true) {
         options += '.fully()';
     } else if (cs.isFully === false) {
@@ -131,13 +133,6 @@ function checkSettings(cs, native) {
         return string
     }
 
-    function checkOptions(actual, supported) {
-        const actualOptions = Object.keys(actual);
-        actualOptions.forEach(option => {
-            if (!supported.includes(option)) throw new Error(`Emitter need update to support check settings option: ${option}`);
-        })
-    }
-
 }
 
 // General
@@ -230,11 +225,13 @@ const returnSyntax = ({value}) => {
 }
 
 function parseEnv(env) {
+    checkOptions(env, ENV_PROPERTIES)
     let result = 'driver = buildDriver()'
     if (env) {
         if (env.browser) result += `.browser(${serialize(env.browser)})`
         if (env.device) result += `.device(${serialize(env.device)})`
         if (env.app) result += `.app(${serialize(env.app)})`
+        if (env.orientation) result += `.orientation(${serialize(env.orientation)})`
         if (env.hasOwnProperty('headless')) result += `.headless(${serialize(env.headless)})`
         if (env.hasOwnProperty('legacy')) result += `.legacy(${serialize(env.legacy)})`
         if (env.hasOwnProperty('executionGrid') && env.executionGrid !== undefined) result += `.executionGrid(${serialize(env.executionGrid)})`
