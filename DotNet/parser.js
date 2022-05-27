@@ -35,7 +35,7 @@ function checkSettings(cs, mobile = false) {
 	if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
 	if (cs.hooks) options += handleHooks(cs.hooks)
 	if ((cs.isFully === true) || (cs.fully === true)) { options += '.Fully()' } else if ((cs.isFully === false) || (cs.fully === false)) { options += '.Fully(false)' }
-	if (cs.name) options += `.WithName(${cs.name})`
+	if (cs.name) options += `.WithName("${cs.name}")`
 	if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`
 	if (cs.variationGroupId) {options += `.VariationGroupId("${cs.variationGroupId}")`}
 	return target + element + options
