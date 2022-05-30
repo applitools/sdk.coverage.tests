@@ -5,6 +5,7 @@ module.exports = {
     // Stale element are not handled by python binding
     'should handle check of stale element if selector is preserved': {skip: true},
     'should handle check of stale element in frame if selector is preserved': {skip: true},
-
-    "Should return exception in TestResultsSummary": {skipEmit: true},
+    
+    'Should return exception in TestResultsSummary': {skipEmit: true},
+    'should get dom pseudo elements when check window': {skipEmit: true},
 }

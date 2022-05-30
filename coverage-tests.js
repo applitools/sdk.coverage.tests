@@ -1261,6 +1261,25 @@ test('should send dom and location when check window', {
   }
 })
 
+test('should get dom pseudo elements when check window', {
+  vg: true,
+  test({ driver, eyes, assert, helpers }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/DomTest/dom_capture_pseudo.html')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({ isFully: true})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    const dom = helpers.getDom(result, info.actualAppOutput[0].image.domId)
+    const pseudoSpans = dom.getNodesByAttribute('data-applitools-is-pseudo')
+    assert.equal(pseudoSpans.length, 5)
+    assert.equal(pseudoSpans[0].attributes['data-applitools-is-pseudo'], 'before')
+    assert.equal(pseudoSpans[1].attributes['data-applitools-is-pseudo'], 'before')
+    assert.equal(pseudoSpans[2].attributes['data-applitools-is-pseudo'], 'before_and_after')
+    assert.equal(pseudoSpans[3].attributes['data-applitools-is-pseudo'], 'before')
+    assert.equal(pseudoSpans[4].attributes['data-applitools-is-pseudo'], 'after')
+  }
+})
+
 test('should send dom and location when check window fully', {
   page: 'Default',
   variants: {

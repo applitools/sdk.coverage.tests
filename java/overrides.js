@@ -60,7 +60,8 @@ module.exports = {
     "appium android landscape mode check region on android 7": {skipEmit: true},
     "appium android landscape mode check window on android 10": {skipEmit: true},
     "appium android landscape mode check window on android 7": {skipEmit: true},
-    "should work with beforeCaptureScreenshot hook": {skip: true}
+    "should work with beforeCaptureScreenshot hook": {skip: true }, 
+    'should get dom pseudo elements when check window': {skipEmit: true},
 
 
 }

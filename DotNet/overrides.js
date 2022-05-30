@@ -41,4 +41,5 @@ module.exports = {
     // Skipped test running on Selenium3 but not on Selenium4
     "should send dom on edge legacy": {skip: true},
     "Should return exception in TestResultsSummary": {skipEmit: true},
+    'should get dom pseudo elements when check window': {skipEmit: true},
 }
