@@ -56,6 +56,20 @@ test('check window', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_VG'}},
+    'on mobile web android': {
+      env: {
+        device: 'Pixel 3a XL',
+        browser: 'chrome',
+      },
+      page: 'HelloWorld',
+    },
+    'on mobile web ios': {
+      env: {
+        device: 'iPhone XS',
+        browser: 'safari',
+      },
+      page: 'HelloWorld',
+    },
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -1514,6 +1528,21 @@ test('should extract text from regions', {
   },
 })
 
+test('should extract text from regions without a hint', {
+  page: 'OCR',
+  config: {stitchMode: 'CSS'},
+  test({driver, eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    const text = eyes.extractText([
+      {target: {x: 10, y: 405, width: 210, height: 22}},
+      {target: {x: 10, y: 405, width: 210, height: 22}, hint: ''},
+    ])
+    eyes.close(false)
+    assert.equal(text[0], 'imagination be your guide.')
+    assert.equal(text[1], 'imagination be your guide.')
+  },
+})
+
 test('should extract text regions from image', {
   page: 'OCR',
   test({eyes, assert}) {
@@ -1528,13 +1557,14 @@ test('should extract text regions from image', {
     assert.equal(regions[patterns[0]][2].text, 'Header 3: Hello world!')
 
     assert.equal(regions[patterns[1]].length, 4)
-    assert.equal(regions[patterns[1]][0].text, '1. One')
-    assert.equal(regions[patterns[1]][1].text, '2. Two')
-    assert.equal(regions[patterns[1]][2].text, '3. Three')
-    assert.equal(regions[patterns[1]][3].text, '4. Four')
+    assert.equal(regions[patterns[1]][0].text, '1.One')
+    assert.equal(regions[patterns[1]][1].text, '2.Two')
+    assert.equal(regions[patterns[1]][2].text, '3.Three')
+    assert.equal(regions[patterns[1]][3].text, '4.Four')
 
+    // Temorary remove
     // assert.equal(regions[patterns[2]].length, 2)
-    assert.equal(regions[patterns[2]][0].text, 'choose to make it that way. Just make a decision and let')
+    // assert.equal(regions[patterns[2]][0].text, 'choose to make it that way. Just make a decision and let')
     // assert.equal(regions[patterns[2]][1].text, 'I can make this world as happy as I want it')
   },
 })
@@ -1627,19 +1657,6 @@ test('should handle check of stale element in frame if selector is preserved', {
   },
 })
 
-test('should abort if not closed', {
-  variants: {
-    '': {vg: false},
-    'with vg': {vg: true},
-  },
-  test({driver, eyes}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/FramesTestPage/')
-    eyes.open({appName: 'Test Abort', viewportSize: {width: 1200, height: 800}})
-    eyes.check()
-    eyes.abort()
-  },
-})
-
 test('should throw if no checkpoints before close', {
   page: 'Default',
   config: {baselineName: 'TestGetAllTestResults'},
@@ -1671,6 +1688,79 @@ test('should not check if disabled', {
     eyes.close()
   }
 })
+
+test('pageCoverage data is correct', {
+  page: 'Simple',
+  test({ eyes, assert, helpers }) {
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize });
+    eyes.check({ isFully: true, pageId: 'my-page' });
+    eyes.check({ isFully: true, region: '#overflowing-div > img:nth-child(22)', pageId: 'my-page' });
+    eyes.check({ isFully: true, region: {width: 200, height: 150, left: 10, top: 15}, pageId: 'my-page1' });
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.pageId,
+        'my-page', 'pageId match'
+    )
+     assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.width,
+        958, 'Page width match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.height,
+        3540, 'Page height match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage,
+        {x: 0, y: 0}, 'Full page'
+    )
+    assert.equal(
+        info.actualAppOutput[1].pageCoverageInfo.imagePositionInPage,
+        {x:  636, y:  1292}, 'Selector match'
+    )
+    assert.equal(
+        info.actualAppOutput[2].pageCoverageInfo.imagePositionInPage,
+        {x: 10, y: 15}, 'Region match'
+    )
+  },
+});
+
+test('pageCoverage data is correct with vg', {
+  page: 'Simple',
+  vg: true,
+  test({ eyes, assert, helpers }) {
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize });
+    eyes.check({ isFully: true, pageId: 'my-page' });
+    eyes.check({ isFully: true, region: '#overflowing-div > img:nth-child(22)', pageId: 'my-page' });
+    eyes.check({ isFully: true, region: {width: 200, height: 150, left: 10, top: 15}, pageId: 'my-page1' });
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.pageId,
+        'my-page', 'pageId match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.width,
+        958, 'Page width match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.height,
+        3540, 'Page height match'
+    )
+    assert.equal(
+        info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage,
+        {x: 0, y: 0}, 'Full page'
+    )
+    assert.equal(
+        info.actualAppOutput[1].pageCoverageInfo.imagePositionInPage,
+        {x: 641 , y:  1297 }, 'Selector match'
+    )
+    assert.equal(
+        info.actualAppOutput[2].pageCoverageInfo.imagePositionInPage,
+        {x: 10, y: 15}, 'Region match'
+    )
+  },
+});
 
 test('should return test results from close', {
   variants: {
@@ -1834,6 +1924,64 @@ test('appium iOS check window', {
   },
 })
 
+test('appium iOS check fully window with scroll and pageCoverage', {
+  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
+  config: { baselineName: 'Appium_iOS_CheckWindow_with_scroll' },
+  features: ['native-selectors'],
+  test: ({ driver, eyes, helpers, assert }) => {
+    driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view' })
+    eyes.open({ appName: 'Applitools Eyes SDK' })
+    eyes.check({ pageId: 'my-page', isFully: true })
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.pageId,
+      'my-page', 'pageId match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.width,
+      335, 'Page width match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.height,
+      1500, 'Page height match'
+    )
+  },
+})
+
+test('appium iOS check window region with scroll and pageCoverage', {
+  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
+  config: { baselineName: 'Appium_iOS_CheckWindow_with_region_scroll' },
+  features: ['native-selectors'],
+  test: ({ driver, eyes, helpers, assert }) => {
+    driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view with nested table' })
+    eyes.open({ appName: 'Applitools Eyes SDK' })
+    eyes.check({ pageId: 'my-page', isFully: false, region: { type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeTable'" } })
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.pageId,
+      'my-page', 'pageId match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.width,
+      335, 'Page width match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.height,
+      690, 'Page height match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage.x,
+      20, 'Image position x match'
+    )
+    assert.equal(
+      info.actualAppOutput[0].pageCoverageInfo.imagePositionInPage.y,
+      84, 'Image position y match'
+    )
+  },
+})
+
 test('appium iOS check region with ignore region', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
@@ -1892,7 +2040,7 @@ test('adopted styleSheets on firefox', {
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: false})
-    assert.throws(() => eyes.close())
+    assert.throws(() => void eyes.close())
     // TODO assert test is aborted
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: false, visualGridOptions: {polyfillAdoptedStyleSheets: true}})
@@ -1913,6 +2061,237 @@ test('variant id', {
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].knownVariantId, 'variant-id')
+  }
+})
+
+test('should abort after close', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check()
+    eyes.close(false)
+    const abortResult = eyes.abort()
+    assert.equal(abortResult, null)
+  },
+})
+
+test('should abort unclosed tests', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check()
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, true)
+  },
+})
+
+test('should return aborted tests in getAllTestResults', {
+  page: 'Default',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check()
+    const abortResult = eyes.abort()
+    assert.equal(abortResult.isAborted, true)
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, true)
+  },
+})
+
+test('should return browserInfo in getAllTestResults', {
+  page: 'Default',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 800, height: 600},
+      {name: 'firefox', width: 640, height: 480},
+      {chromeEmulationInfo: {deviceName: 'Pixel 4 XL'}},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    const testResults = eyes.close(false)
+    assert.equal(testResults.status, 'Passed')
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 3)
+    assert.equal(results.getAllResults()[0].browserInfo.name, 'chrome')
+    assert.equal(results.getAllResults()[0].browserInfo.width, 800)
+    assert.equal(results.getAllResults()[0].browserInfo.height, 600)
+    assert.equal(results.getAllResults()[0].testResults.status, 'Passed')
+    assert.equal(results.getAllResults()[1].browserInfo.name, 'firefox')
+    assert.equal(results.getAllResults()[1].browserInfo.width, 640)
+    assert.equal(results.getAllResults()[1].browserInfo.height, 480)
+    assert.equal(results.getAllResults()[1].testResults.status, 'Unresolved')
+    assert.equal(results.getAllResults()[2].browserInfo.chromeEmulationInfo.deviceName, 'Pixel 4 XL')
+    assert.equal(results.getAllResults()[2].testResults.status, 'Passed')
+  },
+})
+
+test('should waitBeforeCapture with breakpoints in open', {
+  vg: true,
+  config: {
+    layoutBreakpoints: true,
+    waitBeforeCapture: 2000,
+    browsersInfo: [
+      { name: 'chrome', width: 1200, height: 800 },
+    ]
+  },
+  test({ driver, eyes }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
+    eyes.check({isFully: true})
+    eyes.close()
+  },
+})
+test('should waitBeforeCapture with breakpoints in check', {
+  vg: true,
+  config: {
+    browsersInfo: [
+      { name: 'chrome', width: 1200, height: 800 },
+    ]
+  },
+  test({ driver, eyes }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize: { width: 600, height: 600 } })
+    eyes.check({
+      isFully: true,
+      layoutBreakpoints: true,
+      waitBeforeCapture: 2000,
+    })
+    eyes.close()
+  },
+})
+
+test('should waitBeforeCapture in open', {
+  vg: true,
+  config: {
+    waitBeforeCapture: 2000,
+  },
+  test({ driver, eyes }) {
+    // 'delay' (in queryString) is the time in milliseconds until image is visible in html (default is 1000)
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=1000')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({ isFully: true })
+    eyes.close()
+  },
+})
+
+test('should waitBeforeCapture in check', {
+  page: 'Simple',
+  vg: true,
+  test({ driver, eyes }) {
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({name: "session opening is finished", isFully: false})
+    // 'delay' (in queryString) is the time in milliseconds until image is visible in html (default is 1000)
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=5000')
+    eyes.check({name: "should show smurf", isFully: true, waitBeforeCapture: 6000})
+    driver.visit('https://applitools.github.io/demo/TestPages/waitBeforeCapture/dynamicDelay.html?delay=5000')
+    eyes.check({name: "should be blank", isFully: true})
+    eyes.close()
+  },
+})
+
+test('should send agentRunId', {
+  page: 'Default',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 400, height: 400},
+      {name: 'chrome', width: 500, height: 500}
+    ]
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
+    eyes.check({isFully: false});
+    eyes.close(false)
+    const resultSummary = eyes.runner.getAllTestResults(false)
+    const info1 = helpers.getTestInfo(resultSummary.getAllResults()[0].testResults);
+    const info2 = helpers.getTestInfo(resultSummary.getAllResults()[1].testResults); 
+    assert.ok(info1.startInfo.agentRunId)
+    assert.equal(info1.startInfo.agentRunId, info2.startInfo.agentRunId)
+  },
+})
+
+test('appium iOS nav bar check region', {
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/awesomeswift.zip'},
+  features: ['native-selectors'],
+  test: ({driver, eyes, helpers, assert}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: 'name == \"Awesome Swift\" AND type == \"XCUIElementTypeNavigationBar\"'}, isFully: false})
+    const result = eyes.close()
+  },
+})
+
+test('appium android landscape mode check window', {
+  variants: {
+    'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
+    'on android 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
+  },
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
+  test: ({driver, eyes, helpers, assert}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    const result = eyes.close()
+  },
+})
+test('appium android landscape mode check region', {
+  variants: {
+    'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
+    'on android 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
+  },
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
+  test: ({driver, eyes, helpers, assert}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({region: {type: TYPE.XPATH, selector: '//android.widget.CheckBox[1]'}, isFully: false})
+    const result = eyes.close()
+  },
+})
+
+test('should work with beforeCaptureScreenshot hook', {
+page: 'HelloWorld',
+  variants: {
+  'with vg': {vg: true},
+  },
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 800, height: 600}
+    ]
+  },
+  test: ({driver, eyes, helpers, assert}) => {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: true, hooks: {beforeCaptureScreenshot: `document.body.style.backgroundColor = 'gold'`}})
+    eyes.close()
+  }
+})
+
+test('Should return exception in TestResultsSummary', {
+  page: 'AdoptedStyleSheets',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'firefox', width: 640, height: 480},
+    ],
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: false})
+    assert.throws(() => void eyes.close())
+    const summary = eyes.runner.getAllTestResults(false)
+    assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
   }
 })
 

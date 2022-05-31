@@ -10,9 +10,16 @@ function checkSettings(cs, mobile = false) {
 	}
 	let element = ''
 	let options = ''
+	let scrollImplemented = false
 	if (cs.frames === undefined && cs.region === undefined) element = '.Window()'
 	else {
-		if (cs.frames) element += frames(cs.frames)
+		if (cs.frames) {
+			if (cs.scrollRootElement) {
+				element += `.Window()` + scrollRootElement(cs.scrollRootElement)
+				scrollImplemented = true
+			}
+			element += frames(cs.frames)
+		}
 		if (cs.region) {
 			if (cs.region.type) element += region(cs.region, cs.region.type, mobile)
 			else element += region(cs.region, undefined, mobile)
@@ -20,14 +27,15 @@ function checkSettings(cs, mobile = false) {
 	}
 	if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions, mobile)
 	if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
-	if (cs.scrollRootElement) options += scrollRootElement(cs.scrollRootElement)
+	if ((cs.scrollRootElement) && (!scrollImplemented)) options += scrollRootElement(cs.scrollRootElement)
 	if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions[0].region, cs.accessibilityRegions[0].type)
 	if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
 	if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`
 	if (cs.sendDom !== undefined) options += `.SendDom(${cs.sendDom})`
 	if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
+	if (cs.hooks) options += handleHooks(cs.hooks)
 	if ((cs.isFully === true) || (cs.fully === true)) { options += '.Fully()' } else if ((cs.isFully === false) || (cs.fully === false)) { options += '.Fully(false)' }
-	if (cs.name) options += `.WithName(${cs.name})`
+	if (cs.name) options += `.WithName("${cs.name}")`
 	if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`
 	if (cs.variationGroupId) {options += `.VariationGroupId("${cs.variationGroupId}")`}
 	return target + element + options
@@ -146,6 +154,10 @@ function parseAssertActual(actual) {
 		})
 		return result
 	}
+	if ((elements[2] !== undefined) && (elements[2].includes("batchInfo"))) {
+		if (elements[4].includes("length")) elements[4] = "Count()"
+		if (elements[4].includes('0')) elements[4] = "First()"
+	}
 	elements.forEach(element => {
 		if (result === "") { result = result + element; return; }
 		element = element.replace(/"/g, "")
@@ -178,9 +190,13 @@ function expectParser(expected) {
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
 		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
 		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
+		if (expected.hasOwnProperty('name') && expected.hasOwnProperty('value')) return `new PropertyData(\"${expected.name}\", \"${expected.value}\")`
 		expected = "\"" + expected + "\""
 		return expected
 	}
+}
+function handleHooks(hooks) {
+    if ("beforeCaptureScreenshot" in hooks) return '.BeforeRenderScreenshotHook(\"' + `${hooks.beforeCaptureScreenshot}` + '\")'
 }
 
 module.exports = {

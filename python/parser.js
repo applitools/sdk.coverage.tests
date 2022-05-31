@@ -4,10 +4,10 @@ const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 
 function checkSettings(cs) {
-    let name = `'', `
+    let name = ''
     let target = `Target`
     if(cs === undefined){
-        return name + target + '.window()'
+        return target + '.window()'
     }
     let element = ''
     let options = ''
@@ -16,20 +16,23 @@ function checkSettings(cs) {
     //if (cs.frames === undefined && cs.region === undefined) element = '.window()'
     if (cs.frames !== undefined || cs.region !== undefined) {
         if (cs.frames) element += frames(cs.frames)
-        if (cs.region) element += region(cs.region)
+        if (cs.region) element += region(cs.region, true)
     }
     if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
     if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
+    if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
     if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
+    if (cs.pageId) options += python`.page_id(${cs.pageId})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
     if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.hooks) options += handleHooks(cs.hooks)
     if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
-    if (cs.name) options += `.with_name(${cs.name})`
+    if (cs.name) name = python`${cs.name}, `
+    if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     return name + target + element + options
 }
 
@@ -80,8 +83,13 @@ function parseSelector(selector) {
     return string
 }
 
-function region(region) {
-    return `.region(${regionParameter(region)})`
+function region(region_param, first_call) {
+    if ((typeof region_param === "object") && ("shadow" in region_param)) {
+        let callChain = `.shadow(${regionParameter(region_param)})${region(region_param.shadow, false)}`
+        return first_call ? `.region(TargetPath${callChain})` : callChain
+    } else {
+        return `.region(${regionParameter(region_param)})`
+    }
 }
 
 function ignoreRegions(arr) {
@@ -89,6 +97,13 @@ function ignoreRegions(arr) {
 }
 function layoutRegions(arr){
     return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '')
+}
+function layoutBreakpoints(arg){
+    if (Array.isArray(arg)) {
+        return python`.layout_breakpoints(*${arg})`
+    } else {
+        return python`.layout_breakpoints(${arg})`
+    }
 }
 function floatingRegions(arr) {
     return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``)
@@ -116,7 +131,7 @@ function regionParameter(region) {
             string = `${JSON.stringify(region)}`
             break;
         case "object":
-            string = parseObject(region.type ? region : {value: region, type:'Region'})
+            string = parseObject(region.type ? region : (region.shadow ? region : {value: region, type:'Region'}))
             break;
         case "undefined":
             string = 'None'
@@ -169,7 +184,8 @@ function serialize(value) {
 
 function parseObject(object) {
     if (object.selector) {
-        return selectors[object.type](JSON.stringify(object.selector))
+        if (object.type !== undefined) return selectors[object.type](JSON.stringify(object.selector))
+        else return '"' + object.selector + '"'
     } else if (object.type) {
         const typeBuilder = types[object.type]
         if (typeBuilder) {

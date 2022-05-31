@@ -1,6 +1,6 @@
 'use strict'
 const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
-const {capitalizeFirstLetter} = require('./util')
+const {capitalizeFirstLetter, fromCamelCaseToSnakeCase, toLowerSnakeCase} = require('./util')
 const find_commands = require('./mapping/find_commands')
 const types = require('./mapping/types')
 
@@ -19,15 +19,24 @@ function directString(String) {
 
 module.exports = function (tracker, test) {
     const {addSyntax, addCommand, addHook, withScope, addType} = tracker
-
     function findElementFunc(element) {
         if (element.isRef) return element
         else return driver.findElement(element)
     }
 
-    let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
-    let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
-    let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
+    // EG for UFG
+    if(test.vg && process.env.UFG_ON_EG) {
+        test.executionGrid = true;
+    }
+
+    let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
+    if(emulator) {
+        test.meta.native = false;
+        test.meta.mobile = false;
+    }
+
+    let mobile = test.meta.mobile
+    let legacy = test.env && (test.env.legacy === true)
     let openPerformed = false
 
     addType('JsonNode', {
@@ -52,37 +61,23 @@ module.exports = function (tracker, test) {
         addHook('deps', `from applitools.core import Feature`)
     }
     addHook('deps', `from test import *`)
-    addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
+    addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
-        if (key.startsWith('get')) return `${target}.${key.slice(3).toLowerCase()}`
+        if (key.startsWith('get')) return `${target}.${fromCamelCaseToSnakeCase(key).slice(4)}`
         if (key.startsWith('length')) return `len(${target})`
         if ((type !== undefined) && (type !== null) && (type.name === 'JsonNode')) return `${target}[${key}]`
         if (((type !== undefined) && (type !== null) && (type.name === 'Array')) || (!isNaN(key))) return `${target}[${key}]`
+        if (type && types[type.name]) return types[type.name].get(target, key)
         else return `${target}["${key}"]`
     })
     addSyntax('call', ({target, args}) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
     addSyntax('return', ({value}) => `return ${value}`)
 
-    if (mobile) {
-        let device = (test.env.device == "Samsung Galaxy S8") ? "Samsung Galaxy S8 FHD GoogleAPI Emulator" : test.env.device
-        addHook('beforeEach', python`@pytest.fixture(scope="function")
-def dev():
-    return ${device}
-        `)
-        addHook('beforeEach', python`@pytest.fixture(scope="function")
-def app():
-    return ${test.env.app}
-        `)
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        let desired_caps = (test.config.baselineName.includes("iOS")) ? 'ios_desired_capabilities' : 'android_desired_capabilities'
-        addHook('beforeEach', python`def desired_caps(` + desired_caps + `, request, dev, app):`)
-        addHook('beforeEach', python`    return ` + desired_caps)
-        addHook('beforeEach', python`\n`)
-    } else {
+    if (!mobile) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def eyes_runner_class():`)
         if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
@@ -110,9 +105,21 @@ def app():
         let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
         addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `))`)
     }
+    if ("waitBeforeCapture" in test.config) {
+        addHook('beforeEach', python`    conf.set_wait_before_capture(${test.config.waitBeforeCapture})`)
+    }
     if (test.config.browsersInfo) {
         addHook('deps', 'from applitools.common.ultrafastgrid import DesktopBrowserInfo, IosDeviceInfo, ChromeEmulationInfo, ScreenOrientation')
-        addHook('beforeEach', python`    conf.add_browser(${{value: test.config.browsersInfo, type: 'BrowsersInfo'}})`)
+        addHook('beforeEach', python`    ${{value: test.config.browsersInfo, type: 'BrowsersInfo'}}`)
+    }
+    if (test.config.layoutBreakpoints) {
+        let breakpoints = test.config.layoutBreakpoints
+        if (Array.isArray(breakpoints)) {
+            addHook('beforeEach', python`    conf.set_layout_breakpoints(*${breakpoints})`)
+        }
+        else {
+            addHook('beforeEach', python`    conf.set_layout_breakpoints(${breakpoints})`)
+        }
     }
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
@@ -120,7 +127,7 @@ def app():
             addHook('beforeEach', python`    conf.batch.id = ${test.config.batch.id}`)
         }
         if ("properties" in test.config.batch) {
-            addHook('beforeEach', python`    conf.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
+            addHook('beforeEach', python`    conf.batch.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
         }
     }
 
@@ -128,10 +135,40 @@ def app():
     addHook('beforeEach', python`    return conf`)
     addHook('beforeEach', python`\n`)
 
-    if (mobile) setUpMobileNative(test, addHook)
-    else {
-        if (emulator) setUpWithEmulators(test, addHook)
-        else setUpBrowsers(test, addHook)
+    if (mobile) {
+        if(test.env.orientation) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def orientation():`)
+            addHook('beforeEach', python`    return ${test.env.orientation}\n`)
+        }
+        if(test.env.app) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def app():`)
+            addHook('beforeEach', python`    return ${test.env.app}\n`)
+        }
+        if(test.env.browser) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def browser_name():`)
+            addHook('beforeEach', python`    return ${test.env.browser}\n`)
+        }
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(test.env.device))}):`)
+        addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(test.env.device))}\n`)
+    }
+    else if (emulator) {
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
+        addHook('beforeEach', python`    return chrome_emulator\n`)
+    } else if (test.env && test.env.browser){
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(test.env.browser))}):`)
+        addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(test.env.browser))}\n`)
+    }
+
+    if (legacy) {
+        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook('beforeEach', python`def legacy():`)
+        addHook('beforeEach', python`    return True\n`)
     }
 
     if (test.executionGrid) {
@@ -236,7 +273,36 @@ def execution_grid():
 
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(python`eyes._runner.get_all_test_results(${throwEx})`)
+                return addCommand(python`eyes._runner.get_all_test_results(${throwEx})`).type('TestResultsSummary').methods({
+                    getAllResults: (target) => addCommand(python`${target}.all_results`).type({
+                        type: 'Array',
+                        items: {
+                            type: 'TestResultContainer',
+                            schema: {
+                                testResults: {
+                                    type: "TestResults",
+                                    schema: {
+                                        isAborted: "Boolean"
+                                    }
+                                },
+                                browserInfo: {
+                                    type: "BrowserInfo",
+                                    schema: {
+                                        name: "String",
+                                        height: "int",
+                                        width: "int",
+                                        chromeEmulationInfo: {
+                                            type: "ChromeEmulationInfo",
+                                            schema: {
+                                                deviceName: "String"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    })
+                })
             },
         },
 
@@ -343,10 +409,10 @@ def execution_grid():
         },
         close(throwEx = true) {
             let isThrow = throwEx.toString()
-            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`)
+            return addCommand(python`eyes.close(raise_ex=` + isThrow[0].toUpperCase() + isThrow.slice(1) + `)`).type('TestResults')
         },
         abort() {
-            return addCommand(python`eyes.abort`)
+            return addCommand(python`eyes.abort()`).type("TestResults")
         },
         locate(visualLocatorSettings) {
             let names = `${visualLocatorSettings.locatorNames}`
@@ -363,7 +429,7 @@ def execution_grid():
                 if (typeof (region.target) === "string") {
                     commands.push(python`[By.CSS_SELECTOR, ${region.target}])`)
                 } else if (typeof (region.target) === "object") {
-                    commands.push(python`Region(${region.target.left}, ${region.target.top}, ${region.target.width}, ${region.target.height}))`)
+                    commands.push(python`Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
                 } else {
                     commands.push(python`${region.target})`)
                 }
@@ -417,6 +483,7 @@ def execution_grid():
 
     const assert = {
         equal(actual, expected, message) {
+            if (expected === null) return addCommand(python`assert ${actual} is None`)
             if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())
             if (((typeof expected) === 'string') && (expected === 'true')) return addCommand(python`assert ${actual} == ${expected}, ${message}`)
             if (expected.hasOwnProperty('applitools_title')) return addCommand(python`assert ${actual} == Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`)
@@ -451,40 +518,7 @@ def execution_grid():
 
     const helpers = {
         getTestInfo(result) {
-            return addCommand(python`get_test_info(eyes.api_key, ${result})`).type({
-                type: 'TestInfo',
-                schema: {
-                    actualAppOutput: {
-                        type: 'Array',
-                        items: {
-                            type: 'AppOutput',
-                            schema: {
-                                image: {
-                                    type: 'Image',
-                                    schema: {hasDom: 'Boolean'},
-                                },
-                                imageMatchSettings: {
-                                    type: 'ImageMatchSettings',
-                                    schema: {
-                                        ignoreDisplacements: 'Boolean',
-                                        ignore: {type: 'Array', items: 'Region'},
-                                        floating: {type: 'Array', items: 'FloatingRegion'},
-                                        accessibility: {type: 'Array', items: 'AccessibilityRegion'},
-                                        accessibilitySettings: {
-                                            type: 'AccessibilitySettings',
-                                            schema: {
-                                                level: 'AccessibilityLevel',
-                                                version: 'AccessibilityGuidelinesVersion'
-                                            },
-                                        },
-                                        layout: {type: 'Array', items: 'Region'}
-                                    },
-                                },
-                            }
-                        },
-                    },
-                },
-            })
+            return addCommand(python`get_test_info(eyes.api_key, ${result})`)
         },
         getDom(result, domId) {
             return addCommand(python`get_dom(${result}, ${domId})`).type({type: 'JsonNode'}).methods({
@@ -513,129 +547,3 @@ function insert(value) {
         ref: () => value
     }
 }
-
-function setUpMobileNative(test, addHook) {
-    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-    addHook('beforeEach', python`def browser_type():`)
-    addHook('beforeEach', python`    return "Appium"`)
-    addHook('beforeEach', python`\n`)
-    addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-    addHook('beforeEach', python`def driver_builder(appium):`)
-    addHook('beforeEach', python`    return appium`)
-    addHook('beforeEach', python`\n`)
-}
-
-function setUpWithEmulators(test, addHook) {
-    if (test.env.device === 'Android 8.0 Chrome Emulator') {
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def browser_type():`)
-        addHook('beforeEach', python`    return "ChromeEmulator"`)
-        addHook('beforeEach', python`\n`)
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def emulation():`)
-        addHook('beforeEach', python`    is_emulation = True`)
-        switch (test.config.baselineName) {
-            case 'Android Emulator 8.0 Portrait mobile fully':
-                addHook('beforeEach', python`    orientation = "Portrait"`)
-                addHook('beforeEach', python`    page = "mobile"`)
-                break;
-            case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
-                addHook('beforeEach', python`    orientation = "Portrait"`)
-                addHook('beforeEach', python`    page = "scrolled_mobile"`)
-                break;
-            case 'Android Emulator 8.0 Portrait desktop fully':
-                addHook('beforeEach', python`    orientation = "Portrait"`)
-                addHook('beforeEach', python`    page = "desktop"`)
-                break;
-            case 'ShouldNotFailIfScrollRootIsStaleOnAndroid':
-                addHook('beforeEach', python`    orientation = "Landscape"`)
-                addHook('beforeEach', python`    page = "mobile"`)
-                break;
-            default:
-                throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
-        }
-        addHook('beforeEach', python`    return is_emulation, orientation, page`)
-        addHook('beforeEach', python`\n`)
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
-        addHook('beforeEach', python`    return chrome_emulator`)
-        addHook('beforeEach', python`\n`)
-    } else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
-}
-
-function setUpBrowsers(test, addHook) {
-    let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false) ? false : true
-    let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true) ? true : false
-    let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? true : false
-    if (("env" in test) && ("browser" in test.env)) {
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def browser_type():`)
-        switch (test.env.browser) {
-            case 'firefox':
-                addHook('beforeEach', python`    return "Firefox"`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def options():`)
-                addHook('beforeEach', python`    return webdriver.FirefoxOptions()`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_builder(firefox):`)
-                addHook('beforeEach', python`    return firefox`)
-                break;
-            case 'firefox-48':
-                addHook('beforeEach', python`    return "Firefox48"`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def options():`)
-                addHook('beforeEach', python`    return webdriver.FirefoxOptions()`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_builder(firefox48):`)
-                addHook('beforeEach', python`    return firefox48`)
-                break;
-            case 'ie-11':
-                addHook('beforeEach', python`    return "IE11"`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_builder(ie11):`)
-                addHook('beforeEach', python`    return ie11`)
-                break;
-            case 'edge-18':
-                addHook('beforeEach', python`    return "Edge"`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_builder(edge):`)
-                addHook('beforeEach', python`    return edge`)
-                break;
-            case 'safari-11':
-                addHook('beforeEach', python`    return "Safari11"`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_builder(safari11):`)
-                addHook('beforeEach', python`    return safari11`)
-                break;
-            case 'safari-12':
-                addHook('beforeEach', python`    return "Safari12"`)
-                addHook('beforeEach', python`\n`)
-                addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-                addHook('beforeEach', python`def driver_builder(safari12):`)
-                addHook('beforeEach', python`    return safari12`)
-                break;
-            case 'chrome':
-                addHook('beforeEach', python`    return "Chrome"`)
-                break;
-            default:
-                throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
-        }
-        if (legacy) {
-            addHook('beforeEach', python`\n`)
-            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-            addHook('beforeEach', python`def legacy():`)
-            addHook('beforeEach', python`    return True`)
-        }
-        addHook('beforeEach', python`\n`)
-    }
-}
-
-
-

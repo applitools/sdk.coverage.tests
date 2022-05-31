@@ -1,7 +1,7 @@
 const iosDeviceName = require('./iosDeviceName')
 const deviceName = require('./deviceName')
-const {capitalizeFirstLetter} = require('../util')
-const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
+const {capitalizeFirstLetter, fromCamelCaseToSnakeCase} = require('../util')
+const simpleGetter = (target, key) => `${target}.${fromCamelCaseToSnakeCase(key)}`
 const types = {
     "Map": {
         constructor: (value, generic) => {
@@ -12,7 +12,7 @@ const types = {
             return `new HashMap<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
     {{ ${Object.keys(value).map(key => `put(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
         },
-        get: (target, key) => `${target}.get("${key}")`,
+        get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
         name: (type) => {
             const key = type.generic[0].name
@@ -42,6 +42,15 @@ const types = {
     },
     "TestResults": {
         name: () => 'TestResults',
+        get: (target, key) => key === `status` ? `${target}.status.value` : simpleGetter(target, key),
+    },
+    "TestResultsSummary": {
+        name: () => `TestResultsSummary`,
+        get: simpleGetter,
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: simpleGetter,
     },
     "Element": {
         name: () => 'WebElement',
@@ -103,11 +112,25 @@ const types = {
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
-                if(render.name) return `DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
-                else if (render.iosDeviceInfo) return `IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
-                else if (render.chromeEmulationInfo) return `ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
-            }).join(', ')
+                if(render.name) return `conf.add_browser(DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()}))`
+                else if (render.iosDeviceInfo) return `conf.add_browser(IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]}))`
+                else if (render.chromeEmulationInfo) return `conf.add_browser(ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT))`
+            }).join('\n    ')
         },
     },
+    "BrowserInfo": {
+        get: (target, key) => {
+            if (key === 'name') {
+                return `${target}.browser_type.value`
+            } else if (key === 'chromeEmulationInfo') {
+                return `${target}`
+            } else {
+                return simpleGetter(target, key)
+            }
+        },
+    },
+    "ChromeEmulationInfo": {
+        get: (target, key) => key === 'deviceName' ? `${target}.device_name.value` : simpleGetter(target, key),
+    }
 }
 module.exports = types

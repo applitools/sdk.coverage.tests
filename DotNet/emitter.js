@@ -67,10 +67,16 @@ function printCommitHash(webURL, branch) {
 module.exports = function (tracker, test) {
 	const { addSyntax, addCommand, addHook, withScope, addType } = tracker
 
+	// EG for UFG
+	if(test.vg && process.env.UFG_ON_EG) {
+		test.executionGrid = true;
+	}
+
 	let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
 	let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
 	let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
 	let openPerformed = false
+	let confVisualGridOptionCreated = false
 	
 	
 	addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
@@ -102,6 +108,7 @@ module.exports = function (tracker, test) {
 		addHook('deps', `using OpenQA.Selenium.Remote;`)
 		addHook('deps', `using System.Collections.Generic;`)
 		addHook('deps', `using System;`)
+		addHook('deps', `using System.Linq;`)
 	}
 	if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
@@ -136,16 +143,24 @@ module.exports = function (tracker, test) {
 	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
 	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
 	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`eyes.IsDisabled = ${test.config.isDisabled};`)
+	if ("batch" in test.config) {
+		if ("id" in test.config.batch) {
+			addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
+		}
+		if ("properties" in test.config.batch) {
+			addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
+		}
+	}
 	if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)) {
 		let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 		let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
 		addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
-        Applitools.Selenium.Configuration configuration = eyes.GetConfiguration();
+        var configuration = eyes.GetConfiguration();
         configuration.SetAccessibilityValidation(settings);
         eyes.SetConfiguration(configuration);`)
 	}
 	if ("browsersInfo" in test.config) {
-		addHook('beforeEach', dot_net`Applitools.Selenium.IConfiguration config = eyes.GetConfiguration();`)
+		addHook('beforeEach', dot_net`var config = eyes.GetConfiguration();`)
 		if ("name" in test.config.browsersInfo[0]) {
 			let browserType = 'BrowserType.CHROME'
 			switch (`${test.config.browsersInfo[0].name}`) {
@@ -338,6 +353,19 @@ module.exports = function (tracker, test) {
 			addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
 		},
 		check(checkSettings = {}) {
+			if(checkSettings !== undefined && checkSettings.visualGridOptions)
+			{
+				if (!confVisualGridOptionCreated) {
+					addCommand(`var conf = eyes.GetConfiguration();`)
+					confVisualGridOptionCreated = true
+				}
+				var options = checkSettings.visualGridOptions
+				for (var key of Object.keys(options))
+				{
+					addCommand(`conf.SetVisualGridOptions(new VisualGridOption("${key}", ${options[key]}));`)
+				}
+				addCommand(`eyes.SetConfiguration(conf);`)
+			}
 			if (test.api !== 'classic') {
 				return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
 			} else if (checkSettings.region) {
@@ -366,7 +394,8 @@ module.exports = function (tracker, test) {
 				let MatchTimeout = !checkSettings.timeout ? `` : `match_timeout:${checkSettings.timeout}`
 				let Tag = !checkSettings.name ? `` : `tag:"${checkSettings.name}"`
 				if (Tag !== `` && MatchTimeout !== ``) Tag = `, ` + Tag
-				let isFully = !checkSettings.isFully ? `` : `, fully:"${checkSettings.isFully}"`
+				let isFully = (checkSettings.isFully === undefined) ? `` : `fully:${checkSettings.isFully}`
+				if (isFully !== `` && Tag !== ``) isFully = `, ` + isFully
 				return addCommand(dot_net`eyes.CheckWindow(` + MatchTimeout + Tag + isFully + `);`)
 			}
 		},
@@ -405,13 +434,13 @@ module.exports = function (tracker, test) {
 			else {act = `${actual}`
 			console.log("actual = " + actual)}
 
-			let mess = message ? message : null
+			let mess = message ? `"${message}"` : null
 			addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
 		},
 
 		instanceOf(object, className, message) {
 			let classNm = `${className}`
-			let mess = message ? message : null
+			let mess = message ? `"${message}"` : null
 			let obj = object.ref()
 			addCommand(dot_net` Assert.IsInstanceOf<` + className + `>(` + obj + `, ` + mess + `);`)
 		},
@@ -422,7 +451,7 @@ module.exports = function (tracker, test) {
 				command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>().Or.InstanceOf<EyesException>().With.InnerException.With.InstanceOf<${insert(check())}>());`
 			}
 			else {
-				command = dot_net`Assert.That(() => {${func}}, Throws.Exception);`
+				command = dot_net`Assert.That(() => {${func};}, Throws.Exception);`
 			}
 			addCommand(command)
 		},
@@ -450,13 +479,13 @@ module.exports = function (tracker, test) {
 				},
 			}
 			return addCommand(dot_net`TestUtils.GetSessionResults(eyes.ApiKey, ${result});`).type({
-				type: 'TestInfo',
-				schema: {
-					actualAppOutput: {
-						type: 'Array',
-						items: { type: 'AppOutput', schema: appOutputSchema },
-					},
-				},
+				// type: 'TestInfo',
+				// schema: {
+				// 	actualAppOutput: {
+				// 		type: 'Array',
+				// 		items: { type: 'AppOutput', schema: appOutputSchema },
+				// 	},
+				// },
 				type: 'String',
 				schema: {
 					actualAppOutput: {
@@ -525,7 +554,9 @@ function setUpWithEmulators(test, addHook) {
 				addHook('beforeEach', dot_net`initEyes("desktop", ScreenOrientation.Portrait);`)
 				break;
 			default:
-				throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				//throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
+				addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Landscape);`)
+				break;
 		}
 	}
 	else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
@@ -534,7 +565,7 @@ function setUpWithEmulators(test, addHook) {
 function setUpBrowsers(test, addHook) {
 	let headless = ("env" in test) && ("headless" in test.env) && (test.env.headless === false) ? false : true
 	let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true) ? true : false
-	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('CSS')) ? false : true // localeCompare returns 0 when the strings are equal
+	let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('SCROLL')) ? true : false // localeCompare returns 0 when the strings are equal
 	let executionGrid = ("executionGrid" in test) && test.executionGrid
 	if (("env" in test) && ("browser" in test.env)) {
 		switch (test.env.browser) {
