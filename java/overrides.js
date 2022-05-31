@@ -23,7 +23,6 @@ module.exports = {
 
     // Chrome emulator have minor diffs with JS sdk
     'should not fail if scroll root is stale on android': {config: {branchName: 'universal-java'}},
-    'check window fully on android chrome emulator on mobile page with horizontal scroll': {config: {branchName: 'universal-java'}},
     'check window fully on android chrome emulator on mobile page': {config: {branchName: 'universal-java'}},
     'should abort after close': {skipEmit: true},
     'should abort unclosed tests': {skipEmit: true},
@@ -31,6 +30,9 @@ module.exports = {
     'should return aborted tests in getAllTestResults': {skipEmit: true},
     'should return aborted tests in getAllTestResults with vg': {skipEmit: true},
     'should return browserInfo in getAllTestResults': {skipEmit: true},
+    
+    // TODO - recheck Chrome emulator flaky test (was overridden by a specific branch, maybe default will work).
+    'check window fully on android chrome emulator on mobile page with horizontal scroll': {skip: true},
 
     // New mobile web tests which is failing on the eyes.Open() with the error
     //
@@ -54,6 +56,7 @@ module.exports = {
     'appium iOS nav bar check region': {skip: true},
     "appium android landscape mode check window": {skip: true},
     "appium android landscape mode check region": {skip: true},
+    
     
     // Emitter failure
     "appium android landscape mode check region on android 10": {skipEmit: true},
