@@ -40,7 +40,8 @@ config({
     PageWithFrameHiddenByBar: 'https://applitools.github.io/demo/TestPages/PageWithFrameHiddenByBar/index.html',
     OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
-    ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html'
+    ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html',
+    CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
   },
 })
 
@@ -986,6 +987,25 @@ test('should send ignore region by the same selector as target region with vg', 
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 0, top: 0, width: 304, height: 185},
+    )
+  },
+})
+
+test('should send correct ignore region if page scrolled before check', {
+  page: 'CodedRegionPage',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll'}},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize})
+    driver.click('#secondary')
+    eyes.check({isFully: true, ignoreRegions: ['#secondary']})
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].imageMatchSettings.ignore[0],
+      {left: 8, top: 2014, width: 56, height: 56},
     )
   },
 })
