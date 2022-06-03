@@ -20,4 +20,6 @@ module.exports = {
     'should be empty if page delayed by 1500': {skip: true},
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
+    // Universal server is still not latest for ruby
+    "should send correct ignore region if page scrolled before check with css stitching": {skip: true}
 }
