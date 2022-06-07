@@ -2176,6 +2176,7 @@ test('should waitBeforeCapture with breakpoints in open', {
     eyes.close()
   },
 })
+
 test('should waitBeforeCapture with breakpoints in check', {
   vg: true,
   config: {
@@ -2311,6 +2312,24 @@ test('Should return exception in TestResultsSummary', {
     assert.throws(() => void eyes.close())
     const summary = eyes.runner.getAllTestResults(false)
     assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
+  }
+})
+
+test('should override default value of fully', {
+  page: 'Default',
+  variants: {
+    'with true': {config: {forceFullPageScreenshot: true}},
+    'with false': {config: {forceFullPageScreenshot: false}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({name: 'default'})
+    eyes.check({name: 'default', region: {type: 'css', selector: '#overflowing-div-image'}})
+    eyes.check({name: 'fully', isFully: true})
+    eyes.check({name: 'fully', region: {type: 'css', selector: '#overflowing-div-image'}, isFully: true})
+    eyes.check({name: 'not fully', isFully: false})
+    eyes.check({name: 'not fully', region: {type: 'css', selector: '#overflowing-div-image'}, isFully: false})
+    eyes.close()
   }
 })
 
