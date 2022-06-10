@@ -143,6 +143,7 @@ module.exports = function (tracker, test) {
 	if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
 	if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
 	if ("isDisabled" in test.config) addHook('beforeEach', dot_net`eyes.IsDisabled = ${test.config.isDisabled};`)
+	if ("forceFullPageScreenshot" in test.config) addHook('beforeEach', dot_net`eyes.IsForceFullPageScreenshot = ${test.config.forceFullPageScreenshot};`)
 	if ("batch" in test.config) {
 		if ("id" in test.config.batch) {
 			addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
