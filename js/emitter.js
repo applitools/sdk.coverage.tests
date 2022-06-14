@@ -148,6 +148,7 @@ module.exports = function(tracker, test) {
         floatingRegions: checkSettings.floatingRegions && checkSettings.floatingRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
         accessibilityRegions: checkSettings.accessibilityRegions && checkSettings.accessibilityRegions.map(({region, ...other}) => ({region: transformRegion(region), ...other})),
         fully: checkSettings.isFully,
+        lazyLoad: checkSettings.lazyLoad,
       }
       if (test.api !== 'classic') {
         return addCommand(js`await eyes.check(${checkSettings})`)

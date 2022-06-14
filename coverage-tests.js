@@ -41,6 +41,7 @@ config({
     OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
     ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html',
+    LazyLoad: 'https://applitools.github.io/demo/TestPages/LazyLoad/',
     CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
   },
 })
@@ -2313,6 +2314,81 @@ test('Should return exception in TestResultsSummary', {
     const summary = eyes.runner.getAllTestResults(false)
     assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
   }
+})
+
+test('lazy load page with default options', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {}})
+    eyes.close()
+  },
+})
+
+test('lazy load page with all options specified', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       scrollLength: 500,
+       waitingTime: 300,
+       maxAmountToScroll: 10000, 
+    }})
+    eyes.close()
+  },
+})
+
+test('lazy load page with one option specified - scrollLength', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       scrollLength: 500,
+    }})
+    eyes.close()
+  },
+})
+
+test('lazy load page with one option specified - waitingTime', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       waitingTime: 300,
+    }})
+    eyes.close()
+  },
+})
+
+test('lazy load page with one option specified - maxAmountToScroll', {
+  page: 'LazyLoad',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+    'with vg': {vg: true, config: {baselineName: 'LazyLoad_VG'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: true, lazyLoad: {
+       maxAmountToScroll: 10000, 
+    }})
+    eyes.close()
+  },
 })
 
 test('should override default value of fully', {
