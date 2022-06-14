@@ -41,4 +41,11 @@ module.exports = {
     // Skipped test running on Selenium3 but not on Selenium4
     "should send dom on edge legacy": {skip: true},
     "Should return exception in TestResultsSummary": {skipEmit: true},
+    
+    // lazyload tests (api change needed in check settings to support it)
+    'lazy load page with one option specified - maxAmountToScroll': {skipEmit: true},
+    'lazy load page with one option specified - waitingTime': {skipEmit: true},
+    'lazy load page with one option specified - scrollLength': {skipEmit: true},
+    'lazy load page with all options specified': {skipEmit: true},
+    'lazy load page with default options': {skipEmit: true},
 }

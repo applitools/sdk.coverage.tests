@@ -7,4 +7,11 @@ module.exports = {
     'should handle check of stale element in frame if selector is preserved': {skip: true},
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
+
+    // lazyload tests (api change needed in check settings to support it)
+    'lazy load page with one option specified - maxAmountToScroll': {skipEmit: true},
+    'lazy load page with one option specified - waitingTime': {skipEmit: true},
+    'lazy load page with one option specified - scrollLength': {skipEmit: true},
+    'lazy load page with all options specified': {skipEmit: true},
+    'lazy load page with default options': {skipEmit: true},
 }
