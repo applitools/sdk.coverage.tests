@@ -41,7 +41,8 @@ config({
     OCR: 'https://applitools.github.io/demo/TestPages/OCRPage',
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
     ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html',
-    LazyLoad: 'https://applitools.github.io/demo/TestPages/LazyLoad/'
+    LazyLoad: 'https://applitools.github.io/demo/TestPages/LazyLoad/',
+    CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
   },
 })
 
@@ -987,6 +988,25 @@ test('should send ignore region by the same selector as target region with vg', 
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
       {left: 0, top: 0, width: 304, height: 185},
+    )
+  },
+})
+
+test('should send correct ignore region if page scrolled before check', {
+  page: 'CodedRegionPage',
+  variants: {
+    'with css stitching': {config: {stitchMode: 'CSS'}},
+    'with scroll stitching': {config: {stitchMode: 'Scroll'}},
+  },
+  test({driver, eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize})
+    driver.click('#secondary')
+    eyes.check({isFully: true, ignoreRegions: ['#secondary']})
+    const result = eyes.close()
+    const info = helpers.getTestInfo(result)
+    assert.equal(
+      info.actualAppOutput[0].imageMatchSettings.ignore[0],
+      {left: 8, top: 2014, width: 56, height: 56},
     )
   },
 })
@@ -2157,6 +2177,7 @@ test('should waitBeforeCapture with breakpoints in open', {
     eyes.close()
   },
 })
+
 test('should waitBeforeCapture with breakpoints in check', {
   vg: true,
   config: {
@@ -2368,6 +2389,24 @@ test('lazy load page with one option specified - maxAmountToScroll', {
     }})
     eyes.close()
   },
+})
+
+test('should override default value of fully', {
+  page: 'Default',
+  variants: {
+    'with true': {config: {forceFullPageScreenshot: true}},
+    'with false': {config: {forceFullPageScreenshot: false}},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({name: 'default'})
+    eyes.check({name: 'default', region: {type: 'css', selector: '#overflowing-div-image'}})
+    eyes.check({name: 'fully', isFully: true})
+    eyes.check({name: 'fully', region: {type: 'css', selector: '#overflowing-div-image'}, isFully: true})
+    eyes.check({name: 'not fully', isFully: false})
+    eyes.check({name: 'not fully', region: {type: 'css', selector: '#overflowing-div-image'}, isFully: false})
+    eyes.close()
+  }
 })
 
 // #endregion
