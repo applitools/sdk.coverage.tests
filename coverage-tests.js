@@ -2346,7 +2346,7 @@ test('lazy load page with all options specified', {
   },
 })
 
-test('lazy load page with one option specified - scrollLength', {
+test('lazy load page with one option specified scrollLength', {
   page: 'LazyLoad',
   variants: {
     '': {config: {baselineName: 'LazyLoad'}},
@@ -2361,7 +2361,7 @@ test('lazy load page with one option specified - scrollLength', {
   },
 })
 
-test('lazy load page with one option specified - waitingTime', {
+test('lazy load page with one option specified waitingTime', {
   page: 'LazyLoad',
   variants: {
     '': {config: {baselineName: 'LazyLoad'}},
@@ -2376,7 +2376,7 @@ test('lazy load page with one option specified - waitingTime', {
   },
 })
 
-test('lazy load page with one option specified - maxAmountToScroll', {
+test('lazy load page with one option specified maxAmountToScroll', {
   page: 'LazyLoad',
   variants: {
     '': {config: {baselineName: 'LazyLoad'}},

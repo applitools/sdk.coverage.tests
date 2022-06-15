@@ -24,12 +24,12 @@ module.exports = {
     "should send correct ignore region if page scrolled before check with css stitching": {skip: true}
 
     // lazyload tests (api change needed in check settings to support it)
-    'lazy load page with one option specified - maxAmountToScroll': {skipEmit: true},
-    'lazy load page with one option specified - maxAmountToScroll with vg': {skipEmit: true},
-    'lazy load page with one option specified - waitingTime': {skipEmit: true},
-    'lazy load page with one option specified - waitingTime with vg': {skipEmit: true},
-    'lazy load page with one option specified - scrollLength': {skipEmit: true},
-    'lazy load page with one option specified - scrollLength with vg': {skipEmit: true},
+    'lazy load page with one option specified maxAmountToScroll': {skipEmit: true},
+    'lazy load page with one option specified maxAmountToScroll with vg': {skipEmit: true},
+    'lazy load page with one option specified waitingTime': {skipEmit: true},
+    'lazy load page with one option specified waitingTime with vg': {skipEmit: true},
+    'lazy load page with one option specified scrollLength': {skipEmit: true},
+    'lazy load page with one option specified scrollLength with vg': {skipEmit: true},
     'lazy load page with all options specified': {skipEmit: true},
     'lazy load page with all options specified with vg': {skipEmit: true},
     'lazy load page with default options': {skipEmit: true},
