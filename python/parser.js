@@ -1,5 +1,5 @@
 'use strict'
-const {capitalizeFirstLetter} = require('./util')
+const {capitalizeFirstLetter, fromCamelCaseToSnakeCase} = require('./util')
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 
@@ -33,6 +33,7 @@ function checkSettings(cs) {
     if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
     if (cs.name) name = python`${cs.name}, `
     if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
+    if (cs.lazyLoad !== undefined) options += lazyLoad(cs.lazyLoad)
     return name + target + element + options
 }
 
@@ -104,6 +105,10 @@ function layoutBreakpoints(arg){
     } else {
         return python`.layout_breakpoints(${arg})`
     }
+}
+function lazyLoad(arg) {
+    let args = Object.entries(arg).map(([key, value], _) => fromCamelCaseToSnakeCase(key) + python`=${value}`)
+    return `.lazy_load(${args.join(', ')})`
 }
 function floatingRegions(arr) {
     return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``)
