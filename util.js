@@ -5,6 +5,11 @@ function checkOptions(actual, supported) {
     })
 }
 
+function fromCamelCaseToSnakeCase(string) {
+    return string.replace(/([A-Z])/g, '_$1').toLowerCase()
+}
+
 module.exports = {
+    fromCamelCaseToSnakeCase,
     checkOptions
 }

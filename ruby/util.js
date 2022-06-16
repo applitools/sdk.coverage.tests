@@ -34,8 +34,8 @@ function pascalToSnakeCase(string) {
 }
 
 module.exports = {
-    isSelector: isSelector,
-    has: has,
-    wrapSelector: wrapSelector,
-    pascalToSnakeCase: pascalToSnakeCase,
+    isSelector,
+    has,
+    wrapSelector,
+    pascalToSnakeCase,
 }
