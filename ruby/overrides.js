@@ -21,7 +21,7 @@ module.exports = {
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
     // Universal server is still not latest for ruby
-    "should send correct ignore region if page scrolled before check with css stitching": {skip: true}
+    "should send correct ignore region if page scrolled before check with css stitching": {skip: true},
 
     // lazyload tests (api change needed in check settings to support it)
     'lazy load page with one option specified maxAmountToScroll': {skipEmit: true},
