@@ -18,6 +18,7 @@ const CHECK_SETTINGS_OPTIONS = [
     "name",
     "matchLevel",
     "timeout",
+    "lazyLoad",
 ]
 
 module.exports = {

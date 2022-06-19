@@ -1,5 +1,5 @@
 module.exports = {
-    "css": "find_element_by_css_selector",
-    "class name": (selector) => `find_element_by_class_name(${selector})`,
-    "id": (selector) => `find_element_by_id(${selector})]`,
+    "css": (selector) => `find_element(By.CSS_SELECTOR, ${selector})`,
+    "class name": (selector) => `find_element(By.CLASS_NAME, ${selector})`,
+    "id": (selector) => `find_element(By.ID, ${selector})`,
 }

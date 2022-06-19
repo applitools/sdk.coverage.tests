@@ -58,7 +58,6 @@ module.exports = function (tracker, test) {
     addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
     if (mobile) {
         addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
-        addHook('deps', `from applitools.core import Feature`)
     }
     addHook('deps', `from test import *`)
     addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
@@ -214,8 +213,8 @@ def execution_grid():
             let drv = "driver"
             if (openPerformed) drv = "eyes_driver"
             if (selector.type) {
-                let command = `.${find_commands[selector.type]}`
-                return addCommand(python`` + drv + command + `(\"${selector.selector}\")`)
+                let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
+                return addCommand(python`` + drv + command)
             }
             return addCommand(python`` + drv + `.find_element(` + parseSelectorByType(selector) + `)`)
         },
@@ -308,14 +307,12 @@ def execution_grid():
         },
 
         open({appName, viewportSize}) {
-            let new_line = '\n    '
-            let scale_mobile_app = (mobile) && (test.name.includes('iOS')) ? 'eyes.configure.set_features(Feature.SCALE_MOBILE_APP)\n    ' : ''
             let appNm = (appName) ? appName : test.config.appName
             openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
-    eyes.set_configuration(configuration)` + new_line + scale_mobile_app +
-                `eyes_driver = eyes.open(driver)`)
+    eyes.set_configuration(configuration)
+    eyes_driver = eyes.open(driver)`)
         },
         check(checkSettings) {
 			if(checkSettings !== undefined && checkSettings.visualGridOptions)

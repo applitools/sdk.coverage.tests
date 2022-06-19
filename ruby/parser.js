@@ -1,15 +1,15 @@
 'use strict';
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
-const {isSelector, pascalToSnakeCase} = require('./util')
-const {checkOptions} = require('../util')
+const {isSelector, pascalToSnakeCase,} = require('./util')
+const {checkOptions, fromCamelCaseToSnakeCase} = require('../util')
 const {CHECK_SETTINGS_OPTIONS} = require('./mapping/supported')
 
 function checkSettings(cs, driver, native) {
     checkOptions(cs, CHECK_SETTINGS_OPTIONS)
-    let ruby = native ? `target: Applitools::Appium::Target` : `Applitools::Selenium::Target`;
+    let target = native ? `target: Applitools::Appium::Target` : `Applitools::Selenium::Target`;
     if (cs === undefined) {
-        return ruby + '.window'
+        return target + '.window'
     }
     let name = '';
     let element = '';
@@ -32,11 +32,12 @@ function checkSettings(cs, driver, native) {
     if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     if (cs.pageId) options += `.page_id(${serialize(cs.pageId)})`
     if (cs.timeout !== undefined) options += `.timeout(${serialize(cs.timeout)})`
+    if (cs.lazyLoad !== undefined) options += lazyLoad(cs.lazyLoad)
     if (cs.isFully !== undefined) options += `.fully(${serialize(cs.isFully)})`;
     if (cs.hooks) options += hooks(cs.hooks);
     if (cs.name) name = `'${cs.name}', `;
     if (cs.matchLevel) options += `.match_level(${serialize(cs.matchLevel)})`
-    return name + ruby + element + options
+    return name + target + element + options
 
     function hooks(obj) {
         const hooks = Object.keys(obj).map(key => `${key}: ${serialize(obj[key])}`).join(',')
@@ -131,7 +132,13 @@ function checkSettings(cs, driver, native) {
     function scrollRootElement(scrollRootElement) {
         return `.scroll_root_element(${regionParameter(scrollRootElement)})`
     }
+
+    function lazyLoad(arg) {
+        let args = Object.entries(arg).map(([key, value], _) => fromCamelCaseToSnakeCase(key) + ruby`: ${value}`)
+        return `.lazy_load(${args.join(', ')})`
+    }
 }
+
 
 function construct(chunks, ...values) {
     const commands = []
@@ -209,8 +216,7 @@ function driverBuild(env) {
     let parsed = (env && Object.keys(env).length > 0) ? '(' +
         Object.keys(env).map(key => `${key}: ${serialize(env[key])}`).join(', ') +
         ')' : ''
-    let string = `@driver = build_driver${parsed}`
-    return string
+    return `@driver = build_driver${parsed}`
 }
 
 function ref(val) {

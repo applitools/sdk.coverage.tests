@@ -65,7 +65,7 @@ module.exports = {
     "appium android landscape mode check window on android 7": {skipEmit: true},
     "should work with beforeCaptureScreenshot hook": {skip: true},
     "should override default value of fully with true": {skipEmit: true},
-    "should override default value of fully with false": {skipEmit: true}
+    "should override default value of fully with false": {skipEmit: true},
 
     // lazyload tests (api change needed in check settings to support it)
     'lazy load page with one option specified maxAmountToScroll': {skipEmit: true},
