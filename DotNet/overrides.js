@@ -15,8 +15,6 @@ module.exports = {
     "check window on mobile web android": {skipEmit: true},
     "check window on mobile web ios": {skipEmit: true},
     "should extract text from regions without a hint": {skipEmit: true},
-    "should abort after close": {skipEmit: true},
-    "should abort after close with vg": {skipEmit: true},
     "should return aborted tests in getAllTestResults": {skipEmit: true},
     "should return aborted tests in getAllTestResults with vg": {skipEmit: true},
     "should send agentRunId": {skipEmit: true},

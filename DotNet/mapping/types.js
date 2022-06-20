@@ -22,7 +22,7 @@ const types = {
             return `Dictionary<${types[key].name(genericKey)},${types[value].name(genericValue)}>`
         },
     },
-    /*"List": {
+    "List": {
         constructor: (value, generic) => {
             const param = generic[0]
             const paramType = types[param.name]
@@ -41,7 +41,8 @@ const types = {
         name: () => 'SessionResults',
     },
     "TestResults": {
-        name: () => 'TestResults',
+        name: () => `TestResults`,
+        get: (target, key) => key.startsWith('is') ? `${target}.${key}()` : simpleGetter(target, key)
     },
     "Element": {
         name: () => 'WebElement',
@@ -107,6 +108,6 @@ const types = {
                 else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
             }).join(', ')
         },
-    },*/
+    },
 }
 module.exports = types
