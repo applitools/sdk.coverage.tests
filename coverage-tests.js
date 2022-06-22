@@ -1236,10 +1236,10 @@ test('should use regions padding', {
     const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedRegions = {
-      ignore: [{ left: 131, top: 93, width: 838, height: config.visualgrid ? 111 : 110}],
-      strict: [{ left: 151, top: 563, width: 798, height: config.visualgrid ? 548 : 547 }],
-      content: [{ left: 131, top: 413, width: 838, height: config.visualgrid ? 71 : 70 }],
-      layout: [{ left: 151, top: 243, width: 818, height: config.visualgrid ? 91 : 90 }],
+      ignore: [{ left: 131, top: 88, width: 838, height: 110}],
+      strict: [{ left: 151, top: 558, width: 798, height: 548 }],
+      content: [{ left: 131, top: 408, width: 838, height: 70 }],
+      layout: [{ left: 151, top: 238, width: 818, height: 90 }],
     }
     Object.keys(expectedRegions).forEach( regionName => {
       assert.equal(imageMatchSettings[regionName], expectedRegions[regionName], regionName)
