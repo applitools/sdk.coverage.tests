@@ -1,4 +1,5 @@
 'use strict'
+const types = require('./mapping/types')
 const { checkSettingsParser } = require('./parser')
 const { regionParameterParser } = require('./parser')
 const { parseAssertActual } = require('./parser')
@@ -405,7 +406,7 @@ module.exports = function (tracker, test) {
 			return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`)
 		},
 		abort() {
-			addCommand(dot_net`eyes.Abort();`)
+			return addCommand(dot_net`eyes.Abort();`).type("TestResults")
 		},
 		getViewportSize() {
 			return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
@@ -424,19 +425,20 @@ module.exports = function (tracker, test) {
 
 			let objectToString = Object.prototype.toString;
 			let expect = expected
-			if (expected.isRef) expect = expected.ref()
+			if (expected === null) {
+                addCommand(dot_net`Assert.IsNotNull(${actual});`)
+            } else { if (expected.isRef) expect = expected.ref()
 			else {
 				if (objectToString.call(expected) === "[object Function]") expect = expected.ref()
 				if ((objectToString.call(expected) === "[object Object]") ||
 				(objectToString.call(expected) === "[object String]")) expect = expectParser(expected)
+			  }
+			  let act
+			  if (actual.isRef) act = parseAssertActual(actual.ref())
+			  else {act = `${actual}`}
+			  let mess = message ? `"${message}"` : null
+			  addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
 			}
-			let act
-			if (actual.isRef) act = parseAssertActual(actual.ref())
-			else {act = `${actual}`
-			console.log("actual = " + actual)}
-
-			let mess = message ? `"${message}"` : null
-			addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
 		},
 
 		instanceOf(object, className, message) {
