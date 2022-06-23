@@ -43,6 +43,7 @@ config({
     ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html',
     LazyLoad: 'https://applitools.github.io/demo/TestPages/LazyLoad/',
     CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
+    LongPage: 'https://applitools.github.io/demo/TestPages/LongPage/index.html',
   },
 })
 
@@ -943,7 +944,7 @@ test('should send ignore region by the same selector as target region', {
 })
 
 test('should send correct ignore region if page scrolled before check', {
-  page: 'CodedRegionPage',
+  page: 'LongPage',
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll'}},
