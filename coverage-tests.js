@@ -1217,6 +1217,36 @@ test('should send region by selector in padded page', {
   }
 })
 
+test('should use regions padding', {
+  variants: {
+    '': { config: { baselineName: 'TestRegionsPadding' } },
+    'with vg': { vg: true, config: { baselineName: 'TestRegionsPadding_VG' } },
+  },
+  test({ eyes, assert, helpers, driver, config }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/PaddedBody/region-padding.html')
+    eyes.open({ appName: 'Test Regions Padding', viewportSize: { height: 700, width: 1100 } })
+    eyes.check({
+      isFully: true,
+      ignoreRegions: [{ selector: '#ignoreRegions', padding: 20 }],
+      layoutRegions: [{ selector: '#layoutRegions', padding: { top: 20, right: 20 } }],
+      contentRegions: [{ selector: '#contentRegions', padding: { right: 20, left: 20 } }],
+      strictRegions: [{ selector: '#strictRegions', padding: { bottom: 20 } }]
+    })
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
+    const expectedRegions = {
+      ignore: [{ left: 131, top: 88, width: 838, height: 110}],
+      strict: [{ left: 151, top: 558, width: 798, height: 548 }],
+      content: [{ left: 131, top: 408, width: 838, height: 70 }],
+      layout: [{ left: 151, top: 238, width: 818, height: 90 }],
+    }
+    Object.keys(expectedRegions).forEach( regionName => {
+      assert.equal(imageMatchSettings[regionName], expectedRegions[regionName], regionName)
+    })
+  }
+})
+
 test('should send ignore displacements', {
   page: 'Default',
   variants: {

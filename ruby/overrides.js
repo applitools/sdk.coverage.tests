@@ -22,4 +22,7 @@ module.exports = {
     "Should return exception in TestResultsSummary": {skipEmit: true},
     // Universal server is still not latest for ruby
     "should send correct ignore region if page scrolled before check with css stitching": {skip: true},
+    
+    "should use regions padding": {skipEmit: true},
+    "should use regions padding with vg": {skipEmit: true},
 }
