@@ -2440,4 +2440,109 @@ test('should override default value of fully', {
   }
 })
 
+// adapted from https://github.com/applitools/eyes.sdk.javascript1/blob/feat/regionId/packages/eyes-sdk-core/test/e2e/codedRegions.e2e.spec.js
+test('coded regions with selectors or elements should automatically include a regionId', {
+  page: 'CodedRegionPage',
+  variants: {
+    'classic': {},
+    'with vg': {vg: true},
+  },
+  test({test, assert, helpers, driver, eyes}) {
+    const el = driver.findElement('.region.two:nth-child(2)')
+    const regions = [
+      '.region.one:nth-child(1)',
+      {selector: '.region.one:nth-child(2)'},
+      {selector: '//div[@class="region one"][3]', type: 'xpath'},
+      el,
+      '.region.three:nth-child(3n)', // 4 regions are targeted by this selector
+    ]
+
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    // check #1 - ignore regions
+    eyes.check({
+      isFully: false,
+      ignoreRegions: regions,
+    })
+
+    // check #2 - layout regions
+    eyes.check({
+      isFully: false,
+      layoutRegions: regions,
+    })
+
+    // check #3 - content regions
+    eyes.check({
+      isFully: false,
+      contentRegions: regions,
+    })
+
+    // check #4 - strict regions
+    eyes.check({
+      isFully: false,
+      strictRegions: regions,
+    })
+
+    const expectedRegions = [
+      {
+        left: 30,
+        top: 30,
+        width: 100,
+        height: 100,
+        regionId: 'css:.region.one:nth-child(1)', // string
+      },
+      {
+        left: 160,
+        top: 30,
+        width: 100,
+        height: 100,
+        regionId: 'css:.region.one:nth-child(2)', // common selector with type:'css' (default type)
+      },
+      {
+        left: 290,
+        top: 30,
+        width: 100,
+        height: 100,
+        regionId: 'xpath://div[@class="region one"][3]', // common selector with type:'xpath
+      },
+      {left: 280, top: 170, width: 200, height: 200}, // WebElement
+      {left: 250, top: 420, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (1)'}, // string that targets multiple elements
+      {left: 550, top: 420, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (2)'}, // string that targets multiple elements
+      {left: 250, top: 520, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (3)'}, // string that targets multiple elements
+      {left: 550, top: 520, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (4)'}, // string that targets multiple elements
+    ]
+
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(info.actualAppOutput[0].imageMatchSettings.ignore, expectedRegions)
+    assert.equal(info.actualAppOutput[1].imageMatchSettings.layout, expectedRegions)
+    assert.equal(info.actualAppOutput[2].imageMatchSettings.content, expectedRegions)
+    assert.equal(info.actualAppOutput[3].imageMatchSettings.strict, expectedRegions)
+  },
+})
+
+test('regionId can be specified as part of checkSettings', {
+  page: 'CodedRegionPage',
+  variants: {
+    'classic': {},
+    'with vg': {vg: true},
+  },
+  test({test, assert, helpers, eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({
+      isFully: false,
+      ignoreRegions: [{region: '.region.one:nth-child(1)', regionId: 'blah'}],
+    })
+    const expected = [{
+      left: 30,
+      top: 30,
+      width: 100,
+      height: 100,
+      regionId: 'blah'
+    }]
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(info.actualAppOutput[0].imageMatchSettings.ignore, expected)
+  }
+})
+
 // #endregion
