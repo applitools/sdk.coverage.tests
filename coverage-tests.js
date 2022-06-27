@@ -1219,27 +1219,27 @@ test('should send region by selector in padded page', {
 
 test('should use regions padding', {
   variants: {
-    '': { config: { baselineName: 'TestRegionsPadding' } },
-    'with vg': { vg: true, config: { baselineName: 'TestRegionsPadding_VG' } },
+    '': {config: {baselineName: 'TestRegionsPadding'}},
+    'with vg': {vg: true, config: {baselineName: 'TestRegionsPadding_VG'}},
   },
   test({ eyes, assert, helpers, driver, config }) {
     driver.visit('https://applitools.github.io/demo/TestPages/PaddedBody/region-padding.html')
-    eyes.open({ appName: 'Test Regions Padding', viewportSize: { height: 700, width: 1100 } })
+    eyes.open({ appName: 'Test Regions Padding', viewportSize: {height: 700, width: 1100} })
     eyes.check({
       isFully: true,
-      ignoreRegions: [{ selector: '#ignoreRegions', padding: 20 }],
-      layoutRegions: [{ selector: '#layoutRegions', padding: { top: 20, right: 20 } }],
-      contentRegions: [{ selector: '#contentRegions', padding: { right: 20, left: 20 } }],
-      strictRegions: [{ selector: '#strictRegions', padding: { bottom: 20 } }]
+      ignoreRegions: [{region: '#ignoreRegions', padding: 20 }],
+      layoutRegions: [{region: '#layoutRegions', padding: {top: 20, right: 20}}],
+      contentRegions: [{region: '#contentRegions', padding: {right: 20, left: 20}}],
+      strictRegions: [{region: '#strictRegions', padding: {bottom: 20} }]
     })
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedRegions = {
-      ignore: [{ left: 131, top: 88, width: 838, height: 110}],
-      strict: [{ left: 151, top: 558, width: 798, height: 548 }],
-      content: [{ left: 131, top: 408, width: 838, height: 70 }],
-      layout: [{ left: 151, top: 238, width: 818, height: 90 }],
+      ignore: [{regionId: 'css:#ignoreRegions', left: 131, top: 88, width: 838, height: 110}],
+      layout: [{regionId: 'css:#layoutRegions', left: 151, top: 238, width: 818, height: 90}],
+      content: [{regionId: 'css:#contentRegions', left: 131, top: 408, width: 838, height: 70}],
+      strict: [{regionId: 'css:#strictRegions', left: 151, top: 558, width: 798, height: 548}],
     }
     Object.keys(expectedRegions).forEach( regionName => {
       assert.equal(imageMatchSettings[regionName], expectedRegions[regionName], regionName)
@@ -1921,7 +1921,7 @@ test('appium android check window', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {left: 135, top: 236, width: 90, height: 48},
+        {regionId: 'class name:android.widget.Button', left: 135, top: 236, width: 90, height: 48},
     )
   },
 })
@@ -1933,16 +1933,16 @@ test('appium android check region with ignore region', {
   test: ({driver, eyes, helpers, assert}) => {
     driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
     eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({region: {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image_container'},ignoreRegions: [{type: TYPE.ANDROID_UI_AUTOMATOR, selector: 'new UiSelector().textContains("You successfully clicked the button!")'}, {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image'}]})
+    eyes.check({region: {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image_container'}, ignoreRegions: [{type: TYPE.ANDROID_UI_AUTOMATOR, selector: 'new UiSelector().textContains("You successfully clicked the button!")'}, {type: TYPE.ID, selector: 'com.applitools.helloworld.android:id/image'}]})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {left: 53, top: 0, width: 254, height: 22},
+        {regionId: '-android uiautomator:new UiSelector().textContains("You successfully clicked the button!")', left: 53, top: 0, width: 254, height: 22},
     )
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[1],
-        {left: 0, top: 22, width: 360, height: 234},
+        {regionId: 'id:com.applitools.helloworld.android:id/image', left: 0, top: 22, width: 360, height: 234},
     )
   },
 })
@@ -1970,7 +1970,7 @@ test('appium iOS check window', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {left: 155, top: 258, width: 65, height: 30},
+        {regionId: `-ios predicate string:type == 'XCUIElementTypeButton'`, left: 155, top: 258, width: 65, height: 30},
     )
   },
 })
@@ -2045,11 +2045,11 @@ test('appium iOS check region with ignore region', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {left: 0, top: 0, width: 343, height: 21},
+        {regionId: 'accessibility id:BottomLabel', left: 0, top: 0, width: 343, height: 21},
     )
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[1],
-        {left: 115, top: 35, width: 113, height: 65},
+        {regionId: 'accessibility id:BottomImage', left: 115, top: 35, width: 113, height: 65},
     )
   },
 })
