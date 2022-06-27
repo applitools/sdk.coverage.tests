@@ -1227,7 +1227,7 @@ test('should use regions padding', {
     eyes.open({ appName: 'Test Regions Padding', viewportSize: {height: 700, width: 1100} })
     eyes.check({
       isFully: true,
-      ignoreRegions: [{region: '#ignoreRegions', padding: 20 }],
+      ignoreRegions: [{region: '#ignoreRegions', padding: 20}],
       layoutRegions: [{region: '#layoutRegions', padding: {top: 20, right: 20}}],
       contentRegions: [{region: '#contentRegions', padding: {right: 20, left: 20}}],
       strictRegions: [{region: '#strictRegions', padding: {bottom: 20} }]
@@ -1236,10 +1236,10 @@ test('should use regions padding', {
     const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedRegions = {
-      ignore: [{regionId: 'css:#ignoreRegions', left: 131, top: 88, width: 838, height: 110}],
-      layout: [{regionId: 'css:#layoutRegions', left: 151, top: 238, width: 818, height: 90}],
-      content: [{regionId: 'css:#contentRegions', left: 131, top: 408, width: 838, height: 70}],
-      strict: [{regionId: 'css:#strictRegions', left: 151, top: 558, width: 798, height: 548}],
+      ignore: [{left: 131, top: 88, width: 838, height: 110}],
+      layout: [{left: 151, top: 238, width: 818, height: 90}],
+      content: [{left: 131, top: 408, width: 838, height: 70}],
+      strict: [{left: 151, top: 558, width: 798, height: 548}],
     }
     Object.keys(expectedRegions).forEach( regionName => {
       assert.equal(imageMatchSettings[regionName], expectedRegions[regionName], regionName)
