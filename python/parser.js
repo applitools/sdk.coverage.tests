@@ -21,7 +21,7 @@ function checkSettings(cs) {
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
     if (cs.ignoreRegions) {options += regions("ignore", cs.ignoreRegions)}
-    if (cs.layoutRegions) options += regions("layout", cs.layoutRegions)
+    if (cs.layoutRegions) {options += regions("layout", cs.layoutRegions)}
     if (cs.contentRegions) {options += regions("content", cs.contentRegions)}
     if (cs.strictRegions) {options += regions("strict", cs.strictRegions)}
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
