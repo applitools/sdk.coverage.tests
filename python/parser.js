@@ -20,10 +20,10 @@ function checkSettings(cs) {
     }
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
-    if (cs.ignoreRegions) options += regions("ignore", cs.ignoreRegions)
+    if (cs.ignoreRegions) {options += regions("ignore", cs.ignoreRegions)}
     if (cs.layoutRegions) options += regions("layout", cs.layoutRegions)
-    if (cs.contentRegions) options += regions("content", cs.contentRegions)
-    if (cs.strictRegions) options += regions("strict", cs.strictRegions)
+    if (cs.contentRegions) {options += regions("content", cs.contentRegions)}
+    if (cs.strictRegions) {options += regions("strict", cs.strictRegions)}
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
     if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
@@ -96,7 +96,7 @@ function region(region_param, first_call) {
 }
 
 function regions(kind, arr) {
-    return arr.reduce((acc, val) => `${acc}.${kind}(${regionParameter(val)})`, '')
+    return arr.reduce((acc, val) => `${acc}.${kind}(${regionParameter(val)})`, "")
 }
 function layoutBreakpoints(arg){
     if (Array.isArray(arg)) {
@@ -139,7 +139,7 @@ function regionParameter(region) {
                 string = python`${region.region}, padding=${region.padding}`
             } else {
                 string = parseObject(
-                    region.type ? region : (region.shadow ? region : {value: region, type:'Region'})
+                    region.type ? region : (region.shadow ? region : {value: region, type:"Region"})
                 )
             }
             break;
