@@ -18,10 +18,12 @@ function checkSettings(cs) {
         if (cs.frames) element += frames(cs.frames)
         if (cs.region) element += region(cs.region, true)
     }
-    if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions)
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
-    if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
+    if (cs.ignoreRegions) options += regions("ignore", cs.ignoreRegions)
+    if (cs.layoutRegions) options += regions("layout", cs.layoutRegions)
+    if (cs.contentRegions) options += regions("content", cs.contentRegions)
+    if (cs.strictRegions) options += regions("strict", cs.strictRegions)
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
     if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
@@ -93,11 +95,8 @@ function region(region_param, first_call) {
     }
 }
 
-function ignoreRegions(arr) {
-    return arr.reduce((acc, val) => `${acc}.ignore(${regionParameter(val)})`, '')
-}
-function layoutRegions(arr){
-    return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '')
+function regions(kind, arr) {
+    return arr.reduce((acc, val) => `${acc}.${kind}(${regionParameter(val)})`, '')
 }
 function layoutBreakpoints(arg){
     if (Array.isArray(arg)) {
@@ -136,7 +135,13 @@ function regionParameter(region) {
             string = `${JSON.stringify(region)}`
             break;
         case "object":
-            string = parseObject(region.type ? region : (region.shadow ? region : {value: region, type:'Region'}))
+            if (region.region) {
+                string = python`${region.region}, padding=${region.padding}`
+            } else {
+                string = parseObject(
+                    region.type ? region : (region.shadow ? region : {value: region, type:'Region'})
+                )
+            }
             break;
         case "undefined":
             string = 'None'
