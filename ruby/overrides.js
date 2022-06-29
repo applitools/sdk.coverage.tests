@@ -25,4 +25,5 @@ module.exports = {
     
     "should use regions padding": {skipEmit: true},
     "should use regions padding with vg": {skipEmit: true},
+    "Should not fail all by some aborted tests": {skipEmit: true},
 }
