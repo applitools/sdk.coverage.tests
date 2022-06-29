@@ -2162,6 +2162,30 @@ test('should return aborted tests in getAllTestResults', {
   },
 })
 
+test('Should not fail all by some aborted tests', {
+  // the test page has '@media query' to hide the 'region' element once width is less than 700
+  vg: true,
+  config: {
+    browsersInfo: [
+      { name: 'chrome', width: 1000, height: 400 }, // should succeed
+      { name: 'firefox', width: 680, height: 420 }, // should fail
+      { name: 'chrome', width: 500, height: 500 }, // should fail
+      { name: 'firefox', width: 1024, height: 768 }, // should succeed
+    ],
+  },
+  test({ driver, eyes, assert }) {
+    driver.visit('https://applitools.github.io/demo/TestPages/SimpleTestPage/mediaQuery.html')
+    eyes.open({ appName: 'Applitools Eyes SDK', viewportSize })
+    eyes.check({ region: '#size-dependent-div', isFully: true, fully: true })
+    assert.throws(() => void eyes.close())
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults()[0].testResults.isAborted, false)
+    assert.equal(results.getAllResults()[1]._container.exception.message.substring(0, 27), `failed to render screenshot`)
+    assert.equal(results.getAllResults()[2]._container.exception.message.substring(0, 27), `failed to render screenshot`)
+    assert.equal(results.getAllResults()[3].testResults.isAborted, false)
+  }
+})
+
 test('should return browserInfo in getAllTestResults', {
   page: 'Default',
   vg: true,
