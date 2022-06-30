@@ -96,7 +96,7 @@ function region(region_param, first_call) {
 }
 
 function regions(kind, arr) {
-    return arr.reduce((acc, val) => `${acc}.${kind}(${regionParameter(val)})`, "")
+    return arr.reduce((acc, val) => `${acc}.${kind}(${regionParameter(val)})`, "");
 }
 function layoutBreakpoints(arg){
     if (Array.isArray(arg)) {
@@ -136,11 +136,11 @@ function regionParameter(region) {
             break;
         case "object":
             if (region.region) {
-                string = python`${region.region}, padding=${region.padding}`
+                string = python`${region.region}, padding=${region.padding}`;
             } else {
                 string = parseObject(
                     region.type ? region : (region.shadow ? region : {value: region, type:"Region"})
-                )
+                );
             }
             break;
         case "undefined":
