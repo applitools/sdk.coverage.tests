@@ -2504,7 +2504,7 @@ test('coded regions with selectors or elements should automatically include a re
         height: 100,
         regionId: 'xpath://div[@class="region one"][3]', // common selector with type:'xpath
       },
-      {left: 280, top: 170, width: 200, height: 200}, // WebElement
+      {left: 280, top: 170, width: 200, height: 200, regionId: 'css:.region.two:nth-child(2)'}, // WebElement
       {left: 250, top: 420, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (1)'}, // string that targets multiple elements
       {left: 550, top: 420, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (2)'}, // string that targets multiple elements
       {left: 250, top: 520, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (3)'}, // string that targets multiple elements
