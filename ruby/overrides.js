@@ -19,11 +19,10 @@ module.exports = {
     'should return browserInfo in getAllTestResults': {skip: true},
     'should be empty if page delayed by 1500': {skip: true},
 
-    "Should return exception in TestResultsSummary": {skipEmit: true},
+    "should return exception in TestResultsSummary": {skipEmit: true},
     // Universal server is still not latest for ruby
     "should send correct ignore region if page scrolled before check with css stitching": {skip: true},
     
     "should use regions padding": {skipEmit: true},
     "should use regions padding with vg": {skipEmit: true},
-    "Should not fail all by some aborted tests": {skipEmit: true},
 }

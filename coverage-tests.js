@@ -2162,7 +2162,7 @@ test('should return aborted tests in getAllTestResults', {
   },
 })
 
-test('Should not fail all by some aborted tests', {
+test('should not fail all by some aborted tests', {
   // the test page has '@media query' to hide the 'region' element once width is less than 700
   vg: true,
   config: {
@@ -2180,8 +2180,8 @@ test('Should not fail all by some aborted tests', {
     assert.throws(() => void eyes.close())
     const results = eyes.runner.getAllTestResults(false)
     assert.equal(results.getAllResults()[0].testResults.isAborted, false)
-    assert.equal(results.getAllResults()[1]._container.exception.message.substring(0, 27), `failed to render screenshot`)
-    assert.equal(results.getAllResults()[2]._container.exception.message.substring(0, 27), `failed to render screenshot`)
+    assert.equal(results.getAllResults()[1].exception.message.substring(0, 27), `failed to render screenshot`)
+    assert.equal(results.getAllResults()[2].exception.message.substring(0, 27), `failed to render screenshot`)
     assert.equal(results.getAllResults()[3].testResults.isAborted, false)
   }
 })
@@ -2354,7 +2354,7 @@ page: 'HelloWorld',
   }
 })
 
-test('Should return exception in TestResultsSummary', {
+test('should return exception in TestResultsSummary', {
   page: 'AdoptedStyleSheets',
   vg: true,
   config: {
