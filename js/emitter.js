@@ -60,9 +60,9 @@ module.exports = function(tracker, test) {
 
   addHook('afterEach', js`
     try {
-      await eyes.abort()
+      if (eyes) await eyes.abort()
     } finally {
-      await destroyDriver(driver)
+      if (destroyDriver) await destroyDriver(driver)
     }
   `)
 
