@@ -1163,7 +1163,6 @@ test('should send codded regions with region id', {
     const result = eyes.close(false)
 
     const info = helpers.getTestInfo(result)
-    const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedRegions = [
       {left: 290, top: 30, width: 100, height: 100, regionId: '//div[@class="region one"][3]'}, // selector with type:'xpath
       {left: 280, top: 170, width: 200, height: 200, regionId: 'my-region-id'}, // element with custom id
@@ -1173,10 +1172,10 @@ test('should send codded regions with region id', {
       {left: 550, top: 520, width: 50, height: 50, regionId: '.region.three:nth-child(3n) (4)'}, // string that targets multiple elements
     ]
     for (const [index, expectedIgnoreRegion] of expectedRegions.entries()) {
-      assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
-      assert.equal(imageMatchSettings.layout[index], expectedIgnoreRegion)
-      assert.equal(imageMatchSettings.content[index], expectedIgnoreRegion)
-      assert.equal(imageMatchSettings.strict[index], expectedIgnoreRegion)
+      assert.equal(info.actualAppOutput[0].imageMatchSettings.ignore[index], expectedIgnoreRegion)
+      assert.equal(info.actualAppOutput[1].imageMatchSettings.layout[index], expectedIgnoreRegion)
+      assert.equal(info.actualAppOutput[2].imageMatchSettings.content[index], expectedIgnoreRegion)
+      assert.equal(info.actualAppOutput[3].imageMatchSettings.strict[index], expectedIgnoreRegion)
     }
   },
 })
