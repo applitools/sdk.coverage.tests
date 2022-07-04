@@ -55,8 +55,6 @@ module.exports = {
     "should use regions padding": {skipEmit: true},
     "should use regions padding with vg": {skipEmit: true},
 
-    "regionId can be specified as part of checkSettings classic": {skipEmit: true},
-    "regionId can be specified as part of checkSettings with vg": {skipEmit: true},
-    "coded regions with selectors or elements should automatically include a regionId classic": {skipEmit: true},
-    "coded regions with selectors or elements should automatically include a regionId with vg": {skipEmit: true},
+    "should send codded regions with region id": {skipEmit: true},
+    "should send codded regions with region id with vg": {skipEmit: true},
 }
