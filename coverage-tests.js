@@ -871,12 +871,12 @@ test('should send ignore region by selector', {
   },
   test({eyes, assert, helpers, vg}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({ignoreRegions: [{region: '#overflowing-div', regionId: 'ignore-region'}], isFully: false})
+    eyes.check({ignoreRegions: ['#overflowing-div'], isFully: false})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
-      { left: 8, top: vg ? 80 : 81, width: 304, height: vg ? 185 : 184, regionId: 'ignore-region'},
+      { left: 8, top: vg ? 80 : 81, width: 304, height: vg ? 185 : 184, regionId: '#overflowing-div'},
     )
   },
 })
@@ -890,14 +890,14 @@ test('should send multiple ignore regions by selector', {
   },
   test({eyes, assert, helpers, vg}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({ignoreRegions: [{region: '.ignore', regionId: 'ignore-region'}], isFully: true})
+    eyes.check({ignoreRegions: ['.ignore'], isFully: true})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedIgnoreRegions = [
-      {left: 10, top: vg ? 285 : 286, width: 800, height: vg ? 501 : 500, regionId: 'ignore-region (1)'},
-      {left: 122, top: vg ? 932 : 933, width: 456, height: vg ? 307 : 306, regionId: 'ignore-region (2)'},
-      {left: 8, top: vg ? 1276 : 1277, width: 690, height: vg ? 207 : 206, regionId: 'ignore-region (3)'},
+      {left: 10, top: vg ? 285 : 286, width: 800, height: vg ? 501 : 500, regionId: '.ignore (1)'},
+      {left: 122, top: vg ? 932 : 933, width: 456, height: vg ? 307 : 306, regionId: '.ignore (2)'},
+      {left: 8, top: vg ? 1276 : 1277, width: 690, height: vg ? 207 : 206, regionId: '.ignore (3)'},
     ]
     for (const [index, expectedIgnoreRegion] of expectedIgnoreRegions.entries()) {
       assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
@@ -933,12 +933,12 @@ test('should send ignore region by the same selector as target region', {
   },
   test({eyes, assert, helpers, vg}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
-    eyes.check({region: '#overflowing-div-image', ignoreRegions: [{region: '#overflowing-div-image', regionId: 'ignore-region'}]})
+    eyes.check({region: '#overflowing-div-image', ignoreRegions: ['#overflowing-div-image']})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
-      {left: 0, top: 0, width: 304, height: vg ? 185 : 184, regionId: 'ignore-region'},
+      {left: 0, top: 0, width: 304, height: vg ? 185 : 184, regionId: '#overflowing-div-image'},
     )
   },
 })
@@ -966,12 +966,12 @@ test('should send correct ignore region if page scrolled before check', {
   test({driver, eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK', viewportSize})
     driver.click('#secondary')
-    eyes.check({isFully: true, ignoreRegions: [{region: '#secondary', regionId: 'ignore-region'}]})
+    eyes.check({isFully: true, ignoreRegions: ['#secondary']})
     const result = eyes.close()
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.ignore[0],
-      {left: 8, top: 2014, width: 56, height: 56, regionId: 'ignore-region'},
+      {left: 8, top: 2014, width: 56, height: 56, regionId: '#secondary'},
     )
   },
 })
@@ -981,12 +981,12 @@ test('should send correct layout region if page has padded body with css stitchi
   config: {baselineName: 'Test Layout Region within Target Region', stitchMode: 'CSS'},
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Test Layout Region within Target Region', viewportSize: {height: 700, width: 1100}})
-    eyes.check({isFully: true, region: '.main', layoutRegions: [{region: '.minions', regionId: 'layout-region'}]})
+    eyes.check({isFully: true, region: '.main', layoutRegions: ['.minions']})
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(
       info['actualAppOutput']['0']['imageMatchSettings']['layout']['0'],
-      {left: 8, top: 59, width: 1084, height: 679, regionId: 'layout-region'}
+      {left: 8, top: 59, width: 1084, height: 679, regionId: '.minions'}
     )
   }
 })
@@ -1026,14 +1026,7 @@ test('should send floating region by selector', {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({
       floatingRegions: [
-        {
-          region: '#overflowing-div',
-          regionId: 'floating-region',
-          maxUpOffset: 3,
-          maxDownOffset: 3,
-          maxLeftOffset: 20,
-          maxRightOffset: 30,
-        },
+        {region: '#overflowing-div', maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
       ],
       isFully: false,
     })
@@ -1041,7 +1034,7 @@ test('should send floating region by selector', {
     const info = helpers.getTestInfo(result)
     assert.equal(
       info.actualAppOutput[0].imageMatchSettings.floating[0],
-      {left: 8, top: vg ? 80 : 81, width: 304, height: vg ? 185 : 184, regionId: 'floating-region', maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
+      {left: 8, top: vg ? 80 : 81, width: 304, height: vg ? 185 : 184, regionId: '#overflowing-div', maxUpOffset: 3, maxDownOffset: 3, maxLeftOffset: 20, maxRightOffset: 30},
     )
   },
 })
@@ -1091,7 +1084,7 @@ test('should send multiple accessibility regions by selector', {
   test({eyes, assert, helpers, vg}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
     eyes.check({
-      accessibilityRegions: [{region: '.ignore', regionId: 'accessibility-region', type: 'LargeText'}],
+      accessibilityRegions: [{region: '.ignore', type: 'LargeText'}],
       isFully: false,
     })
     const result = eyes.close()
@@ -1100,9 +1093,9 @@ test('should send multiple accessibility regions by selector', {
     assert.equal(imageMatchSettings.accessibilitySettings.level, 'AAA')
     assert.equal(imageMatchSettings.accessibilitySettings.version, 'WCAG_2_0')
     const expectedAccessibilityRegions = [
-      {left: 10, top: vg ? 285 : 286, width: 800, height: vg ? 501 : 500, regionId: 'accessibility-region (1)', type: 'LargeText', isDisabled: false, type: 'LargeText'},
-      {left: 122, top: vg ? 932 : 933, width: 456, height: vg ? 307 : 306, regionId: 'accessibility-region (2)', type: 'LargeText', isDisabled: false, type: 'LargeText'},
-      {left: 8, top: vg ? 1276 : 1277, width: 690, height: vg ? 207 : 206, regionId: 'accessibility-region (3)', type: 'LargeText', isDisabled: false, type: 'LargeText'},
+      {left: 10, top: vg ? 285 : 286, width: 800, height: vg ? 501 : 500, regionId: '.ignore (1)', type: 'LargeText', isDisabled: false},
+      {left: 122, top: vg ? 932 : 933, width: 456, height: vg ? 307 : 306, regionId: '.ignore (2)', type: 'LargeText', isDisabled: false},
+      {left: 8, top: vg ? 1276 : 1277, width: 690, height: vg ? 207 : 206, regionId: '.ignore (3)', type: 'LargeText', isDisabled: false},
     ]
     for (const [index, expectedAccessibilityRegion] of expectedAccessibilityRegions.entries()) {
       assert.equal(imageMatchSettings.accessibility[index], expectedAccessibilityRegion)
@@ -1120,19 +1113,19 @@ test('should send codded regions with padding', {
     eyes.open({appName: 'Test Regions Padding', viewportSize: {height: 700, width: 1100}})
     eyes.check({
       isFully: true,
-      ignoreRegions: [{region: '#ignoreRegions', regionId: 'ignore-region', padding: 20}],
-      layoutRegions: [{region: '#layoutRegions', regionId: 'layout-region', padding: {top: 20, right: 20}}],
-      contentRegions: [{region: '#contentRegions', regionId: 'content-region', padding: {right: 20, left: 20}}],
-      strictRegions: [{region: '#strictRegions', regionId: 'strict-region', padding: {bottom: 20} }]
+      ignoreRegions: [{region: '#ignoreRegions', padding: 20}],
+      layoutRegions: [{region: '#layoutRegions', padding: {top: 20, right: 20}}],
+      contentRegions: [{region: '#contentRegions', padding: {right: 20, left: 20}}],
+      strictRegions: [{region: '#strictRegions', padding: {bottom: 20} }]
     })
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedRegions = {
-      ignore: [{left: 131, top: 88, width: 838, height: 110, regionId: 'ignore-region'}],
-      layout: [{left: 151, top: 238, width: 818, height: 90, regionId: 'layout-region'}],
-      content: [{left: 131, top: 408, width: 838, height: 70, regionId: 'content-region'}],
-      strict: [{left: 151, top: 558, width: 798, height: 548, regionId: 'strict-region'}],
+      ignore: [{left: 131, top: 88, width: 838, height: 110, regionId: '#ignoreRegions'}],
+      layout: [{left: 151, top: 238, width: 818, height: 90, regionId: '#layoutRegions'}],
+      content: [{left: 131, top: 408, width: 838, height: 70, regionId: '#contentRegions'}],
+      strict: [{left: 151, top: 558, width: 798, height: 548, regionId: '#strictRegions'}],
     }
     Object.keys(expectedRegions).forEach( regionName => {
       assert.equal(imageMatchSettings[regionName], expectedRegions[regionName], regionName)
@@ -1172,12 +1165,12 @@ test('should send codded regions with region id', {
     const info = helpers.getTestInfo(result)
     const imageMatchSettings = info.actualAppOutput[0].imageMatchSettings
     const expectedRegions = [
-      {left: 290, top: 30, width: 100, height: 100, regionId: 'xpath://div[@class="region one"][3]'}, // selector with type:'xpath
+      {left: 290, top: 30, width: 100, height: 100, regionId: '//div[@class="region one"][3]'}, // selector with type:'xpath
       {left: 280, top: 170, width: 200, height: 200, regionId: 'my-region-id'}, // element with custom id
-      {left: 250, top: 420, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (1)'}, // string that targets multiple elements
-      {left: 550, top: 420, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (2)'}, // string that targets multiple elements
-      {left: 250, top: 520, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (3)'}, // string that targets multiple elements
-      {left: 550, top: 520, width: 50, height: 50, regionId: 'css:.region.three:nth-child(3n) (4)'}, // string that targets multiple elements
+      {left: 250, top: 420, width: 50, height: 50, regionId: '.region.three:nth-child(3n) (1)'}, // string that targets multiple elements
+      {left: 550, top: 420, width: 50, height: 50, regionId: '.region.three:nth-child(3n) (2)'}, // string that targets multiple elements
+      {left: 250, top: 520, width: 50, height: 50, regionId: '.region.three:nth-child(3n) (3)'}, // string that targets multiple elements
+      {left: 550, top: 520, width: 50, height: 50, regionId: '.region.three:nth-child(3n) (4)'}, // string that targets multiple elements
     ]
     for (const [index, expectedIgnoreRegion] of expectedRegions.entries()) {
       assert.equal(imageMatchSettings.ignore[index], expectedIgnoreRegion)
@@ -1811,7 +1804,7 @@ test('appium android check window', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {regionId: 'class name:android.widget.Button', left: 135, top: 236, width: 90, height: 48},
+        {left: 135, top: 236, width: 90, height: 48, regionId: 'android.widget.Button'},
     )
   },
 })
@@ -1828,11 +1821,11 @@ test('appium android check region with ignore region', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {regionId: '-android uiautomator:new UiSelector().textContains("You successfully clicked the button!")', left: 53, top: 0, width: 254, height: 22},
+        {left: 53, top: 0, width: 254, height: 22, regionId: 'new UiSelector().textContains("You successfully clicked the button!")',},
     )
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[1],
-        {regionId: 'id:com.applitools.helloworld.android:id/image', left: 0, top: 22, width: 360, height: 234},
+        {left: 0, top: 22, width: 360, height: 234, regionId: 'com.applitools.helloworld.android:id/image', },
     )
   },
 })
@@ -1860,7 +1853,7 @@ test('appium iOS check window', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {regionId: `-ios predicate string:type == 'XCUIElementTypeButton'`, left: 155, top: 258, width: 65, height: 30},
+        {left: 155, top: 258, width: 65, height: 30, regionId: `type == 'XCUIElementTypeButton'`},
     )
   },
 })
@@ -1935,11 +1928,11 @@ test('appium iOS check region with ignore region', {
     const info = helpers.getTestInfo(result)
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[0],
-        {regionId: 'accessibility id:BottomLabel', left: 0, top: 0, width: 343, height: 21},
+        {left: 0, top: 0, width: 343, height: 21, regionId: 'BottomLabel'},
     )
     assert.equal(
         info.actualAppOutput[0].imageMatchSettings.ignore[1],
-        {regionId: 'accessibility id:BottomImage', left: 115, top: 35, width: 113, height: 65},
+        {left: 115, top: 35, width: 113, height: 65, regionId: 'BottomImage'},
     )
   },
 })
