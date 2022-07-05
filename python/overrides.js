@@ -7,10 +7,4 @@ module.exports = {
     'should handle check of stale element in frame if selector is preserved': {skip: true},
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
-    
-    "should use regions padding": {skipEmit: true},
-    "should use regions padding with vg": {skipEmit: true},
-
-    "should send codded regions with region id": {skipEmit: true},
-    "should send codded regions with region id with vg": {skipEmit: true},
 }
