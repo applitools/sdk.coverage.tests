@@ -84,5 +84,5 @@ module.exports = {
 
     "should send codded regions with region id": {skipEmit: true},
     "should send codded regions with region id with vg": {skipEmit: true},
-    "should send codded regions with padding":{skipemit: true}
+    "should send codded regions with padding": {skipemit: true}
 }
