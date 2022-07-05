@@ -136,7 +136,13 @@ function regionParameter(region) {
             break;
         case "object":
             if (region.region) {
-                string = python`${region.region}, padding=${region.padding}`;
+                string = python`${region.region}`;
+                if (region.padding) {
+                    string += python`, padding=${region.padding}`;
+                }
+                if (region.regionId) {
+                    string += python`, region_id=${region.regionId}`;
+                }
             } else {
                 string = parseObject(
                     region.type ? region : (region.shadow ? region : {value: region, type:"Region"})
