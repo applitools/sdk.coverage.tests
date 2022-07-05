@@ -51,7 +51,11 @@ const types = {
     },
     "Region": {
         name: () => 'Region',
-        constructor: (value) => `new Region(${value.left}, ${value.top}, ${value.width}, ${value.height})`,
+        constructor: (value) => {
+            let region = `new Region(${value.left}, ${value.top}, ${value.width}, ${value.height})`;
+            if(value.regionId) region += `.regionId(${JSON.stringify(value.regionId)})`
+            return region
+        }
     },
     "FloatingRegion": {
         constructor: (value) => {

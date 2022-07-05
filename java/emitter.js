@@ -6,13 +6,15 @@ const ImageMatchSettings = {
     type: 'ImageMatchSettings',
     schema: {
         ignoreDisplacements: 'BooleanObject',
-        ignore: {type: 'Array', items: 'Region'},
         floating: {type: 'Array', items: 'FloatingRegion'},
         accessibility: {type: 'Array', items: 'AccessibilityRegion'},
         accessibilitySettings: {
             type: 'AccessibilitySettings',
             schema: {level: 'AccessibilityLevel', version: 'AccessibilityGuidelinesVersion'},
         },
+        ignore: {type: 'Array', items: 'Region'},
+        strict: {type: 'Array', items: 'Region'},
+        content: {type: 'Array', items: 'Region'},
         layout: {type: 'Array', items: 'Region'}
     },
 }

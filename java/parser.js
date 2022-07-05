@@ -24,10 +24,12 @@ function checkSettings(cs, native) {
         }
         if (cs.region) element += region(cs.region)
     }
-    if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions);
-    if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions);
+    if (cs.ignoreRegions) options += typeRegions('ignore', cs.ignoreRegions);
+    if (cs.strictRegions) options += typeRegions('strict', cs.strictRegions);
+    if (cs.contentRegions) options += typeRegions('content', cs.contentRegions);
+    if (cs.layoutRegions) options += typeRegions('layout',cs.layoutRegions);
     if (cs.scrollRootElement && !cs.frames) options += `.scrollRootElement(${printSelector(cs.scrollRootElement)})`;
     if (cs.ignoreDisplacements !== undefined) options += `.ignoreDisplacements(${cs.ignoreDisplacements})`;
     if (cs.timeout) options += `.timeout(${serialize(cs.timeout)})`;
@@ -84,12 +86,8 @@ function checkSettings(cs, native) {
         return `.region(${regionParameter(region)})`;
     }
 
-    function ignoreRegions(arr) {
-        return arr.reduce((acc, val) => `${acc}.ignore(${regionParameter(val)})`, '');
-    }
-
-    function layoutRegions(arr) {
-        return arr.reduce((acc, val) => `${acc}.layout(${regionParameter(val)})`, '');
+    function typeRegions(type, arr) {
+        return arr.reduce((acc, val) => `${acc}.${type}(${regionParameter(val)})`, '');
     }
 
     function floatingRegions(arr) {
@@ -118,7 +116,12 @@ function checkSettings(cs, native) {
                 string = `By.cssSelector(${JSON.stringify(region)})`;
                 break;
             case "object":
-                if (region.type) {
+                if(region.region) {
+                    string = regionParameter(region.region)
+                    if(region.regionId) {
+                        string += `, "${region.regionId}"`
+                    }
+                } else if (region.type) {
                     string = native ? `getDriver().findElement(${parseObject(region)})` : parseObject(region);
                 } else {
                     string = parseObject({value: region, type: 'Region'});

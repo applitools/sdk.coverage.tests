@@ -3,6 +3,8 @@ const CHECK_SETTINGS_OPTIONS = [
     "region",
     "accessibilityRegions",
     "layoutRegions",
+    "contentRegions",
+    "strictRegions",
     "ignoreRegions",
     "floatingRegions",
     "scrollRootElement",

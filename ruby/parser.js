@@ -20,9 +20,11 @@ function checkSettings(cs, driver, native) {
         if (cs.region) element += region(cs.region)
     }
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions)
-    if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
-    if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
+    if (cs.strictRegions) options += typeRegions('strict', cs.strictRegions);
+    if (cs.contentRegions) options += typeRegions('content', cs.contentRegions);
+    if (cs.layoutRegions) options += typeRegions('layout', cs.layoutRegions);
+    if (cs.ignoreRegions) options += typeRegions('ignore', cs.ignoreRegions);
     if (cs.scrollRootElement) element += scrollRootElement(cs.scrollRootElement)
     if (cs.ignoreDisplacements !== undefined) options += `.ignore_displacements(${cs.ignoreDisplacements})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
@@ -89,6 +91,10 @@ function checkSettings(cs, driver, native) {
         return `.ignore(${regionParameter(region)})`
     }
 
+    function typeRegions(type, arr) {
+        return arr.reduce((acc, val) => acc + `.${type}(${regionParameter(val)})`, '')
+    }
+
     function floatingRegions(arr) {
         return arr.reduce((acc, val) => acc + floating(val), '')
     }
@@ -108,7 +114,17 @@ function checkSettings(cs, driver, native) {
                 string = `:css, \'${region}\'`;
                 break;
             case "object":
-                string = region.selector ? serialize(region) : types.Region.constructor(region)
+                if(region.region) {
+                    string = regionParameter(region.region)
+                    if (region.padding) {
+                        string += `, padding: ${types.PaddingBounds.constructor(region.padding)}`;
+                    }
+                    if (region.regionId) {
+                        string += ruby`, region_id: ${region.regionId}`;
+                    }
+                } else {
+                    string = region.selector ? serialize(region) : types.Region.constructor(region)
+                }
                 break;
             default:
                 string = serialize(region)
@@ -123,10 +139,6 @@ function checkSettings(cs, driver, native) {
         function accessibilityRegion(reg) {
             return `.accessibility(${regionParameter(reg.region)}, type: ${serialize(reg.type)})`
         }
-    }
-
-    function layoutRegions(regions) {
-        return regions.map(region => `.layout(${regionParameter(region)})`)
     }
 
     function scrollRootElement(scrollRootElement) {
