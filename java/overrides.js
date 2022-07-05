@@ -79,8 +79,8 @@ module.exports = {
     'lazy load page with default options': {skipEmit: true},
     'lazy load page with default options with vg': {skipEmit: true},
 
-    "should use regions padding": {skipEmit: true},
-    "should use regions padding with vg": {skipEmit: true},
+    // "should use regions padding": {skipEmit: true},
+    // "should use regions padding with vg": {skipEmit: true},
 
     "should send codded regions with region id": {skipEmit: true},
     "should send codded regions with region id with vg": {skipEmit: true},
