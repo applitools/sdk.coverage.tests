@@ -286,7 +286,9 @@ module.exports = function (tracker, test) {
                                             type: 'AccessibilitySettings',
                                             schema: {level: 'String', version: 'String'},
                                         },
-                                        layout: {type: 'Array', items: 'Region'}
+                                        layout: {type: 'Array', items: 'Region'},
+                                        strict: {type: 'Array', items: 'Region'},
+                                        content: {type: 'Array', items: 'Region'},
                                     },
                                 }
                             }
