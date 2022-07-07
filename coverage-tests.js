@@ -2253,7 +2253,7 @@ test('lazy load page with all options specified', {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     eyes.check({isFully: true, lazyLoad: {
        scrollLength: 500,
-       waitingTime: 300,
+       waitingTime: 500,
        maxAmountToScroll: 10000, 
     }})
     eyes.close()
