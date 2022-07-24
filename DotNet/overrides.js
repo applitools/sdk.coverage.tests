@@ -23,8 +23,6 @@ module.exports = {
     "appium android landscape mode check region on android 7": {skipEmit: true},
     "appium android landscape mode check region on android 10": {skipEmit: true},
     // Compilation errors:
-    "should waitBeforeCapture with breakpoints in check": {skipEmit: true},
-    "should waitBeforeCapture with breakpoints in open": {skipEmit: true},
     "should return browserInfo in getAllTestResults": {skipEmit: true},
     // // Page coverage feature
     "pageCoverage data is correct": {skipEmit: true},
