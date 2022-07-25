@@ -192,7 +192,8 @@ module.exports = function (tracker, test) {
 		if ("layoutBreakpoints" in test.config) {
 			//let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
 			//let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-			addHook('beforeEach', dot_net`config.SetLayoutBreakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]});`);
+			if (Array.isArray(test.config.layoutBreakpoints)) addHook('beforeEach', dot_net`config.SetLayoutBreakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]});`);
+			else addHook('beforeEach', dot_net`config.SetLayoutBreakpoints(${test.config.layoutBreakpoints});`);
 		}
 		addHook('beforeEach', dot_net`eyes.SetConfiguration(config);`);
 	}
