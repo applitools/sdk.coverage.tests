@@ -40,6 +40,7 @@ module.exports = {
 
     // waitBeforeCapture is not implemented
     "should waitBeforeCapture with breakpoints in check": {skipEmit: true},
+    "should waitBeforeCapture with breakpoints in open": {skipEmit: true},
     
     // lazyload tests (api change needed in check settings to support it)
     'lazy load page with one option specified maxAmountToScroll': {skipEmit: true},
