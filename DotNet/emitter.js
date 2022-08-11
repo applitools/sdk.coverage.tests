@@ -505,6 +505,9 @@ module.exports = function (tracker, test) {
         getNodesByAttribute: (dom, name) => addCommand(dot_net`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
       })
 		},
+		hasErrorMessage(error, msg) {
+			return addCommand(dot_net`${error.message} === ${msg}`)
+		},
 		math: {
 			round(number) {
 		if (number.isRef)

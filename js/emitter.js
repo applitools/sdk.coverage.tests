@@ -248,6 +248,9 @@ module.exports = function(tracker, test) {
         getNodesByAttribute: (dom, name) => addExpression(js`${dom}.getNodesByAttribute(${name})`)
       })
     },
+    hasErrorMessage(error, msg) {
+      return addExpression(js`${error.message} === ${msg}`)
+    },
     math: {
       round(number) {
         return addExpression(js`(Math.round(${number}) || 0)`)
