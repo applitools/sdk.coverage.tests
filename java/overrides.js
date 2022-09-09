@@ -70,5 +70,6 @@ module.exports = {
     // "should send codded regions with region id": {skipEmit: true},
     // "should send codded regions with region id with vg": {skipEmit: true},
     "should send codded regions with padding": {skipEmit: true},
-    "should send codded regions with padding with vg": {skipEmit: true}
+    "should send codded regions with padding with vg": {skipEmit: true},
+    "check window fully on page with horizontal scroll with scroll stitching": {skipEmit: true}
 }
