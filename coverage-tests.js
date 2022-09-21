@@ -296,10 +296,8 @@ test('check frame', {
   variants: {
     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckFrame', appName: 'Eyes Selenium SDK - Classic API'}},
     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrame_Scroll', appName: 'Eyes Selenium SDK - Classic API'}},
-    'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckFrame_VG', appName: 'Eyes Selenium SDK - Classic API'}},
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFrame_Fluent', appName: 'Eyes Selenium SDK - Fluent API'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrame_Fluent_Scroll', appName: 'Eyes Selenium SDK - Fluent API'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckFrame_VG', appName: 'Eyes Selenium SDK - Classic API'}},
   },
   test({eyes}) {
     eyes.open({viewportSize})
@@ -313,7 +311,6 @@ test('check frame fully', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameFully_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameFully_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckFrameFully_Fluent_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -327,7 +324,6 @@ test('check frame in frame fully', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameInFrame_Fully_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameInFrame_Fully_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckFrameInFrame_Fully_Fluent_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -341,7 +337,6 @@ test('check window fully and frame in frame fully', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckFrameInFrame_Fully_Fluent2_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckFrameInFrame_Fully_Fluent2_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -358,7 +353,6 @@ test('check frame after manual switch to frame', {
   variants: {
     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckInnerFrame'}},
     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckInnerFrame_Scroll'}},
-    'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckInnerFrame_VG'}}
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -585,7 +579,6 @@ test('check region by coordinates in frame', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionByCoordinateInFrame_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionByCoordinateInFrame_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckRegionByCoordinateInFrame_Fluent_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -602,7 +595,6 @@ test('check region by coordinates in frame fully', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionByCoordinateInFrameFully_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionByCoordinateInFrameFully_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckRegionByCoordinateInFrameFully_Fluent_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -620,10 +612,8 @@ test('check region by selector in frame fully', {
   variants: {
     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame'}},
     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame_Scroll'}},
-    'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckRegionInFrame_VG'}},
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckRegionInFrame_VG'}},
     'on firefox legacy': {features: ['jsonwire'], config: {baselineName: 'TestCheckRegionInFrame_Scroll'}, env: {browser: 'firefox-48', legacy: true}}
   },
   test({eyes}) {
@@ -655,7 +645,6 @@ test('check region by selector in overflowed frame', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInAVeryBigFrame'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInAVeryBigFrame_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckRegionInAVeryBigFrame_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Special Cases', viewportSize})
@@ -687,7 +676,6 @@ test('check region by selector in overflowed frame after manual scroll', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInAVeryBigFrameAfterManualSwitchToFrame'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInAVeryBigFrameAfterManualSwitchToFrame_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckRegionInAVeryBigFrameAfterManualSwitchToFrame_VG'}},
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Special Cases', viewportSize})
@@ -747,7 +735,6 @@ test('check regions by coordinates in frame', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckLongIFrameModal'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckLongIFrameModal_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckLongIFrameModal_VG'}},
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -778,7 +765,6 @@ test('check regions by coordinates in overflowed frame', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckLongOutOfBoundsIFrameModal'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckLongOutOfBoundsIFrameModal_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckLongOutOfBoundsIFrameModal_VG'}},
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -2226,7 +2212,7 @@ test('Should return exception in TestResultsSummary', {
     eyes.check({isFully: false})
     assert.throws(() => void eyes.close())
     const summary = eyes.runner.getAllTestResults(false)
-    assert.equal( summary.getAllResults()[0]._container.exception.message.substring(0,27), `failed to render screenshot`)
+    assert.equal( summary.getAllResults()[0]._container.error.message.substring(0,27), `failed to render screenshot`)
   }
 })
 
