@@ -214,7 +214,7 @@ module.exports = function(tracker, test) {
     ok(value, message) {
       addCommand(js`assert.ok(${value}, ${message})`)
     },
-    includes(value, search, message) {
+    contains(value, search, message) {
       addCommand(js`assert.ok(${value}.includes(${search})), ${message}`)
     },
     instanceOf(object, typeName, message) {
