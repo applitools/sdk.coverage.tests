@@ -214,6 +214,9 @@ module.exports = function(tracker, test) {
     ok(value, message) {
       addCommand(js`assert.ok(${value}, ${message})`)
     },
+    includes(value, search, message) {
+      addCommand(js`assert.ok(${value}.includes(${search})), ${message}`)
+    },
     instanceOf(object, typeName, message) {
       addCommand(js`assert.ok(${object} instanceof sdk[${typeName}], ${message})`)
     },

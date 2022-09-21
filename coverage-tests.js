@@ -1030,7 +1030,6 @@ test('should send floating region by coordinates in frame', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckRegionInFrame3_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegionInFrame3_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestCheckRegionInFrame3_Fluent_VG'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -1453,7 +1452,6 @@ test('should hide and restore scrollbars', {
   variants: {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_Scroll'}},
-    'with vg': {vg: true, config: {baselineName: 'TestScrollbarsHiddenAndReturned_Fluent_VG'}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Fluent API', viewportSize})
@@ -2212,7 +2210,7 @@ test('Should return exception in TestResultsSummary', {
     eyes.check({isFully: false})
     assert.throws(() => void eyes.close())
     const summary = eyes.runner.getAllTestResults(false)
-    assert.equal( summary.getAllResults()[0]._container.error.message.substring(0,27), `failed to render screenshot`)
+    assert.contains( summary.getAllResults()[0].getException().message, `This page's DOM has a feature, Adopted Stylesheets`)
   }
 })
 
