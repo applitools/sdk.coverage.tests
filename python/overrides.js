@@ -7,4 +7,8 @@ module.exports = {
     'should handle check of stale element in frame if selector is preserved': {skip: true},
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
+
+    // need to add support for the webview property in check settings to the emitter
+    'should capture webview when specified in check settings on ios': {skipEmit: true},
+    'should capture webview when specified in check settings on android': {skipEmit: true}
 }
