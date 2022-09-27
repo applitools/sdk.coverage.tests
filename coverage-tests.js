@@ -377,7 +377,7 @@ test('check region by selector', {
     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckRegion'}},
     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegion_Scroll'}},
     'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckRegion_VG'}},
-    'on ie': {env: {browser: 'ie-11'}},
+    'on ie': {env: {browser: 'ie-11', legacy: false}},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -1183,8 +1183,8 @@ test('should send ignore displacements', {
 test('should send dom', {
   page: 'DomCaptureSurge',
   variants: {
-    'on edge legacy': {env: {browser: 'edge-18'}},
-    'on ie': {env: {browser: 'ie-11'}},
+    'on edge legacy': {env: {browser: 'edge-18', legacy: false}},
+    'on ie': {env: {browser: 'ie-11', legacy: false}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes SDK', viewportSize})
@@ -1557,7 +1557,7 @@ test('should set viewport size', {
   page: 'Default',
   variants: {
     '': {env: {browser: 'chrome'}},
-    'on edge legacy': {env: {browser: 'edge-18'}},
+    'on edge legacy': {env: {browser: 'edge-18', legacy: false}},
   },
   test({driver, eyes, assert}) {
     const expectedViewportSize = {width: 600, height: 600}
