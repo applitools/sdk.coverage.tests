@@ -24,6 +24,6 @@ module.exports = {
     "should send correct ignore region if page scrolled before check with css stitching": {skip: true},
    
     // need to add support for the webview property in check settings to the emitter
-    'should capture webview when specified in check settings on ios': {skipEmit: true},
+    "should capture webview when specified in check settings on ios": {skipEmit: true},
     'should capture webview when specified in check settings on android': {skipEmit: true}
 }
