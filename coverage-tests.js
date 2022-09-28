@@ -2307,4 +2307,36 @@ test('should override default value of fully', {
   }
 })
 
+test('should capture webview when specified in check settings on ios', {
+  env: {
+    device: 'iPhone 12',
+    app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip'
+  },
+  test: ({driver, eyes}) => {
+    driver.click({type: TYPE.ACCESSIBILITY_ID, selector: 'Web view'})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({webview: true})
+    // NOTE:
+    // this check command is omitted because the webview id is dynamcially generated in the ios test app
+    // keeping it here but commented out for reference
+    //
+    // eyes.check({webview: 'WEBVIEW_3055.1'})
+    eyes.close()
+  },
+})
+
+test('should capture webview when specified in check settings on android', {
+  env: {
+    device: 'Pixel 3a XL',
+    app: 'https://applitools.jfrog.io/artifactory/Examples/android/1.3/app-debug.apk',
+  },
+  test: ({driver, eyes}) => {
+    driver.click({type: TYPE.ID, selector: 'com.applitools.eyes.android:id/btn_web_view'})
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({webview: true})
+    eyes.check({webview: 'WEBVIEW_com.applitools.eyes.android'})
+    eyes.close()
+  },
+})
+
 // #endregion
