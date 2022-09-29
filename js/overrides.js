@@ -35,4 +35,7 @@ module.exports = {
     'should send ignore region by selector with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send floating region by coordinates with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send multiple accessibility regions by selector with vg': {config: {branchName: 'universal-sdk'}}, // was v1
+    // skip due to inabilty to get session started when running test
+    // e.g., https://github.com/applitools/eyes.sdk.javascript1/actions/runs/3141379887/jobs/5103756080
+    'should send dom': {skip: true},
 }
