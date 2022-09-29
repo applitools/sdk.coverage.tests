@@ -35,8 +35,10 @@ module.exports = {
     'should send ignore region by selector with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send floating region by coordinates with vg': {config: {branchName: 'universal-sdk'}}, // was skipped
     'should send multiple accessibility regions by selector with vg': {config: {branchName: 'universal-sdk'}}, // was v1
-    // skip due to inabilty to get session started when running test
+    // skip due to intermittent failures getting a session started when running the tests
     // e.g., https://github.com/applitools/eyes.sdk.javascript1/actions/runs/3141379887/jobs/5103756080
     'should send dom on ie': {skip: true},
     'should send dom on edge legacy': {skip: true},
+    'should set viewport size on edge legacy': {skip: true},
+    'check region by selector in frame fully on firefox legacy': {skip: true},
 }
