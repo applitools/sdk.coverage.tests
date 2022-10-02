@@ -24,6 +24,7 @@ function checkSettings(cs, native) {
         }
         if (cs.region) element += region(cs.region)
     }
+    if (cs.webview) options += webview(cs.webview);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions);
     if (cs.ignoreRegions) options += typeRegions('ignore', cs.ignoreRegions);
@@ -61,6 +62,22 @@ function checkSettings(cs, native) {
     return java + element + options;
 
     // check settings
+
+    function webview(webview) {
+        let s;
+        switch(typeof webview) {
+            case "boolean":
+                s = `.webview(${cs.webview})`
+                break;
+            case "string":
+                s = `.webview(${JSON.stringify(cs.webview)})`
+                break;
+            default:
+                throw new Error(`webview parameter of the unimplemented type was used:  ${JSON.stringify(webview)}`);
+        }
+
+        return s;
+    }
 
     function frames(arr) {
         return arr.reduce((acc, val) => acc + `${frame(val)}`, '');
