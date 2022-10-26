@@ -244,7 +244,7 @@ module.exports = function(tracker, test) {
       return addCommand(js`await new Promise(r => setTimeout(r, ${milliseconds}))`)
     },
     getTestInfo(result) {
-      return addCommand(js`await getTestInfo(${result}, eyes.configuration.apiKey)`)
+      return addCommand(js`await getTestInfo(${result}, eyes.configuration && eyes.configuration.apiKey)`)
     },
     getDom(result, domId) {
       return addCommand(js`await getTestDom(${result}, ${domId})`).methods({
