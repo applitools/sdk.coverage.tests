@@ -1,6 +1,6 @@
 const iosDeviceName = require('./iosDeviceName')
 const deviceName = require('./deviceName')
-const {capitalizeFirstLetter} = require('../util')
+const { capitalizeFirstLetter } = require('../util')
 const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
 const types = {
     "Map": {
@@ -53,20 +53,21 @@ const types = {
         name: () => 'Region',
         constructor: (value) => {
             let region = `new Region(${value.left}, ${value.top}, ${value.width}, ${value.height})`;
-            if(value.regionId) region += `.regionId(${JSON.stringify(value.regionId)})`
+            if (value.regionId) region += `.regionId(${JSON.stringify(value.regionId)})`
             return region
         }
     },
     "FloatingRegion": {
         constructor: (value) => {
             let region;
-            if(value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
+            if (value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
             else region = `${value.left}, ${value.top}, ${value.width}, ${value.height}`
-            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`}
+            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`
+        }
     },
     "Array": {
         get: (target, key) => {
-            if(key === 'length') return `${target}.length`
+            if (key === 'length') return `${target}.length`
             else return `${target}[${key}]`
         },
         name: (arr) => `${arr.items.type}[]`,
@@ -75,7 +76,7 @@ const types = {
         constructor: (value) => `${value}`,
         name: () => `Boolean`
     },
-    "BooleanObject":{
+    "BooleanObject": {
         constructor: (value) => `Boolean.${value.toString().toUpperCase()}`
     },
     "String": {
@@ -103,19 +104,19 @@ const types = {
     "AppOutput": {
         get: simpleGetter,
     },
-    "AccessibilitySettings":{
+    "AccessibilitySettings": {
         constructor: function (value) {
             return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
-        } ,
+        },
         get: (target, key) => (key === 'version') ? `${target}.getGuidelinesVersion()` : simpleGetter(target, key)
     },
-    "AccessibilityRegion":{
+    "AccessibilityRegion": {
         constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
     },
-    "AccessibilityLevel":{
+    "AccessibilityLevel": {
         constructor: (value) => `AccessibilityLevel.${value}`
     },
-    "AccessibilityGuidelinesVersion":{
+    "AccessibilityGuidelinesVersion": {
         constructor: (value) => `AccessibilityGuidelinesVersion.${value}`
     },
     "Location": {
@@ -126,7 +127,7 @@ const types = {
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
-                if(render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
+                if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
                 else if (render.iosDeviceInfo) return `new IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
                 else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
             }).join(', ')
@@ -151,22 +152,38 @@ const types = {
     },
     "TestResults": {
         name: () => `TestResults`,
-        get: (target, key) => key.startsWith('is') ? `${target}.${key}()` : simpleGetter(target, key)
+        get: (target, key) => {
+            if (key.startsWith('is')) {
+                return `${target}.${key}()`
+            }
+            else if (key == 'status') {
+                return `${target}.getStatus().name()`
+            } else {
+                return simpleGetter(target, key)
+            }
+        }
     },
     "rect": {
         name: () => 'Rect',
         get: (target, key) => `${target}.get("${key}").asDouble()`,
     },
-	"PageCoverageInfo": {
-		get: simpleGetter
-	},
-	"BrowserInfo": {
-        name: () => `BrowserInfo`,
+    "PageCoverageInfo": {
         get: simpleGetter
     },
+    "BrowserInfo": {
+        name: () => `BrowserInfo`,
+        get: (target, key) => key.startsWith('name') ? `${target}.getBrowserType().getName()` : simpleGetter(target, key),
+    },
+
     "ChromeEmulationInfo": {
         name: () => "ChromeEmulationInfo",
-        get: simpleGetter
+        get: (target, key) => {
+            if (target.includes('Chrome')) {
+                target = target.replace("ChromeEmulationInfo", "EmulationInfo");
+                return simpleGetter(target, key);
+            } else { return simpleGetter(target, key) }
+        }
     }
+
 }
 module.exports = types
