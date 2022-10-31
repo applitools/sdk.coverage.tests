@@ -1,9 +1,9 @@
 'use strict'
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
-const {capitalizeFirstLetter, isEmpty} = require('./util')
-const {checkOptions} = require("../util")
-const {CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES} = require('./mapping/supported')
+const { capitalizeFirstLetter, isEmpty } = require('./util')
+const { checkOptions } = require("../util")
+const { CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES } = require('./mapping/supported')
 
 
 function checkSettings(cs, native) {
@@ -29,7 +29,7 @@ function checkSettings(cs, native) {
     if (cs.ignoreRegions) options += typeRegions('ignore', cs.ignoreRegions);
     if (cs.strictRegions) options += typeRegions('strict', cs.strictRegions);
     if (cs.contentRegions) options += typeRegions('content', cs.contentRegions);
-    if (cs.layoutRegions) options += typeRegions('layout',cs.layoutRegions);
+    if (cs.layoutRegions) options += typeRegions('layout', cs.layoutRegions);
     if (cs.scrollRootElement && !cs.frames) options += `.scrollRootElement(${printSelector(cs.scrollRootElement)})`;
     if (cs.ignoreDisplacements !== undefined) options += `.ignoreDisplacements(${cs.ignoreDisplacements})`;
     if (cs.timeout) options += `.timeout(${serialize(cs.timeout)})`;
@@ -55,9 +55,13 @@ function checkSettings(cs, native) {
             options += `.beforeRenderScreenshotHook("${cs.hooks.beforeCaptureScreenshot}")`;
         }
     }
-	if (cs.pageId) {
-		options += `.pageId("${cs.pageId}")`;
-	}
+    if (cs.pageId) {
+        options += `.pageId("${cs.pageId}")`;
+    }
+    if (cs.lazyLoad) {
+        options += lazyLoad(cs.lazyLoad);
+    }
+
     return java + element + options;
 
     // check settings
@@ -116,15 +120,15 @@ function checkSettings(cs, native) {
                 string = `By.cssSelector(${JSON.stringify(region)})`;
                 break;
             case "object":
-                if(region.region) {
+                if (region.region) {
                     string = regionParameter(region.region)
-                    if(region.regionId) {
+                    if (region.regionId) {
                         string += `, "${region.regionId}"`
                     }
                 } else if (region.type) {
                     string = native ? `getDriver().findElement(${parseObject(region)})` : parseObject(region);
                 } else {
-                    string = parseObject({value: region, type: 'Region'});
+                    string = parseObject({ value: region, type: 'Region' });
                 }
                 break;
             case "function":
@@ -134,6 +138,27 @@ function checkSettings(cs, native) {
                 throw new Error(`Region parameter of the unimplemented type was used:  ${JSON.stringify(region)}`);
         }
         return string
+    }
+    function lazyLoadOptions(lazyLoad) {
+        let string;
+        let llOptions;
+        const LLOptionsKeys = Object.keys(lazyLoad);
+        if (LLOptionsKeys.length == 3) {
+            llOptions = LLOptionsKeys.map(key => `${lazyLoad[key]}`).join(', ');
+            string = `new LazyLoadOptions(${llOptions})`;
+            return `.lazyLoad(${string})`
+        }
+        else {
+            llOptions = LLOptionsKeys.map(key => `${key}(${lazyLoad[key]})`).join('.');
+            string = `new LazyLoadOptions().${llOptions}`;
+            return `.lazyLoad(${string})`;
+        }
+    }
+    function lazyLoad(lazyLoad) {
+        if (isEmpty(lazyLoad))
+            return `.lazyLoad()`
+        else
+            return lazyLoadOptions(lazyLoad)
     }
 
 }
@@ -190,7 +215,7 @@ function parseObject(object) {
     } else return JSON.stringify(object);
 }
 
-function getter({target, key, type}) {
+function getter({ target, key, type }) {
     // console.log(`target: ${target} , key: ${key}, type: ${JSON.stringify(type, null, 3)}, typeOfKey: ${typeof key}, isArray: ${Array.isArray(key)}`)
     try {
         if (typeof type === 'undefined') return `${target}.${key}`
@@ -212,18 +237,18 @@ function mapTypes(type) {
 }
 
 function wrapSelector(val) {
-    return val.selector ? val : {type: 'css', selector: val}
+    return val.selector ? val : { type: 'css', selector: val }
 }
 
 function printSelector(val) {
     return serialize((val && val.isRef) ? val : wrapSelector(val))
 }
 
-const variable = ({name, value, type}) => `final ${mapTypes(type)} ${name} = (${mapTypes(type)}) ${value}`
-const call = ({target, args}) => {
+const variable = ({ name, value, type }) => `final ${mapTypes(type)} ${name} = (${mapTypes(type)}) ${value}`
+const call = ({ target, args }) => {
     return args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}()`
 }
-const returnSyntax = ({value}) => {
+const returnSyntax = ({ value }) => {
     return `return ${value};`
 }
 
