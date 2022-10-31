@@ -1,31 +1,23 @@
 module.exports = {
-    // Failed to generate
-    // 'should not fail if scroll root is stale on android': {skipEmit: true},
-    // 'check region by selector in frame fully on firefox legacy': { skipEmit: true },
+ 
     // Python like
     // fails in selenium4 only due to legacy driver being used
-    'check window after manual scroll on safari 11': {skip: true},
-    // Shadow emitter not implemented
-    'check region by selector within shadow dom with vg': {skipEmit: true},
-    'check region by element within shadow dom with vg': {skipEmit: true},
+    'check window after manual scroll on safari 11': { skip: true },
+    // not available in chrome > 96(will be avalable on slenium v4)
+    'check region by selector within shadow dom with vg': { skipEmit: true },
+    'check region by element within shadow dom with vg': { skipEmit: true },
     // Feature not present in Selenium
-    'should handle check of stale element if selector is preserved': {skip: true}, // Not implemented yet
-    'should handle check of stale element in frame if selector is preserved': {skip: true}, // Not implemented yet
+    'should handle check of stale element if selector is preserved': { skip: true }, // Not implemented yet
+    'should handle check of stale element in frame if selector is preserved': { skip: true }, // Not implemented yet
     // They are testing a functionality that no longer exists for the SDK
-    'should return actual viewport size': {skip: true},
-    'should set viewport size': {skip: true},
-    'should set viewport size on edge legacy': {skip: true},
+    'should return actual viewport size': { skip: true },
+    'should set viewport size': { skip: true },
+    'should set viewport size on edge legacy': { skip: true },
     // Chrome emulator have minor diffs with JS sdk
-    'should not fail if scroll root is stale on android': {config: {branchName: 'universal-java'}},
-    'check window fully on android chrome emulator on mobile page': {config: {branchName: 'universal-java'}},
-    'should abort after close': {skipEmit: true},
-    'should abort unclosed tests': {skipEmit: true},
-    'should abort unclosed tests with vg': {skipEmit: true},
-    'should return aborted tests in getAllTestResults': {skipEmit: true},
-    'should return aborted tests in getAllTestResults with vg': {skipEmit: true},
-    'should return browserInfo in getAllTestResults': {skipEmit: true},
+    'should not fail if scroll root is stale on android': { config: { branchName: 'universal-java' } },
+    
     // TODO - recheck Chrome emulator flaky test (was overridden by a specific branch, maybe default will work).
-    'check window fully on android chrome emulator on mobile page with horizontal scroll': {skip: true},
+    // 'check window fully on android chrome emulator on mobile page with horizontal scroll': { skip: true },
     // New mobile web tests which is failing on the eyes.Open() with the error
     //
     // com.applitools.eyes.EyesException: unknown command: Cannot call non W3C standard command while in W3C mode
@@ -35,46 +27,26 @@ module.exports = {
     // RESPONSE: {"name":"EyesManager.openEyes","key":"6dba109a-d023-44ba-9466-83af1ff3a912","payload":{"error":{"message":"unknown command: Cannot call non W3C standard command while in W3C mode","stack":"#0 0x56477aac9199 <unknown>\n"}}}
     // REQUEST: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"manager":{"applitools-ref-id":"4e73260e-70b8-49aa-a5d2-369246ded3b3"},"throwErr":false}}
     // RESPONSE: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"result":{"results":[],"passed":0,"unresolved":0,"failed":0,"exceptions":0,"mismatches":0,"missing":0,"matches":0}}}
-    'check window on mobile web android': {skip: true},
+    'check window on mobile web android': { skip: true },
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
     // TODO verify and enable
-    'should send agentRunId': {skipEmit: true},
-    "appium iOS nav bar check regio": {skipEmit: true},
-    "Should return exception in TestResultsSummary": {skipEmit: true},
+    'should send agentRunId': { skipEmit: true },
+    "appium iOS nav bar check regio": { skipEmit: true },
+    "Should return exception in TestResultsSummary": { skipEmit: true },
     // TODO Failed and needs to be re-checked.
-    'appium iOS nav bar check region': {skip: true},
-    "appium android landscape mode check window": {skip: true},
-    "appium android landscape mode check region": {skip: true},
+    'appium iOS nav bar check region': { skip: true },
+    //"appium android landscape mode check window": {skip: true},
+    //"appium android landscape mode check region": {skip: true},
     // Emitter failure
-    "appium android landscape mode check region on android 10": {skipEmit: true},
-    "appium android landscape mode check region on android 7": {skipEmit: true},
-    "appium android landscape mode check window on android 10": {skipEmit: true},
-    "appium android landscape mode check window on android 7": {skipEmit: true},
-    "should work with beforeCaptureScreenshot hook": {skip: true},
-    "should override default value of fully with true": {skipEmit: true},
-    "should override default value of fully with false": {skipEmit: true},
-    // lazyload tests (api change needed in check settings to support it)
-    'lazy load page with one option specified maxAmountToScroll': {skipEmit: true},
-    'lazy load page with one option specified maxAmountToScroll with vg': {skipEmit: true},
-    'lazy load page with one option specified waitingTime': {skipEmit: true},
-    'lazy load page with one option specified waitingTime with vg': {skipEmit: true},
-    'lazy load page with one option specified scrollLength': {skipEmit: true},
-    'lazy load page with one option specified scrollLength with vg': {skipEmit: true},
-    'lazy load page with all options specified': {skipEmit: true},
-    'lazy load page with all options specified with vg': {skipEmit: true},
-    'lazy load page with default options': {skipEmit: true},
-    'lazy load page with default options with vg': {skipEmit: true},
-     "should use regions padding": {skipEmit: true},
-     "should use regions padding with vg": {skipEmit: true},
-    // "should send codded regions with region id": {skipEmit: true},
-    // "should send codded regions with region id with vg": {skipEmit: true},
-    "should send codded regions with padding": {skipEmit: true},
-    "should send codded regions with padding with vg": {skipEmit: true},
-    "check window fully on page with horizontal scroll with scroll stitching": {skipEmit: true},
-    "check window fully on page with horizontal scroll with css stitching": {skipEmit: true},
+   
+    "should override default value of fully with true": { skipEmit: true },
+    "should override default value of fully with false": { skipEmit: true },
 
+    "should send codded regions with padding": { skipEmit: true },
+    "should send codded regions with padding with vg": { skipEmit: true },
+   
     // need to add support for the webview property in check settings to the emitter
-    "should capture webview when specified in check settings on ios": {skipEmit: true},
-    "should capture webview when specified in check settings on android": {skipEmit: true}
+    "should capture webview when specified in check settings on ios": { skipEmit: true },
+    "should capture webview when specified in check settings on android": { skipEmit: true }
 }
