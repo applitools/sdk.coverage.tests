@@ -1,21 +1,21 @@
 'use strict'
 const types = require('./mapping/types')
-const {checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv} = require('./parser')
-const {capitalizeFirstLetter} = require('./util')
+const { checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv } = require('./parser')
+const { capitalizeFirstLetter } = require('./util')
 const ImageMatchSettings = {
     type: 'ImageMatchSettings',
     schema: {
         ignoreDisplacements: 'BooleanObject',
-        floating: {type: 'Array', items: 'FloatingRegion'},
-        accessibility: {type: 'Array', items: 'AccessibilityRegion'},
+        floating: { type: 'Array', items: 'FloatingRegion' },
+        accessibility: { type: 'Array', items: 'AccessibilityRegion' },
         accessibilitySettings: {
             type: 'AccessibilitySettings',
-            schema: {level: 'AccessibilityLevel', version: 'AccessibilityGuidelinesVersion'},
+            schema: { level: 'AccessibilityLevel', version: 'AccessibilityGuidelinesVersion' },
         },
-        ignore: {type: 'Array', items: 'Region'},
-        strict: {type: 'Array', items: 'Region'},
-        content: {type: 'Array', items: 'Region'},
-        layout: {type: 'Array', items: 'Region'}
+        ignore: { type: 'Array', items: 'Region' },
+        strict: { type: 'Array', items: 'Region' },
+        content: { type: 'Array', items: 'Region' },
+        layout: { type: 'Array', items: 'Region' }
     },
 }
 const Location = {
@@ -35,14 +35,14 @@ const TestResults = {
 }
 
 module.exports = function (tracker, test) {
-    const {addSyntax, addCommand, addHook, addExpression} = tracker
+    const { addSyntax, addCommand, addHook, addExpression } = tracker
 
     function argumentCheck(actual, ifUndefined) {
         return (typeof actual === 'undefined') ? ifUndefined : actual
     }
 
     function addType(obj, type, generic) {
-        return type ? {value: obj, type: type, generic: generic} : obj
+        return type ? { value: obj, type: type, generic: generic } : obj
     }
 
     function getTypeName(obj) {
@@ -94,7 +94,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `package coverage.generic;`)
     addHook('deps', ``)
     // EG for UFG
-    if(test.vg && process.env.UFG_ON_EG) {
+    if (test.vg && process.env.UFG_ON_EG) {
         test.executionGrid = true;
     }
     // Dirty emulator workaround
@@ -134,7 +134,7 @@ module.exports = function (tracker, test) {
     addSyntax('return', returnSyntax)
 
     addHook('beforeEach', java`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
-    addHook('beforeEach', parseEnv({...test.env, executionGrid: test.executionGrid}))
+    addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
     addHook('beforeEach', java`System.out.println(getClass().getName());`)
     const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
     Object.keys(test.config).filter(property => !specific.includes(property))
@@ -142,20 +142,20 @@ module.exports = function (tracker, test) {
     if (test.config.browsersInfo) {
         addHook('deps', 'import com.applitools.eyes.visualgrid.model.*;')
         addHook('deps', 'import com.applitools.eyes.visualgrid.model.ScreenOrientation;')
-        addHook('beforeEach', java`setBrowsersInfo(${{value: test.config.browsersInfo, type: 'BrowsersInfo'}});`)
+        addHook('beforeEach', java`setBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
     }
     if (test.config.defaultMatchSettings) {
         const defaultMatchSettings = test.config.defaultMatchSettings
         Object.keys(defaultMatchSettings)
             .forEach(property => addHook('beforeEach',
-                java`set${insert(capitalizeFirstLetter(property))}(${{value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property]}});`))
+                java`set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`))
     }
     if (test.config.layoutBreakpoints) {
         addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
     }
     if (test.config.batch) {
         addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
-            return {value: val, type: 'Map', generic: [{name: 'String'}, {name: 'String'}]}
+            return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
         }).map(property => java`${property}`).join(',\n    ')}});`)
     }
 
@@ -238,7 +238,7 @@ module.exports = function (tracker, test) {
                 })
             }
         },
-        open({appName, testName, viewportSize}) {
+        open({ appName, testName, viewportSize }) {
             let command = []
             command.push('open(driver')
             command.push(java`, ${appName || test.config.appName}`)
@@ -359,7 +359,7 @@ module.exports = function (tracker, test) {
                 }
             });
         },
-        extractTextRegions({patterns, ignoreCase, firstOnly, language}) {
+        extractTextRegions({ patterns, ignoreCase, firstOnly, language }) {
             const commands = []
             commands.push(java`eyes.extractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
             if (ignoreCase) commands.push(java`.ignoreCase(${ignoreCase})`)
@@ -371,11 +371,11 @@ module.exports = function (tracker, test) {
                 items: {
                     type: 'List<TextRegion>',
                     schema: {
-                        length: {rename: 'size'}
+                        length: { rename: 'size' }
                     },
                     items: {
                         type: 'TextRegion',
-                        schema: {text: {type: 'String'}}
+                        schema: { text: { type: 'String' } }
                     }
                 }
             })
@@ -469,7 +469,7 @@ module.exports = function (tracker, test) {
                                     properties: {
                                         type: 'List<Map<String, String>>',
                                         schema: {
-                                            length: {rename: 'size'}
+                                            length: { rename: 'size' }
                                         },
                                         items: {
                                             type: 'Map<String, String>',
@@ -487,10 +487,10 @@ module.exports = function (tracker, test) {
             })
         },
         getDom(result, domId) {
-            return addCommand(java`getDom(${result},${domId});`).type({type: 'JsonNode', recursive: true}).methods({
+            return addCommand(java`getDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
                 getNodesByAttribute: (dom, attr) => addCommand(java`getNodesByAttributes(${dom}, ${attr});`).type({
                     type: 'List<JsonNode>',
-                    schema: {length: {rename: 'size'}},
+                    schema: { length: { rename: 'size' } },
                     items: {
                         type: 'JsonNode', schema: {
                             rect: {
@@ -512,5 +512,5 @@ module.exports = function (tracker, test) {
         }
     }
 
-    return {driver, eyes, assert, helpers}
+    return { driver, eyes, assert, helpers }
 }
