@@ -19,7 +19,8 @@ const CHECK_SETTINGS_OPTIONS = [
     'hooks',
     'timeout',
     'pageId',
-    'waitBeforeCapture'
+    'waitBeforeCapture',
+    'webview'
 ]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'
