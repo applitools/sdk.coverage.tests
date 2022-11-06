@@ -20,7 +20,8 @@ const CHECK_SETTINGS_OPTIONS = [
     'timeout',
     'pageId',
     'waitBeforeCapture',
-    'lazyLoad'
+    'lazyLoad',
+    'webview'
 ]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'
