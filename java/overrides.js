@@ -45,4 +45,11 @@ module.exports = {
 
     "should send codded regions with padding": { skipEmit: true },
     "should send codded regions with padding with vg": { skipEmit: true },
+
+    // produces visual differences
+    "check window fully on android chrome emulator on mobile page": { skipEmit: true },
+    "check window fully on android chrome emulator on mobile page with horizontal scroll": { skipEmit: true },
+    // sessionNotCreated exception
+    "check window fully on page with horizontal scroll with css stitching": { skipEmit: true },
+    "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: true },
 }
