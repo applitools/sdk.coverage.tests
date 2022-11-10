@@ -20,7 +20,7 @@ function serialize(data) {
     return data.ref()
   } else if (Array.isArray(data)) {
     return `[${data.map(serialize).join(', ')}]`
-  } else if (typeof data === 'object' && data !== null) {
+  } else if (typeof data === 'object' && data !== null && !(data instanceof String)) {
     const properties = Object.entries(data).reduce((data, [key, value]) => {
       return value !== undefined ? data.concat(`${key}: ${serialize(value)}`) : data
     }, [])
