@@ -134,7 +134,7 @@ module.exports = function(tracker, test) {
           )`,
       )
     },
-    check(checkSettings = {}) {
+    check({image, dom, ...checkSettings} = {}) {
       const transformRegion = region => {
         return (!region.isRef && (region.left != null || region.top != null)) ? {x: region.left, y: region.top, width: region.width, height: region.height} : region
       }
@@ -151,8 +151,13 @@ module.exports = function(tracker, test) {
         lazyLoad: checkSettings.lazyLoad,
       }
       if (test.api !== 'classic') {
-        return addCommand(js`await eyes.check(${checkSettings})`)
+        return image
+          ? addCommand(js`await eyes.check(${{image, dom}}, ${checkSettings})`)
+          : addCommand(js`await eyes.check(${checkSettings})`)
       } else if (checkSettings.region) {
+        if (image) {
+          return addCommand(js`await eyes.checkRegion(${image}, ${checkSettings.region}, ${checkSettings.name})`)
+        }
         if (checkSettings.frames && checkSettings.frames.length > 0) {
           const [frameReference] = checkSettings.frames
           return addCommand(js`await eyes.checkRegionInFrame(
@@ -176,6 +181,8 @@ module.exports = function(tracker, test) {
           ${checkSettings.timeout},
           ${checkSettings.name},
         )`)
+      } else if (image) {
+        return addCommand(js`await eyes.checkImage(${image}, ${checkSettings.name})`)
       } else {
         return addCommand(js`await eyes.checkWindow(
           ${checkSettings.name},
