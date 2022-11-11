@@ -59,8 +59,8 @@ module.exports = {
     
     // need to add support for the webview property in check settings to the emitter
     "should capture webview when specified in check settings on ios": {skipEmit: true},
-    "should capture webview when specified in check settings on android": {skipEmit: true}
-        "should use regions padding": {skipEmit: true},
+    "should capture webview when specified in check settings on android": {skipEmit: true},
+    "should use regions padding": {skipEmit: true},
     "should use regions padding with vg": {skipEmit: true},
 
     "should send codded regions with padding": {skipEmit: true},
