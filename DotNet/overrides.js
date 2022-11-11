@@ -53,9 +53,6 @@ module.exports = {
     'lazy load page with all options specified with vg': {skipEmit: true},
     'lazy load page with default options': {skipEmit: true},
     'lazy load page with default options with vg': {skipEmit: true},
-  
-    "should send codded regions with region id": {skipEmit: true},
-    "should send codded regions with region id with vg": {skipEmit: true},
     
     // need to add support for the webview property in check settings to the emitter
     "should capture webview when specified in check settings on ios": {skipEmit: true},
