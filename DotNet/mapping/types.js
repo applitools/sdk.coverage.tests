@@ -109,5 +109,17 @@ const types = {
             }).join(', ')
         },
     },
+    "PaddingBounds": {
+        constructor: (bounds) => {
+            switch (typeof bounds) {
+                case "object":
+                    return `new Padding(${bounds.left || 0}, ${bounds.top || 0}, ${bounds.right || 0}, ${bounds.bottom || 0})`
+                case "number":
+                    return `new Padding(${bounds}, ${bounds}, ${bounds}, ${bounds})`
+                default:
+                    throw new Error(`PaddingBounds object: ${bounds}, isn't correct. It should number for all paddings or object containing values directions`)
+            }
+        }
+    },
 }
 module.exports = types

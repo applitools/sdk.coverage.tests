@@ -25,11 +25,17 @@ function checkSettings(cs, mobile = false) {
 			else element += region(cs.region, undefined, mobile)
 		}
 	}
-	if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions, mobile)
+	// if (cs.ignoreRegions) options += ignoreRegions(cs.ignoreRegions, mobile)
+	// if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
+
+	if (cs.ignoreRegions) options += typeRegions('Ignore', cs.ignoreRegions, mobile);
+	if (cs.layoutRegions) options += typeRegions('Layout', cs.layoutRegions, mobile);
+	if (cs.contentRegions) options += typeRegions('Content', cs.contentRegions, mobile);
+	if (cs.strictRegions) options += typeRegions('Strict', cs.strictRegions, mobile);
+
 	if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions)
 	if ((cs.scrollRootElement) && (!scrollImplemented)) options += scrollRootElement(cs.scrollRootElement)
 	if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions[0].region, cs.accessibilityRegions[0].type)
-	if (cs.layoutRegions) options += layoutRegions(cs.layoutRegions)
 	if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`
 	if (cs.sendDom !== undefined) options += `.SendDom(${cs.sendDom})`
 	if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel})`
@@ -77,20 +83,24 @@ function region(region) {
 	return `.Region(${regionParameter(region)})`
 }
 
-function ignoreRegions(arr, mobile = false) {
-	return arr.reduce((acc, val) => acc + ignore(val, mobile), '')
-}
+// function ignoreRegions(arr, mobile = false) {
+// 	return arr.reduce((acc, val) => acc + ignore(val, mobile), '')
+// }
+//
+// function ignore(region, type = undefined, mobile = false) {
+// 	return `.Ignore(${regionParameter(region, type, mobile)})`
+// }
+//
+// function layoutRegions(arr) {
+// 	return `.Layout(${regionParameter(arr[0])})`
+// }
 
-function ignore(region, type = undefined, mobile = false) {
-	return `.Ignore(${regionParameter(region, type, mobile)})`
+function typeRegions(type, arr) {
+	return arr.reduce((acc, val) => acc + `.${type}(${regionParameter(val)})`, '')
 }
 
 function floatingRegions(arr) {
 	return `.Floating(${regionParameter(arr[0].region)}, ${arr[0].maxUpOffset}, ${arr[0].maxDownOffset}, ${arr[0].maxLeftOffset}, ${arr[0].maxRightOffset})`
-}
-
-function layoutRegions(arr) {
-	return `.Layout(${regionParameter(arr[0])})`
 }
 
 function scrollRootElement(cssSelector) {
@@ -110,8 +120,15 @@ function regionParameter(region) {
 			else string = `By.CssSelector(${takeSelector(region)})`
 			break;
 		case "object":
-			if (region.type) string = findElementBySelectorType(region.selector, region.type)
-			else string = `new System.Drawing.Rectangle(${region.left}, ${region.top}, ${region.width}, ${region.height})`
+			if (region.region) {
+				string = regionParameter(region.region)
+				if (region.padding) {
+					string += `, ${types.PaddingBounds.constructor(region.padding)}`;
+				}
+			} else {
+				if (region.type) string = findElementBySelectorType(region.selector, region.type)
+				else string = `new System.Drawing.Rectangle(${region.left}, ${region.top}, ${region.width}, ${region.height})`
+			}
 			break
 		case 'function':
 			string = serializeRegion(region)
