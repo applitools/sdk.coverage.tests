@@ -428,12 +428,7 @@ module.exports = function (tracker, test) {
         },
 
         equal(actual, expected, message) {
-            console.log("hello from equals")
-            console.log(`expected is ref: ${expected.isRef}`)
-            console.log(`expected: ${expected}`)
-
             let objectToString = Object.prototype.toString;
-            console.log(`call: ${objectToString.call(expected)}`)
             let expect = expected
             if (expected === null) {
                 addCommand(dot_net`Assert.IsNotNull(${actual});`)
