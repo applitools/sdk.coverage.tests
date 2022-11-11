@@ -123,7 +123,10 @@ function regionParameter(region) {
 			if (region.region) {
 				string = regionParameter(region.region)
 				if (region.padding) {
-					string += `, ${types.PaddingBounds.constructor(region.padding)}`;
+					string += `, padding:${types.PaddingBounds.constructor(region.padding)}`;
+				}
+				if (region.regionId) {
+					string += `, regionId: ${region.regionId}`;
 				}
 			} else {
 				if (region.type) string = findElementBySelectorType(region.selector, region.type)
@@ -188,11 +191,16 @@ function parseAssertActual(actual) {
 }
 
 function expectParser(expected) {
+	// TODO assert expected calculation to same manner it is done in java
 	if (expected.hasOwnProperty('left')) {
 		if (expected.hasOwnProperty('maxUpOffset')) return `new FloatingMatchSettings(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height}, ${expected.maxUpOffset}, ${expected.maxDownOffset}, ${expected.maxLeftOffset}, ${expected.maxRightOffset})`
 		else {
 			if (expected.hasOwnProperty('isDisabled')) return `new AccessibilityRegionByRectangle(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height}, AccessibilityRegionType.${expected.type})`
-			else return `new Region(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height})`//return `new Rectangle(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height})`
+			else if (expected.regionId) {
+				return `new Region(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height}, regionId: "${expected.regionId}")`
+			}  else return `new Region(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height})`
+
+				//return `new Rectangle(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height})`
 		}
 	}
 	else {
@@ -205,7 +213,13 @@ function expectParser(expected) {
 				return `AccessibilityGuidelinesVersion.` + expected
 		}
 		if (expected.hasOwnProperty('width')) return `new RectangleSize(${expected.width}, ${expected.height})`
-		if (expected.hasOwnProperty('applitools_title')) return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
+		if (expected.hasOwnProperty('applitools_title')) {
+			if (expected.regionId) {
+				return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height}, regionId: ${expected.applitools_title[0].regionId})`
+			}	else {
+				return `new Region(${expected.applitools_title[0].left}, ${expected.applitools_title[0].top}, ${expected.applitools_title[0].width}, ${expected.applitools_title[0].height})`
+			}
+		}
 		if (expected.hasOwnProperty('x') && expected.hasOwnProperty('y')) return `new Location(${expected.x}, ${expected.y})`
 		if (expected.hasOwnProperty('name') && expected.hasOwnProperty('value')) return `new PropertyData(\"${expected.name}\", \"${expected.value}\")`
 		expected = "\"" + expected + "\""
