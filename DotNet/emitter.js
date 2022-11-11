@@ -444,7 +444,7 @@ module.exports = function (tracker, test) {
                     // I am sorry to add this as it is, but I have not enough time to update whole method
                     if (objectToString.call(expected) === "[object Array]") {
                         // temporary solution
-                        expect = `new[] {${expected.map(region=> `new Region(${region.left}, ${region.top}, ${region.width}, ${region.height}, regionId: "${region.regionId}")`).join(", ")}}`
+                        expect = `new[] {${expected.map(region=> `new Region(${region.left}, ${region.top}, ${region.width}, ${region.height}, regionId: ${JSON.stringify(region.regionId)})`).join(", ")}}`
                     }
                 }
                 let act

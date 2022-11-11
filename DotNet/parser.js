@@ -197,7 +197,7 @@ function expectParser(expected) {
 		else {
 			if (expected.hasOwnProperty('isDisabled')) return `new AccessibilityRegionByRectangle(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height}, AccessibilityRegionType.${expected.type})`
 			else if (expected.regionId) {
-				return `new Region(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height}, regionId: "${expected.regionId}")`
+				return `new Region(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height}, regionId: ${JSON.stringify(expected.regionId)})`
 			}  else return `new Region(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height})`
 
 				//return `new Rectangle(${expected.left}, ${expected.top}, ${expected.width}, ${expected.height})`
