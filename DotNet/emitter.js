@@ -98,6 +98,7 @@ module.exports = function (tracker, test) {
 	addHook('deps', `using Applitools.Generated.Utils;`)
 	addHook('deps', `using Applitools.Utils.Geometry;`)
 	addHook('deps', `using OpenQA.Selenium;`)
+	addHook('deps', `using Applitools.Fluent;`)
 	if (mobile) {
 		addHook('deps', `using Applitools.Appium;`)
 		addHook('deps', `using Applitools.Appium.GenericUtils;`)
