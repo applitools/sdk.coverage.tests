@@ -10,6 +10,7 @@ module.exports = {
   template:
     'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/template.hbs',
   tests: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/coverage-tests.js',
+  fixtures: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/fixtures/fixtures.zip',
   format: {
     parser: 'babel',
     singleQuote: true,
