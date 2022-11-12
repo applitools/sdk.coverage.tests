@@ -52,4 +52,15 @@ module.exports = {
     // sessionNotCreated exception
     "check window fully on page with horizontal scroll with css stitching": { skipEmit: true },
     "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: true },
+
+    // check image
+    "check image file in png format": {skipEmit: true},
+    "check image file in jpeg format": {skipEmit: true},
+    "check image file in bmp format": {skipEmit: true},
+    "check image base64 in png format": {skipEmit: true},
+    "check image url in png format": {skipEmit: true},
+    "check image file in png format classic": {skipEmit: true},
+    "check image region": {skipEmit: true},
+    "check image region classic": {skipEmit: true},
+    "should send dom when check image": {skipEmit: true},
 }

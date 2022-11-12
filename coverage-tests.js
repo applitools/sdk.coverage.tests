@@ -47,6 +47,41 @@ config({
   },
 })
 
+// #region CHECK IMAGE
+
+test('check image', {
+  features: ['image'],
+  variants: {
+    'file in png format': {image: fixture('/images/house.png')},
+    'file in jpeg format': {image: fixture('/images/house.jpeg')},
+    'file in bmp format': {image: fixture('/images/house.bmp')},
+    'base64 in png format': {image: fixture('/images/house.png').toBase64()},
+    'url in png format': {image: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/fixtures/images/house.png'},
+    'file in png format classic': {api: 'classic',image: fixture('/images/house.png')},
+  },
+  test({eyes, image}) {
+    eyes.open({appName: 'Eyes Images SDK', viewportSize})
+    eyes.check({image})
+    eyes.close()
+  },
+})
+
+test('check image region', {
+  features: ['image'],
+  image: fixture('/images/house.png'),
+  variants: {
+    '': {api: 'fluent'},
+    'classic': {api: 'classic'},
+  },
+  test({eyes, image}) {
+    eyes.open({appName: 'Eyes Images SDK', viewportSize})
+    eyes.check({image, region: {left: 10, top: 10, height: 100, width: 100}})
+    eyes.close()
+  },
+})
+
+// #endregion
+
 // #region CHECK WINDOW
 
 test('check window', {
@@ -1204,6 +1239,19 @@ test('should not send dom', {
     const result = eyes.close(false)
     const info = helpers.getTestInfo(result)
     assert.equal(info.actualAppOutput[0].image.hasDom, false)
+  }
+})
+
+test('should send dom when check image', {
+  features: ['image'],
+  image: fixture('/images/house.png'),
+  dom: fixture('/dom.json').toText(),
+  test({eyes, image, dom, assert, helpers}) {
+    eyes.open({appName: 'Eyes Images SDK', viewportSize})
+    eyes.check({image, dom})
+    const result = eyes.close(false)
+    const info = helpers.getTestInfo(result)
+    assert.equal(info.actualAppOutput[0].image.hasDom, true)
   }
 })
 
