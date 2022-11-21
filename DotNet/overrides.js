@@ -29,6 +29,9 @@ module.exports = {
     "pageCoverage data is correct with vg": {skipEmit: true},
     "appium iOS check fully window with scroll and pageCoverage": {skipEmit: true},
     "appium iOS check window region with scroll and pageCoverage": {skipEmit: true},
+    
+    // locator emitter
+    "should find regions by visual locator": {skipEmit: true},
   
     // Flaky tests (waitBeforeCapture isn't implemented)
     'should waitBeforeCapture in open': {skip: true},
