@@ -37,4 +37,8 @@ module.exports = {
     "check image region": {skipEmit: true},
     "check image region classic": {skipEmit: true},
     "should send dom when check image": {skipEmit: true},
+
+    // server regression
+    "should extract text from regions": {skip: true},
+    "should extract text regions from image": {skip: true},
 }
