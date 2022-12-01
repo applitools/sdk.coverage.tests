@@ -108,7 +108,7 @@ module.exports = function(tracker, test) {
       addCommand(js`await spec.click(driver, spec.transformSelector(${element}))`)
     },
     type(element, keys) {
-      addCommand(js`await spec.type(driver, spec.transformSelector(${element}), ${keys})`)
+      addCommand(js`await spec.setElementText(driver, spec.transformSelector(${element}), ${keys})`)
     },
     scrollIntoView(element, align) {
       addCommand(js`await spec.scrollIntoView(driver, spec.transformSelector(${element}), ${align})`)
