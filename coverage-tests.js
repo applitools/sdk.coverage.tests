@@ -42,6 +42,7 @@ config({
     AdoptedStyleSheets: 'https://applitools.github.io/demo/TestPages/AdoptedStyleSheets/index.html',
     ShadowDOM: 'https://applitools.github.io/demo/TestPages/ShadowDOM/index.html',
     LazyLoad: 'https://applitools.github.io/demo/TestPages/LazyLoad/',
+    LazyLoadInsideScrollableArea: 'https://applitools.github.io/demo/TestPages/LazyLoad/insideScrollableArea.html',
     CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
     LongPage: 'https://applitools.github.io/demo/TestPages/LongPage/index.html',
   },
@@ -2339,6 +2340,18 @@ test('lazy load page with one option specified maxAmountToScroll', {
     eyes.check({isFully: true, lazyLoad: {
        maxAmountToScroll: 10000, 
     }})
+    eyes.close()
+  },
+})
+
+test('lazy load inside scrollRootElement', {
+  page: 'LazyLoadInsideScrollableArea',
+  variants: {
+    '': {config: {baselineName: 'LazyLoad'}},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({scrollRootElement: '#sre', isFully: true, lazyLoad: true})
     eyes.close()
   },
 })
