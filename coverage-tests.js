@@ -2347,11 +2347,13 @@ test('lazy load page with one option specified maxAmountToScroll', {
 test('lazy load inside scrollRootElement', {
   page: 'LazyLoadInsideScrollableArea',
   variants: {
-    '': {config: {baselineName: 'LazyLoad'}},
+    '': {config: {baselineName: 'LazyLoadInsideScrollableArea'}},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({scrollRootElement: '#sre', isFully: true, lazyLoad: true})
+    eyes.check({scrollRootElement: '#sre', isFully: true, lazyLoad: {
+      waitingTime: 500,
+    }})
     eyes.close()
   },
 })
