@@ -1486,29 +1486,15 @@ test('should send dom and location when check region by selector fully with cust
 
 // #region OTHERS
 
-test('should send overlap', {
+test('should handle stitch overlap', {
   page: 'Default',
   config: {
     stitchOverlap: 30,
   },
   variants: {
     '': {vg: false},
-    'with vg': {vg: true},
-    // 'on android': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'}},
   },
-  test({driver, eyes}) {
-    eyes.open({appName: 'Eyes Selenium SDK - overlap', viewportSize});
-    eyes.check({isFully: true});
-    eyes.close()
-  },
-})
-
-test('should send overlap on android', {
-  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
-  config: {
-    stitchOverlap: 30
-  },
-  test({driver, eyes}) {
+  test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - overlap', viewportSize});
     eyes.check({isFully: true});
     eyes.close()
