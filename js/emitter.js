@@ -57,13 +57,12 @@ module.exports = function(tracker, test) {
 
   if (!process.env.NO_DRIVER) {
     addHook('beforeEach', js`
-      let attempt = 1
-      while (attempt++ <= 5) {
+      let attempt = 0
+      while (!driver) {
         try {
           ;[driver, destroyDriver] = await spec.build(${{eg: test.executionGrid, ...(test.env || {browser: 'chrome'})}})
-          break
-        } catch {
-          continue
+        } catch (err) {
+          if (attempt++ > 7) throw err
         }
       }
     `)
