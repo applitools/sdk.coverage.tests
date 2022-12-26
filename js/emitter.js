@@ -53,7 +53,7 @@ module.exports = function(tracker, test) {
 
   if (!process.env.NO_SDK) addHook('deps', `const sdk = require(process.cwd())`)
 
-  addHook('vars', `let driver, destroyDriver, eyes`)
+  addHook('vars', `let driver, transformedDriver, destroyDriver, eyes`)
 
   if (!process.env.NO_DRIVER) {
     addHook('beforeEach', js`
@@ -65,6 +65,7 @@ module.exports = function(tracker, test) {
           if (attempt++ > 7) throw err
         }
       }
+      transformedDriver = spec.transformDriver ? spec.transformDriver(driver) : driver
     `)
   }
   
@@ -88,40 +89,40 @@ module.exports = function(tracker, test) {
       },
     },
     visit(url) {
-      addCommand(js`await spec.visit(driver, ${url})`)
+      addCommand(js`await spec.visit(transformedDriver, ${url})`)
     },
     getUrl() {
-      return addCommand(js`await spec.getUrl(driver)`)
+      return addCommand(js`await spec.getUrl(transformedDriver)`)
     },
     executeScript(script, ...args) {
-      return addCommand(js`await spec.executeScript(driver, ${script}, ...${args})`)
+      return addCommand(js`await spec.executeScript(transformedDriver, ${script}, ...${args})`)
     },
     sleep(ms) {
-      addCommand(js`await spec.sleep(driver, ${ms})`)
+      addCommand(js`await spec.sleep(transformedDriver, ${ms})`)
     },
     switchToFrame(element) {
-      addCommand(js`await spec.childContext(driver, ${element})`)
+      addCommand(js`await spec.childContext(transformedDriver, ${element})`)
     },
     switchToParentFrame() {
-      addCommand(js`await spec.mainContext(driver)`)
+      addCommand(js`await spec.mainContext(transformedDriver)`)
     },
     findElement(selector, parent) {
-      return addExpression(js`await spec.findElement(driver, spec.transformSelector(${selector}), ${parent})`)
+      return addExpression(js`await spec.findElement(transformedDriver, spec.transformSelector(${selector}), ${parent})`)
     },
     findElements(selector, parent) {
-      return addExpression(js`await spec.findElements(driver, spec.transformSelector(${selector}), ${parent})`)
+      return addExpression(js`await spec.findElements(transformedDriver, spec.transformSelector(${selector}), ${parent})`)
     },
     click(element) {
-      addCommand(js`await spec.click(driver, spec.transformSelector(${element}))`)
+      addCommand(js`await spec.click(transformedDriver, spec.transformSelector(${element}))`)
     },
     type(element, keys) {
-      addCommand(js`await spec.setElementText(driver, spec.transformSelector(${element}), ${keys})`)
+      addCommand(js`await spec.setElementText(transformedDriver, spec.transformSelector(${element}), ${keys})`)
     },
     scrollIntoView(element, align) {
-      addCommand(js`await spec.scrollIntoView(driver, spec.transformSelector(${element}), ${align})`)
+      addCommand(js`await spec.scrollIntoView(transformedDriver, spec.transformSelector(${element}), ${align})`)
     },
     hover(element, offset) {
-      addCommand(js`await spec.hover(driver, spec.transformSelector(${element}), ${offset})`)
+      addCommand(js`await spec.hover(transformedDriver, spec.transformSelector(${element}), ${offset})`)
     },
   }
 
