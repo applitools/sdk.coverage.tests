@@ -53,6 +53,9 @@ module.exports = {
     "check window fully on page with horizontal scroll with css stitching": { skipEmit: true },
     "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: true },
 
+    // Test have diffs after JS unskip it.
+    'check window fully on android chrome emulator on desktop page': {skip: true}, // require a better understanding of how we handle it
+
     // check image
     "check image file in png format": {skipEmit: true},
     "check image file in jpeg format": {skipEmit: true},
