@@ -155,7 +155,7 @@ test('check window after manual scroll', {
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowAfterScroll_VG'}},
 
     'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver', 'jsonwire']},
-    'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver']}
+    'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver', 'jsonwire']}
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
