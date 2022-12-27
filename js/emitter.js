@@ -113,7 +113,7 @@ module.exports = function(tracker, test) {
       return addExpression(js`await spec.findElements(transformedDriver, spec.transformSelector(${selector}), ${parent})`)
     },
     click(element) {
-      addCommand(js`await spec.click(transformedDriver, await spec.findElements(transformedDriver, spec.transformSelector(${element})))`)
+      addCommand(js`await spec.click(transformedDriver, await spec.findElement(transformedDriver, spec.transformSelector(${element})))`)
     },
     type(element, keys) {
       addCommand(js`await spec.setElementText(transformedDriver, spec.transformSelector(${element}), ${keys})`)
