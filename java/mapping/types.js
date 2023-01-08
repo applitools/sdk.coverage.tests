@@ -137,6 +137,15 @@ const types = {
         get: simpleGetter
     },
     "BatchInfo": {
+        name: () => 'BatchInfo',
+        get: simpleGetter
+    },
+    "BatchMetadataInfo": {
+        name: () => 'com.applitools.eyes.metadata.BatchInfo',
+        get: simpleGetter
+    },
+    "BatchClose": {
+        name: () => 'BatchClose',
         get: simpleGetter
     },
     "StartInfo": {

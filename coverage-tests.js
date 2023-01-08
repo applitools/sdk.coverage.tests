@@ -1486,6 +1486,28 @@ test('should send dom and location when check region by selector fully with cust
 
 // #region OTHERS
 
+test('should close batch with batchClose when specifying apiKey and serverUrl', {
+  page: 'Default',
+  config: {
+    batch: {id: `batch_close_params_${Date.now()}`},
+    apiKey: 'APPLITOOLS_API_KEY_TEST_EYES',
+    serverUrl: "https://testeyes.applitools.com"
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - BatchClose', viewportSize});
+    eyes.check();
+    const result = eyes.close(false);
+    let batchInfo = helpers.getBatchInfo(result);
+    assert.equal(batchInfo.isCompleted, false);
+    eyes.batchClose({id: batchInfo.pointerId, 
+                    apiKey: helpers.getEnvironmentVariable('APPLITOOLS_API_KEY_TEST_EYES'), 
+                    serverUrl: "https://testeyes.applitools.com"})
+    batchInfo = helpers.getBatchInfo(result);
+    helpers.sleep(5000);
+    assert.equal(batchInfo.isCompleted, true);
+  }
+})
+
 test('should send custom batch properties', {
   page: 'Default',
   config: {
