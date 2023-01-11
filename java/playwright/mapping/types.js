@@ -1,5 +1,5 @@
-const iosDeviceName = require('../mapping/iosDeviceName')
-const deviceName = require('../mapping/deviceName')
+const iosDeviceName = require('../../mapping/iosDeviceName')
+const deviceName = require('../../mapping/deviceName')
 const { capitalizeFirstLetter } = require('../../util')
 const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
 const types = {
@@ -46,7 +46,7 @@ const types = {
         name: () => 'JsonNode'
     },
     "Element": {
-        name: () => 'WebElement',
+        name: () => 'ElementHandle',
         get: simpleGetter,
     },
     "Region": {

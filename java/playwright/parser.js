@@ -1,9 +1,9 @@
 'use strict'
-const types = require('../mapping/types')
-const selectors = require('../mapping/selectors')
+const types = require('./mapping/types')
+const selectors = require('./mapping/selectors')
 const { capitalizeFirstLetter, isEmpty } = require('../util')
 const { checkOptions } = require("../../util")
-const { CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES } = require('../mapping/supported')
+const { CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES } = require('./mapping/supported')
 
 
 function checkSettings(cs, native) {
@@ -56,12 +56,8 @@ function checkSettings(cs, native) {
             options += `.beforeRenderScreenshotHook("${cs.hooks.beforeCaptureScreenshot}")`;
         }
     }
-    if (cs.pageId) {
-        options += `.pageId("${cs.pageId}")`;
-    }
-    if (cs.lazyLoad) {
-        options += lazyLoad(cs.lazyLoad);
-    }
+    if (cs.pageId) { options += `.pageId("${cs.pageId}")`; }
+    if (cs.lazyLoad) { options += lazyLoad(cs.lazyLoad); }
 
     return java + element + options;
 
@@ -141,6 +137,22 @@ function checkSettings(cs, native) {
                     string = regionParameter(region.region)
                     if (region.regionId) {
                         string += `, "${region.regionId}"`
+                    }
+                    if (region.padding) {
+                        switch(typeof region.padding) {
+                            case 'number':
+                                string += `, new Padding(${region.padding})`
+                                break;
+                            case 'object':
+                                string += `, new Padding()`
+                                if (region.padding.top) string += `.setTop(${region.padding.top})`
+                                if (region.padding.right) string += `.setRight(${region.padding.right})`
+                                if (region.padding.bottom) string += `.setBottom(${region.padding.bottom})`
+                                if (region.padding.left) string += `.setLeft(${region.padding.left})`
+                                break;
+                            default:
+                                throw new Error(`Padding parameter of the unimplemented type was used:  ${JSON.stringify(region.padding)}`);
+                        }
                     }
                 } else if (region.type) {
                     string = native ? `getDriver().locator(${parseObject(region)})` : parseObject(region);

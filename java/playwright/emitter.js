@@ -1,5 +1,6 @@
 'use strict'
-const types = require('../mapping/types')
+const types = require('./mapping/types')
+const { TAGS } = require('./mapping/supported')
 const { checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv } = require('./parser')
 const { capitalizeFirstLetter } = require('../util')
 const ImageMatchSettings = {
@@ -94,21 +95,24 @@ module.exports = function (tracker, test) {
 
     addHook('deps', `package coverage.generic;`)
     addHook('deps', ``)
+    
     // EG for UFG
     if (test.vg && process.env.UFG_ON_EG) {
         test.executionGrid = true;
     }
+
     // Dirty emulator workaround
     if (test.env && test.env.device === "Android 8.0 Chrome Emulator") {
         test.meta.native = false;
         test.env.browser = "chrome";
     }
+
     // Playwright has no mobile testing
-    if (!test.meta.native) {
-        addHook('deps', `import coverage.PlaywrightTestSetup;`)
-        addHook('deps', `import com.applitools.eyes.playwright.*;`)
-        addHook('afterEach', `runner.getAllTestResults(false);`)
-    }
+    addHook('deps', `import coverage.PlaywrightTestSetup;`)
+    addHook('deps', `import com.applitools.eyes.playwright.*;`)
+    addHook('deps', `import com.applitools.eyes.playwright.universal.PlaywrightStaleElementReferenceException;`)
+    addHook('afterEach', `runner.getAllTestResults(false);`)
+    
     // Not specific
     addHook('deps', `import java.net.MalformedURLException;`)
     addHook('deps', `import com.applitools.eyes.*;`)
@@ -119,7 +123,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `import java.util.*;`)
     addHook('deps', `import com.applitools.eyes.locators.VisualLocatorSettings;`)
     addHook('deps', 'import com.fasterxml.jackson.databind.JsonNode;')
-    addHook('deps', 'import com.applitools.eyes.locators.OcrRegion;')
+    addHook('deps', 'import com.applitools.eyes.playwright.locators.OcrRegion;')
     addHook('deps', 'import com.applitools.eyes.locators.TextRegion;')
     addHook('deps', 'import com.applitools.eyes.locators.TextRegionSettings;')
 
@@ -160,7 +164,7 @@ module.exports = function (tracker, test) {
 
     const driver = {
         constructor: {
-            isStaleElementError: () => 'StaleElementReferenceException.class'
+            isStaleElementError: () => 'PlaywrightStaleElementReferenceException.class'
         },
         visit(url) {
             addCommand(java`getPage().navigate(${url});`)
@@ -170,13 +174,13 @@ module.exports = function (tracker, test) {
         },
         switchToFrame(selector) {
             if (selector === null) {
-                addCommand(java`getDriver().switchTo().defaultContent();`)
+                addCommand(java`getPage().mainFrame();`)
             } else {
-                addCommand(java`getPage().locator(${selector}).elementHandle().contentFrame();`)
+                addCommand(java`${selector}.contentFrame();`)
             }
         },
         switchToParentFrame() {
-            addCommand(java`getDriver().switchTo().parentFrame();`)
+            addCommand(java`getPage().mainFrame().parentFrame();`)
         },
         findElement(selector) {
             return addCommand(java`getPage().locator(${wrapSelector(selector)}).elementHandle();`).type('Element')
@@ -186,16 +190,21 @@ module.exports = function (tracker, test) {
         },
         click(element) {
             if (element.isRef) addCommand(java`${element}.click();`)
-            else addCommand(java`getDriver().findElement(${wrapSelector(element)}).click();`)
+            else addCommand(java`getPage().locator(${element}).click();`)
         },
         type(element, keys) {
-            addCommand(java`${element}.sendKeys(${keys});`)
+            addCommand(java`${element}.fill(${keys});`)
         },
         scrollIntoView(element, align = false) {
-            addCommand(java`((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(arguments[1])", ${findElement(element)}, ${align});`)
+            let commands = [];
+            commands.push(java`ArrayList<Object> args = new ArrayList<>();`)
+            commands.push(java`args.add(${findElement(element)});`)
+            commands.push(java`args.add(${align});`)
+            commands.push(java`getPage().evaluate("arguments[0].scrollIntoView(arguments[1])", args);`)
+            addCommand(commands)
         },
         hover(element, offset) {
-            addCommand(java`hover(${findElement(element)});`)
+            addCommand(java`${findElement(element)}.hover();`)
         }
     }
 
@@ -227,7 +236,8 @@ module.exports = function (tracker, test) {
                                             }
                                         }
                                     }
-                                }
+                                },
+                                exception: "Exception"
                             }
                         }
                     })
@@ -263,39 +273,40 @@ module.exports = function (tracker, test) {
         checkWindow(tag, matchTimeout, stitchContent) {
             if (matchTimeout && stitchContent) throw new Error(`There is no signature in java SDK for usage both matchTimeout and stitchContent`)
             const commands = []
-            commands.push(java`eyes.checkWindow(`)
-            if (matchTimeout) commands.push(java`${matchTimeout}, `)
-            commands.push(java`${tag || ''}`)
-            if (stitchContent !== undefined) commands.push(java`, ${stitchContent}`)
+            commands.push(java`eyes.check(Target`)
+            commands.push(java`.window()`)
+            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
+            if (stitchContent !== undefined) commands.push(java`.fully(${stitchContent})`)
+            if (tag) commands.push(java`.withName(${tag})`)
             commands.push(java`);`)
             addCommand([commands.join('')])
         },
         checkFrame(element, matchTimeout, tag) {
             const commands = []
-            commands.push(java`eyes.checkFrame(`)
-            commands.push(java`${findFrame(element)}`)
-            if (matchTimeout) commands.push(java`, ${matchTimeout}`)
-            if (tag) commands.push(java`, ${tag}`)
+            commands.push(java`eyes.check(Target`)
+            commands.push(java`.frame(${findFrame(element)})`)
+            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
+            if (tag) commands.push(java`.withName(${tag})`)
             commands.push(java`);`)
             addCommand([commands.join('')])
         },
         checkRegion(region, matchTimeout, tag) {
             const commands = []
-            commands.push(java`eyes.checkRegion(`)
-            commands.push(java`${wrapSelector(region)}`)
-            if (matchTimeout) commands.push(java`, ${matchTimeout}`)
-            if (tag) commands.push(java`, ${tag}`)
+            commands.push(java`eyes.check(Target`)
+            commands.push(java`.region(${wrapSelector(region)})`)
+            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
+            if (tag) commands.push(java`.withName(${tag})`)
             commands.push(java`);`)
             addCommand([commands.join('')])
         },
         checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
             const commands = []
-            commands.push(java`eyes.checkRegionInFrame(`)
-            commands.push(java`${findFrame(frameReference)},`)
-            commands.push(java` ${wrapSelector(selector)}`)
-            if (matchTimeout) commands.push(java`, ${matchTimeout}`)
-            if (tag) commands.push(java`, ${tag}`)
-            if (stitchContent) commands.push(java`, ${stitchContent}`)
+            commands.push(java`eyes.check(Target`)
+            commands.push(java`.frame(${findFrame(frameReference)})`)
+            commands.push(java`.region(${wrapSelector(selector)})`)
+            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
+            if (tag) commands.push(java`.withName(${tag})`)
+            if (stitchContent) commands.push(java`.fully(${stitchContent})`)
             commands.push(java`);`)
             addCommand([commands.join('')])
         },
@@ -328,7 +339,7 @@ module.exports = function (tracker, test) {
                 commands.push(java`new OcrRegion(`)
                 const region = ocrRegions[index]
                 if (typeof (region.target) === "string") {
-                    commands.push(java`By.cssSelector(${region.target}))`)
+                    commands.push(java`getPage().locator(${region.target}))`)
                 } else if (typeof (region.target) === "object") {
                     commands.push(java`new Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
                 } else {
@@ -389,6 +400,8 @@ module.exports = function (tracker, test) {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {
                     addCommand(java`Assert.assertEquals(${actual}.asText(""), ${expected}${assertMessage(message)});`)
+                } else if (type === 'Array') {
+                    addCommand(java`Assert.assertEquals(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
                 } else if (type !== 'Map') {
                     addCommand(java`Assert.assertEquals(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
                 } else {
@@ -417,6 +430,9 @@ module.exports = function (tracker, test) {
         },
         ok(arg, message) {
             addCommand(java`Assert.assertNotNull(${arg}${assertMessage(message)});`)
+        },
+        contains(args, expectedToHave) {
+            addCommand(java`Assert.assertTrue(${args}.contains(${expectedToHave}));`)
         }
     }
 
