@@ -93,7 +93,7 @@ module.exports = function (tracker, test) {
         return insert(result)
     }
 
-    addHook('deps', `package coverage.generic;`)
+    addHook('deps', `package coverage.generic.playwright;`)
     addHook('deps', ``)
     
     // EG for UFG
@@ -339,7 +339,7 @@ module.exports = function (tracker, test) {
                 commands.push(java`new OcrRegion(`)
                 const region = ocrRegions[index]
                 if (typeof (region.target) === "string") {
-                    commands.push(java`getPage().locator(${region.target}))`)
+                    commands.push(java`${region.target})`)
                 } else if (typeof (region.target) === "object") {
                     commands.push(java`new Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
                 } else {

@@ -130,7 +130,7 @@ function checkSettings(cs, native) {
         let string;
         switch (typeof region) {
             case 'string':
-                string = `getPage().locator(${JSON.stringify(region)})`;
+                string = `${JSON.stringify(region)}`;
                 break;
             case "object":
                 if (region.region) {
