@@ -1,7 +1,4 @@
 module.exports = {
- 
-    // Python like
-    // fails in selenium4 only due to legacy driver being used
     
     // not available in chrome > 96(will be avalable on slenium v4)
     'check region by selector within shadow dom with vg': { skipEmit: true },
@@ -20,7 +17,6 @@ module.exports = {
     "should override default value of fully with false": { skipEmit: true },
 
     // TODO verify and enable
-    // 'should send agentRunId': { skipEmit: true },
     "Should return exception in TestResultsSummary": { skipEmit: true },
 
     // check image
@@ -57,10 +53,10 @@ module.exports = {
     "should capture webview when specified in check settings on ios": {skipEmit: true},
     "check window on mobile web ios": {skipEmit: true},
 
-    // not in ./mapping/supported.js -> TYPES 
+    // not in ./mapping/supported.js -> TAGS 
     "should send dom on ie": {skipEmit: true}, // "ie"
+    "check region by selector on ie": {skipEmit: true}, // "ie"
     "should send dom on edge legacy": {skipEmit: true}, // "edge"
-    "check reigon by selector on ie": {skipEmit: true}, // "ie"
     "check frame after manual switch to frame with css stitching classic": {skipEmit: true}, // "webdriver"
     "check frame after manual switch to frame with scroll stitching classic": {skipEmit: true}, // "webdriver"
     "check region by selector in overflowed frame after manual scroll with css stitching": {skipEmit: true}, // "webdriver"

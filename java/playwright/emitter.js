@@ -196,12 +196,7 @@ module.exports = function (tracker, test) {
             addCommand(java`${element}.fill(${keys});`)
         },
         scrollIntoView(element, align = false) {
-            let commands = [];
-            commands.push(java`ArrayList<Object> args = new ArrayList<>();`)
-            commands.push(java`args.add(${findElement(element)});`)
-            commands.push(java`args.add(${align});`)
-            commands.push(java`getPage().evaluate("arguments[0].scrollIntoView(arguments[1])", args);`)
-            addCommand(commands)
+            addCommand(java`${element}.scrollIntoViewIfNeeded();`)
         },
         hover(element, offset) {
             addCommand(java`${findElement(element)}.hover();`)
