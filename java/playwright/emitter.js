@@ -110,6 +110,7 @@ module.exports = function (tracker, test) {
     // Playwright has no mobile testing
     addHook('deps', `import coverage.PlaywrightTestSetup;`)
     addHook('deps', `import com.applitools.eyes.playwright.*;`)
+    addHook('deps', `import com.applitools.eyes.playwright.fluent.*;`)
     addHook('deps', `import com.applitools.eyes.playwright.universal.PlaywrightStaleElementReferenceException;`)
     addHook('afterEach', `runner.getAllTestResults(false);`)
     
