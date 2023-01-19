@@ -205,7 +205,12 @@ def execution_grid():
             return addCommand(python`driver.quit()`)
         },
         visit(url) {
-            return addCommand(python`driver.get(${url})`)
+            if (test.playwright) {
+                return addCommand(python`page.goto(${url})`)
+            }
+            else {
+                return addCommand(python`driver.get(${url})`)
+            }
         },
         executeScript(script, ...args) {
             if (args.length > 0) {
@@ -330,7 +335,7 @@ def execution_grid():
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
     eyes.set_configuration(configuration)
-    eyes.open(${driver_var})`)
+    eyes.open` + `(${driver_var})`)
         },
         check(checkSettings) {
 			if(checkSettings !== undefined && checkSettings.visualGridOptions)
