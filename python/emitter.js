@@ -225,23 +225,32 @@ def execution_grid():
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-            //return addCommand(python`driver.switch_to.frame(${selector})`)
-            return addCommand(python`eyes_driver.switch_to.frame(` + framesClassic(selector) + `)`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "switchToFrame not implemented"`)
+            } else {
+                return addCommand(python`driver.switch_to.frame(` + framesClassic(selector) + `)`)
+            }
         },
         switchToParentFrame() {
-            return addCommand(python`eyes_driver.switch_to.parent_frame()`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "switchToParentFrame not implemented"`)
+            } else {
+                return addCommand(python`driver.switch_to.parent_frame()`)
+            }
         },
         findElement(selector) {
-            let drv = "driver"
-            if (openPerformed) drv = "eyes_driver"
             if (selector.type) {
                 let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
-                return addCommand(python`` + drv + command)
+                return addCommand("driver" + command)
             }
-            return addCommand(python`` + drv + `.find_element(` + parseSelectorByType(selector) + `)`)
+            return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
         },
         findElements(selector) {
-            return addCommand(python`eyes_driver.find_elements_by_css_selector(${selector})`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "findElements not implemented"`)
+            } else {
+                return addCommand(python`driver.find_elements_by_css_selector(${selector})`)
+            }
         },
         getWindowLocation() {
             // return addCommand(ruby`await specs.getWindowLocation(driver)`)
@@ -258,26 +267,29 @@ def execution_grid():
             return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            let drv = "driver"
-            if (openPerformed) drv = "eyes_driver"
             let selector = parseSelectorByType(element)
             selector = selector.replace(/\[/g, "")
             selector = selector.replace(/\]/g, "")
-            return addCommand(python`` + drv + `.find_element(` + selector + `).click()`)
+            return addCommand(`driver.find_element(` + selector + `).click()`)
         },
         type(element, keys) {
             return addCommand(python`${element}.send_keys(${keys})`)
         },
         scrollIntoView(element, align) {
 			let alignTemp = (align) ? align : false
-            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp});`)
-            return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "scrollIntoView not implemented"`)
+            } else {
+                return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp});`)
+            }
         },
         hover(element, offset) {
-            if (openPerformed) return addCommand(python`hover = ActionChains(eyes_driver).move_to_element(${findElementFunc(element)})
+            if (test.playwright) {
+                return addCommand(python`assert False, "hover not implemented"`)
+            } else {
+                return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
-            return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
-    hover.perform()`)
+            }
         },
     }
 
