@@ -214,10 +214,10 @@ def execution_grid():
         },
         executeScript(script, ...args) {
             if (args.length > 0) {
-                if (openPerformed) return addCommand(python`eyes_driver.execute_script(${script}, ${args[0]})`)
+                if (test.playwright) return addCommand(python`page.evaluate(${script}, ${args[0]})`)
                 else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
             }
-            if (openPerformed) return addCommand(python`eyes_driver.execute_script(${script})`)
+            if (test.playwright) return addCommand(python`page.evaluate(${script})`)
             else return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
