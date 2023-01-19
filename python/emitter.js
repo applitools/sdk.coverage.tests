@@ -28,11 +28,7 @@ module.exports = function (tracker, test) {
     if(test.vg && process.env.UFG_ON_EG) {
         test.executionGrid = true;
     }
-    if (process.env.AUTOMATION_FRAMEWORK === "playwright") {
-        test.automationFramework = "playwright"
-    } else {
-        test.automationFramework = "selenium"
-    }
+    test.playwright = process.env.AUTOMATION_FRAMEWORK === "playwright"
 
     let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
     if(emulator) {
@@ -84,7 +80,7 @@ module.exports = function (tracker, test) {
     if (!mobile) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def eyes_runner_class():`)
-        if (test.automationFramework === "playwright") {
+        if (test.playwright) {
             if (test.vg) {
                 addHook('beforeEach', python`    return VisualGridPlaywrightRunner(10)`)
             } else {
@@ -329,11 +325,12 @@ def execution_grid():
 
         open({appName, viewportSize}) {
             let appNm = (appName) ? appName : test.config.appName
+            let driver_var = test.playwright ? "page" : "driver"
             openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
     eyes.set_configuration(configuration)
-    eyes_driver = eyes.open(driver)`)
+    eyes.open(${driver_var})`)
         },
         check(checkSettings) {
 			if(checkSettings !== undefined && checkSettings.visualGridOptions)
