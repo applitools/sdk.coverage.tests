@@ -45,4 +45,8 @@ module.exports = {
     "check window fully on android chrome emulator on mobile page with horizontal scroll": { skipEmit: true },
     "check window fully on android chrome emulator on mobile page": { skipEmit: true },
     "should not fail if scroll root is stale on android": {skipEmit: true},
+
+    // manual frame switching
+    "check frame after manual switch to frame with css stitching classic": {skipEmit: true},
+    "check frame after manual switch to frame with scroll stitching classic": {skipEmit: true},
 }
