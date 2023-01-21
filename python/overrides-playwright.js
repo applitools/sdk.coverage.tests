@@ -49,6 +49,9 @@ module.exports = {
     // manual frame switching
     "check frame after manual switch to frame with css stitching classic": {skipEmit: true},
     "check frame after manual switch to frame with scroll stitching classic": {skipEmit: true},
-    "check region by selector in overflowed frame after manual scroll with css stitching":  {skipEmit: true},
-    "check region by selector in overflowed frame after manual scroll with scroll stitching":  {skipEmit: true},
+    "check region by selector in overflowed frame after manual scroll with css stitching": {skipEmit: true},
+    "check region by selector in overflowed frame after manual scroll with scroll stitching": {skipEmit: true},
+
+    // unsupported browser
+    "check region by selector on ie":  {skipEmit: true},
 }
