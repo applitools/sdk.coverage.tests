@@ -53,20 +53,10 @@ function frame(frame) {
 }
 function parseSelectorByType(selector) {
      if ((typeof selector) === 'string') {
-         if (selector.includes('name=')) {
-             selector = selector.replace('name=', "")
-             return `By.NAME, ${parseSelector(selector)}`
-         }
-         else if (selector.includes('#')) {
-                  selector = selector.replace('#', "")
-                  return `By.ID, ${parseSelector(selector)}`
-              }
-              else if (selector.includes('.')) {
-                       selector = selector.replace('.', "")
-                       return `By.CLASS_NAME, ${parseSelector(selector)}`
-                   }
-                   else return `By.CSS_SELECTOR, ${parseSelector(selector)}`
-     } else return parseSelector(selector)
+         return `By.CSS_SELECTOR, '${selector}'`
+     } else {
+       return parseSelector(selector)
+     }
 }
 function parseSelector(selector) {
     let string
