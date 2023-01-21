@@ -239,11 +239,20 @@ def execution_grid():
             }
         },
         findElement(selector) {
-            if (selector.type) {
-                let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
-                return addCommand("driver" + command)
+            if (test.playwright) {
+                switch (typeof selector) {
+                    case 'string':
+                        return addCommand(`page.locator('${selector}')`)
+                    case "object":
+                        return addCommand(`page.locator('${selector["selector"]}')`)
+                }
+            } else {
+                if (selector.type) {
+                    let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
+                    return addCommand("driver" + command)
+                }
+                return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
             }
-            return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
         },
         findElements(selector) {
             if (test.playwright) {
@@ -287,14 +296,14 @@ def execution_grid():
         scrollIntoView(element, align) {
 			let alignTemp = (align) ? align : false
             if (test.playwright) {
-                return addCommand(python`assert False, "scrollIntoView not implemented"`)
+                return addCommand(python`${findElementFunc(element)}.evaluate("(elem, arg) => elem.scrollIntoView(arg)", ${alignTemp})`)
             } else {
-                return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp});`)
+                return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp})`)
             }
         },
         hover(element, offset) {
             if (test.playwright) {
-                return addCommand(python`assert False, "hover not implemented"`)
+                return addCommand(python`${findElementFunc(element)}.hover()`)
             } else {
                 return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
