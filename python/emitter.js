@@ -267,10 +267,19 @@ def execution_grid():
             return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            let selector = parseSelectorByType(element)
-            selector = selector.replace(/\[/g, "")
-            selector = selector.replace(/\]/g, "")
-            return addCommand(`driver.find_element(` + selector + `).click()`)
+            if (test.playwright) {
+                    switch (typeof element) {
+                        case 'string':
+                            return addCommand(`page.click('${element}')`)
+                        case "object":
+                            return addCommand(`page.click('${element["selector"]}')`)
+                    }
+            } else {
+                let selector = parseSelectorByType(element)
+                selector = selector.replace(/\[/g, "")
+                selector = selector.replace(/\]/g, "")
+                return addCommand(`driver.find_element(` + selector + `).click()`)
+            }
         },
         type(element, keys) {
             return addCommand(python`${element}.send_keys(${keys})`)
