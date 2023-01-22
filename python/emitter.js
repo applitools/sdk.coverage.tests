@@ -214,7 +214,7 @@ def execution_grid():
         },
         executeScript(script, ...args) {
             if (args.length > 0) {
-                if (test.playwright) return addCommand(python`page.evaluate(${script}, ${args[0]})`)
+                if (test.playwright) return addCommand(python`page.evaluate("arguments => " + ${script}, [${args[0]}.element_handle()])`)
                 else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
             }
             if (test.playwright) return addCommand(python`page.evaluate(${script})`)
