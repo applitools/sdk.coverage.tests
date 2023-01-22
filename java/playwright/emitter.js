@@ -86,9 +86,18 @@ module.exports = function (tracker, test) {
 
     function extraParameters(params) {
         let result = ''
-        for (const param of params) {
-            if (param === undefined) break
-            result += java`, ${param}`
+        if (params.length > 0) {
+            let i = 0;
+            result = `Arrays.asList(`
+            for (const param of params) {
+                if (param === undefined) break
+                i += 1;
+                if (i < params.length)
+                    result += java`${param}, `
+                else
+                    result += java`${param}`
+            }
+            result += `)`
         }
         return insert(result)
     }
@@ -171,7 +180,12 @@ module.exports = function (tracker, test) {
             addCommand(java`getPage().navigate(${url});`)
         },
         executeScript(script, ...args) {
-            return addCommand(java`getPage().evaluate(${script}${extraParameters(args)});`)
+            let actualScript = script;
+            if (script.startsWith("arguments[0]")) {
+                actualScript = `arguments => { ${script} };`
+                return addCommand(java`getPage().evaluate(${actualScript}, ${extraParameters(args)});`)
+            }
+            return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
         },
         switchToFrame(selector) {
             if (selector === null) {
