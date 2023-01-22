@@ -221,10 +221,10 @@ def execution_grid():
         },
         executeScript(script, ...args) {
             if (args.length > 0) {
-                if (test.playwright) return addCommand(python`page.evaluate("arguments => " + ${script}, [${args[0]}.element_handle()])`)
+                if (test.playwright) return addCommand(python`page.evaluate("function(arguments) {" + ${script} + "}", [${args[0]}.element_handle()])`)
                 else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
             }
-            if (test.playwright) return addCommand(python`page.evaluate(${script})`)
+            if (test.playwright) return addCommand(python`page.evaluate("function() {" + ${script} + "}")`)
             else return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
