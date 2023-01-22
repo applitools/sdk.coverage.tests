@@ -326,12 +326,20 @@ def execution_grid():
 
         constructor: {
             setViewportSize(viewportSize) {
-                return addCommand(python`Eyes.set_viewport_size(driver, ${viewportSize})`)
+                if (test.playwright) {
+                    return addCommand(python`Eyes.set_viewport_size(page, ${viewportSize})`)
+                } else {
+                    return addCommand(python`Eyes.set_viewport_size(driver, ${viewportSize})`)
+                }
             }
         },
 
         getViewportSize() {
-            return addCommand(python`eyes.get_viewport_size(driver)`)
+            if (test.playwright) {
+                return addCommand(python`eyes.get_viewport_size(page)`)
+            } else {
+                return addCommand(python`eyes.get_viewport_size(driver)`)
+            }
         },
 
         runner: {
