@@ -64,6 +64,9 @@ module.exports = function (tracker, test) {
     addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, PlaywrightRunner, VisualGridPlaywrightRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
+    if (test.playwright) {
+        addHook('deps', 'import playwright._impl._api_types')
+    }
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
@@ -205,7 +208,11 @@ def execution_grid():
     const driver = {
         constructor: {
             isStaleElementError(error) {
-                addCommand(python`selenium.common.exceptions.StaleElementReferenceException`)
+                if (test.playwright) {
+                    addCommand(python`playwright._impl._api_types.TimeoutError`)
+                } else {
+                    addCommand(python`selenium.common.exceptions.StaleElementReferenceException`)
+                }
             },
         },
         cleanup() {
