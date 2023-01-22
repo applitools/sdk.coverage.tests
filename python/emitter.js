@@ -291,7 +291,11 @@ def execution_grid():
             }
         },
         type(element, keys) {
-            return addCommand(python`${element}.send_keys(${keys})`)
+            if (test.playwright) {
+                return addCommand(python`${element}.fill(${keys})`)
+            } else {
+                return addCommand(python`${element}.send_keys(${keys})`)
+            }
         },
         scrollIntoView(element, align) {
 			let alignTemp = (align) ? align : false
