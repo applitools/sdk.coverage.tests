@@ -25,7 +25,6 @@ function checkSettings(cs) {
     if (cs.contentRegions) {options += regions("content", cs.contentRegions);}
     if (cs.strictRegions) {options += regions("strict", cs.strictRegions);}
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
-    if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.enablePatterns) options += '.enable_patterns()'
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.pageId) options += python`.page_id(${cs.pageId})`
