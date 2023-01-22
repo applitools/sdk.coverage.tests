@@ -176,10 +176,17 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
         addHook('beforeEach', python`    return chrome_emulator\n`)
-    } else if (test.env && test.env.browser){
+    } else {
+        let browser = (test.env && test.env.browser) ? test.env.browser : "chrome"
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(test.env.browser))}):`)
-        addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(test.env.browser))}\n`)
+        if (test.playwright)
+        {
+            addHook('beforeEach', python`def driver_builder():`)
+            addHook('beforeEach', python`    return ${toLowerSnakeCase(browser)}\n`)
+        } else {
+            addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(browser))}):`)
+            addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(browser))}\n`)
+        }
     }
 
     if (legacy) {
