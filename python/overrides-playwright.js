@@ -40,7 +40,7 @@ module.exports = {
     "check window on mobile web android": {skipEmit: true},
     "check window on mobile web ios": {skipEmit: true},
 
-    // cheomr emulation
+    // chrome emulation
     "check window fully on android chrome emulator on desktop page": {skipEmit: true},
     "check window fully on android chrome emulator on mobile page with horizontal scroll": { skipEmit: true },
     "check window fully on android chrome emulator on mobile page": { skipEmit: true },
@@ -54,4 +54,8 @@ module.exports = {
 
     // unsupported browser
     "check region by selector on ie":  {skipEmit: true},
+    "check window after manual scroll on safari 11":  {skipEmit: true},
+    "should send dom on edge legacy":  {skipEmit: true},
+    "should send dom on ie":  {skipEmit: true},
+    "should set viewport size on edge legacy":  {skipEmit: true},
 }
