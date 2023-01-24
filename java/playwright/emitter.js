@@ -297,7 +297,7 @@ module.exports = function (tracker, test) {
             commands.push(java`.frame(${findFrame(element)})`)
             if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
             if (tag) commands.push(java`.withName(${tag})`)
-            commands.push(java`);`)
+            commands.push(java`.fully());`)
             addCommand([commands.join('')])
         },
         checkRegion(region, matchTimeout, tag) {
