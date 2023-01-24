@@ -184,8 +184,8 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         if (test.playwright)
         {
-            addHook('beforeEach', python`def driver_builder():`)
-            addHook('beforeEach', python`    return ${toLowerSnakeCase(browser)}\n`)
+            addHook('beforeEach', python`def pw_browser(pw_${directString(toLowerSnakeCase(browser))}):`)
+            addHook('beforeEach', python`    return pw_${directString(toLowerSnakeCase(browser))}\n`)
         } else {
             addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(browser))}):`)
             addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(browser))}\n`)
