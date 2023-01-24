@@ -88,7 +88,7 @@ module.exports = function (tracker, test) {
         let result = ''
         if (params.length > 0) {
             let i = 0;
-            result = `Arrays.asList(`
+            result += `, Arrays.asList(`
             for (const param of params) {
                 if (param === undefined) break
                 i += 1;
@@ -183,7 +183,10 @@ module.exports = function (tracker, test) {
             let actualScript = script;
             if (script.startsWith("arguments[0]")) {
                 actualScript = `arguments => { ${script} };`
-                return addCommand(java`getPage().evaluate(${actualScript}, ${extraParameters(args)});`)
+                return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+            } else if (script.startsWith('return')) {
+                actualScript = `() => { ${script} };`
+                return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
             }
             return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
         },
