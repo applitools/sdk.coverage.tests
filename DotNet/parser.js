@@ -2,6 +2,7 @@
 
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
+const {isEmpty} = require("../util");
 
 function checkSettings(cs, mobile = false) {
 	let target = `Target`
@@ -44,7 +45,23 @@ function checkSettings(cs, mobile = false) {
 	if (cs.name) options += `.WithName("${cs.name}")`
 	if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`
 	if (cs.variationGroupId) {options += `.VariationGroupId("${cs.variationGroupId}")`}
+	if (cs.lazyLoad) options += lazyLoad(cs.lazyLoad);
 	return target + element + options
+}
+
+function lazyLoadOptions(lazyLoad) {
+	let string;
+	let llOptions;
+	const LLOptionsKeys = Object.keys(lazyLoad);
+	llOptions = LLOptionsKeys.map(key => `${key}:${lazyLoad[key]}`).join(', ');
+	string = `new LazyLoadOptions(${llOptions})`;
+	return `.LazyLoad(${string})`
+}
+function lazyLoad(lazyLoad) {
+	if (isEmpty(lazyLoad))
+		return `.LazyLoad()`
+	else
+		return lazyLoadOptions(lazyLoad)
 }
 
 function frames(arr) {

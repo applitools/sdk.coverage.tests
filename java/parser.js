@@ -1,8 +1,8 @@
 'use strict'
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
-const { capitalizeFirstLetter, isEmpty } = require('./util')
-const { checkOptions } = require("../util")
+const { capitalizeFirstLetter} = require('./util')
+const { checkOptions, isEmpty  } = require("../util")
 const { CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES } = require('./mapping/supported')
 
 

@@ -9,7 +9,12 @@ function fromCamelCaseToSnakeCase(string) {
     return string.replace(/([A-Z])/g, '_$1').toLowerCase()
 }
 
+function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+}
+
 module.exports = {
     fromCamelCaseToSnakeCase,
-    checkOptions
+    checkOptions,
+    isEmpty
 }
