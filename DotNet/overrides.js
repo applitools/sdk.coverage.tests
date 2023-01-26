@@ -46,18 +46,6 @@ module.exports = {
     "should waitBeforeCapture with breakpoints in check": {skipEmit: true},
     "should waitBeforeCapture with breakpoints in open": {skipEmit: true},
     
-    // lazyload tests (api change needed in check settings to support it)
-    'lazy load page with one option specified maxAmountToScroll': {skipEmit: true},
-    'lazy load page with one option specified maxAmountToScroll with vg': {skipEmit: true},
-    'lazy load page with one option specified waitingTime': {skipEmit: true},
-    'lazy load page with one option specified waitingTime with vg': {skipEmit: true},
-    'lazy load page with one option specified scrollLength': {skipEmit: true},
-    'lazy load page with one option specified scrollLength with vg': {skipEmit: true},
-    'lazy load page with all options specified': {skipEmit: true},
-    'lazy load page with all options specified with vg': {skipEmit: true},
-    'lazy load page with default options': {skipEmit: true},
-    'lazy load page with default options with vg': {skipEmit: true},
-    
     // need to add support for the webview property in check settings to the emitter
     "should capture webview when specified in check settings on ios": {skipEmit: true},
     "should capture webview when specified in check settings on android": {skipEmit: true},
