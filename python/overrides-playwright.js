@@ -55,6 +55,7 @@ module.exports = {
     // unsupported browser
     "check region by selector on ie":  {skipEmit: true},
     "check window after manual scroll on safari 11":  {skipEmit: true},
+    "check window after manual scroll on safari 12":  {skipEmit: true},
     "should send dom on edge legacy":  {skipEmit: true},
     "should send dom on ie":  {skipEmit: true},
     "should set viewport size on edge legacy":  {skipEmit: true},
