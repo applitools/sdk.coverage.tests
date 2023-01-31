@@ -1486,6 +1486,21 @@ test('should send dom and location when check region by selector fully with cust
 
 // #region OTHERS
 
+test('should handle stitch overlap', {
+  page: 'Default',
+  config: {
+    stitchOverlap: 30,
+  },
+  variants: {
+    '': {vg: false},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Selenium SDK - overlap', viewportSize});
+    eyes.check({isFully: true});
+    eyes.close()
+  },
+})
+
 test('should send custom batch properties', {
   page: 'Default',
   config: {
