@@ -112,6 +112,7 @@ module.exports = function (tracker, test) {
         addHook('deps', `import coverage.TestSetup;`)
         addHook('deps', `import com.applitools.eyes.selenium.*;`)
         addHook('deps', `import com.applitools.eyes.selenium.fluent.Target;`)
+        addHook('deps', `import com.applitools.eyes.fluent.*;`)
         addHook('afterEach', `runner.getAllTestResults(false);`)
     }
     // Not specific
@@ -154,9 +155,18 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
     }
     if (test.config.batch) {
-        addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
-            return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
-        }).map(property => java`${property}`).join(',\n    ')}});`)
+        if (test.config.batch.properties) {
+            addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
+                return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
+            }).map(property => java`${property}`).join(',\n    ')}});`)
+        } else {
+            if (test.config.batch.id) {
+                addHook('beforeEach', `setBatch("${test.config.baselineName}", "${test.config.batch.id}");`);    
+            }
+            else {
+                addHook('beforeEach', `setBatch("${test.config.baselineName}");`);
+            }
+        }
     }
 
     addHook('afterEach', java`if (driver != null) driver.quit();`)
@@ -379,6 +389,14 @@ module.exports = function (tracker, test) {
                     }
                 }
             })
+        },
+        batchClose({ id, apiKey, serverUrl }) {
+            const commands = [];
+            commands.push(java`BatchClose batchClose = new BatchClose();`)
+            if (apiKey) commands.push(java`batchClose.setApiKey(${apiKey});`)
+            if (serverUrl) commands.push(java`batchClose.setUrl(${serverUrl});`)
+            commands.push(java`batchClose.setBatchId(Arrays.asList(${id})).close();`)
+            return addCommand(commands)
         }
     }
 
@@ -486,6 +504,14 @@ module.exports = function (tracker, test) {
                 },
             })
         },
+        getBatchInfo(result) {
+            return addCommand(java`getBatchInfo(${result});`).type({
+                type: 'BatchMetadataInfo',
+                schema: {
+                    isCompleted: {type: 'Boolean'}
+                }
+            })
+        },
         getDom(result, domId) {
             return addCommand(java`getDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
                 getNodesByAttribute: (dom, attr) => addCommand(java`getNodesByAttributes(${dom}, ${attr});`).type({
@@ -504,6 +530,20 @@ module.exports = function (tracker, test) {
                     }
                 })
             })
+        },
+        getEnvironmentVariable(key) {
+            return addCommand(java`System.getenv(${key});`).type({
+                type: 'String'
+            })
+        },
+        sleep(milliseconds) {
+            let commands = []
+            commands.push(`try {`);
+            commands.push(`Thread.sleep(${milliseconds});`);
+            commands.push(`} catch (Exception e) {`);
+            commands.push(`e.printStackTrace();`);
+            commands.push(`}`)
+            return addCommand(commands.join(''))
         },
         math: {
             round(number) {
