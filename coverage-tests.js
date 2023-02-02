@@ -1486,6 +1486,37 @@ test('should send dom and location when check region by selector fully with cust
 
 // #region OTHERS
 
+test('should send enablePatterns when specified in config', {
+  page: 'HelloWorld',
+  config: {defaultMatchSettings: {enablePatterns: true}},
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
+    eyes.check()
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(info.actualAppOutput[0].imageMatchSettings.enablePatterns, true)
+  },
+})
+
+test('should send enablePatterns when specified in check settings', {
+  page: 'HelloWorld',
+  variants: {
+    '': {vg: false},
+    'with vg': {vg: true},
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK', viewportSize});
+    eyes.check({enablePatterns: true})
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(info.actualAppOutput[0].imageMatchSettings.enablePatterns, true)
+  },
+})
+
 test('should send custom batch properties', {
   page: 'Default',
   config: {
