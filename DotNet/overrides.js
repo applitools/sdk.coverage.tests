@@ -69,4 +69,9 @@ module.exports = {
     "check image region": {skipEmit: true},
     "check image region classic": {skipEmit: true},
     "should send dom when check image": {skipEmit: true},
+    
+    "should send enablePatterns when specified in config": {skipEmit: true},
+    "should send enablePatterns when specified in config with vg": {skipEmit: true},
+    "should send enablePatterns when specified in check settings": {skipEmit: true},
+    "should send enablePatterns when specified in check settings with vg": {skipEmit: true},
 }
