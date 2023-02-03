@@ -100,10 +100,15 @@ module.exports = function (tracker, test) {
     if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
     if ("forceFullPageScreenshot" in test.config) addHook('beforeEach', python`    conf.force_full_page_screenshot = ${test.config.forceFullPageScreenshot}`)
     if ("isDisabled" in test.config) addHook('beforeEach', python`    conf.is_disabled = ${test.config.isDisabled};`)
-    if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)) {
-        let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
-        let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-        addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `))`)
+    if ("defaultMatchSettings" in test.config) {
+        if ("accessibilitySettings" in test.config.defaultMatchSettings) {
+            let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
+            let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
+            addHook('beforeEach', python`    conf.set_accessibility_validation(AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `))`)
+        }
+        if ("enablePatterns" in test.config.defaultMatchSettings) {
+            addHook('beforeEach', python`    conf.set_enable_patterns(${test.config.defaultMatchSettings.enablePatterns})`)
+        }
     }
     if ("waitBeforeCapture" in test.config) {
         addHook('beforeEach', python`    conf.set_wait_before_capture(${test.config.waitBeforeCapture})`)

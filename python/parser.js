@@ -26,6 +26,7 @@ function checkSettings(cs) {
     if (cs.strictRegions) {options += regions("strict", cs.strictRegions);}
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
     if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
+    if (cs.enablePatterns) options += '.enable_patterns()'
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.pageId) options += python`.page_id(${cs.pageId})`
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
