@@ -1,0 +1,189 @@
+const iosDeviceName = require('../../mapping/iosDeviceName')
+const deviceName = require('../../mapping/deviceName')
+const { capitalizeFirstLetter } = require('../../util')
+const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
+const types = {
+    "Map": {
+        constructor: (value, generic) => {
+            const mapKey = generic[0]
+            const mapValue = generic[1]
+            const keyType = types[mapKey.name]
+            const valueType = types[mapValue.name]
+            return `new HashMap<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
+    {{ ${Object.keys(value).map(key => `put(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
+        },
+        get: (target, key) => `${target}.get("${key}")`,
+        isGeneric: true,
+        name: (type) => {
+            const key = type.generic[0].name
+            const genericKey = type.generic[0]
+            const value = type.generic[1].name
+            const genericValue = type.generic[1]
+            return `Map<${types[key].name(genericKey)},${types[value].name(genericValue)}>`
+        },
+    },
+    "List": {
+        constructor: (value, generic) => {
+            const param = generic[0]
+            const paramType = types[param.name]
+            return `new ArrayList<${paramType.name(param)}>()
+            {{ ${value.map(region => `add(${paramType.constructor(region)});`).join(' ')} }}`
+        },
+        name: (type) => `List<${type.generic[0].name}>`,
+        get: (target, key) => Number.isInteger(Number(key)) ? `${target}.get(${key})` : `${target}.${key}()`
+    },
+    "RectangleSize": {
+        constructor: (value) => `new RectangleSize(${value.width}, ${value.height})`,
+        get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key),
+        name: () => 'RectangleSize',
+    },
+    "TestInfo": {
+        get: simpleGetter,
+        name: () => 'SessionResults',
+    },
+    "JsonNode": {
+        get: (target, key) => `${target}.get(${Number.isInteger(Number(key)) ? key : `"${key}"`})`,
+        name: () => 'JsonNode'
+    },
+    "Element": {
+        name: () => 'ElementHandle',
+        get: simpleGetter,
+    },
+    "Region": {
+        name: () => 'Region',
+        constructor: (value) => {
+            let region = `new Region(${value.left}, ${value.top}, ${value.width}, ${value.height})`;
+            if (value.regionId) region += `.regionId(${JSON.stringify(value.regionId)})`
+            return region
+        }
+    },
+    "FloatingRegion": {
+        constructor: (value) => {
+            let region;
+            if (value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
+            else region = `${value.left}, ${value.top}, ${value.width}, ${value.height}`
+            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`
+        }
+    },
+    "Array": {
+        get: (target, key) => {
+            if (key === 'length') return `${target}.length`
+            else return `${target}[${key}]`
+        },
+        name: (arr) => `${arr.items.type}[]`,
+    },
+    "Boolean": {
+        constructor: (value) => `${value}`,
+        name: () => `Boolean`
+    },
+    "BooleanObject": {
+        constructor: (value) => `Boolean.${value.toString().toUpperCase()}`
+    },
+    "String": {
+        constructor: (value) => JSON.stringify(value),
+        name: () => `String`,
+    },
+    "Number": {
+        constructor: (value) => `${JSON.stringify(value)}L`,
+        name: () => `Number`,
+    },
+    "Long": {
+        constructor: (value) => `new Long(${JSON.stringify(value)})`,
+        name: () => `Long`,
+    },
+    "int": {
+        constructor: (value) => `${JSON.stringify(value)}`,
+        name: () => `int`,
+    },
+    "Image": {
+        get: simpleGetter,
+    },
+    "ImageMatchSettings": {
+        get: simpleGetter,
+    },
+    "AppOutput": {
+        get: simpleGetter,
+    },
+    "AccessibilitySettings": {
+        constructor: function (value) {
+            return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
+        },
+        get: (target, key) => (key === 'version') ? `${target}.getGuidelinesVersion()` : simpleGetter(target, key)
+    },
+    "AccessibilityRegion": {
+        constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
+    },
+    "AccessibilityLevel": {
+        constructor: (value) => `AccessibilityLevel.${value}`
+    },
+    "AccessibilityGuidelinesVersion": {
+        constructor: (value) => `AccessibilityGuidelinesVersion.${value}`
+    },
+    "Location": {
+        constructor: (value) => `new Location(${value.x}, ${value.y})`,
+        name: () => `Location`,
+        get: simpleGetter,
+    },
+    "BrowsersInfo": {
+        constructor: (value) => {
+            return value.map(render => {
+                if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
+                else if (render.iosDeviceInfo) return `new IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
+                else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
+            }).join(', ')
+        },
+    },
+    "TextRegion": {
+        get: simpleGetter
+    },
+    "BatchInfo": {
+        get: simpleGetter
+    },
+    "StartInfo": {
+        get: simpleGetter
+    },
+    "TestResultsSummary": {
+        name: () => `TestResultsSummary`,
+        get: simpleGetter
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key)
+    },
+    "TestResults": {
+        name: () => `TestResults`,
+        get: (target, key) => {
+            if (key.startsWith('is')) {
+                return `${target}.${key}()`
+            }
+            else if (key == 'status') {
+                return `${target}.getStatus().name()`
+            } else {
+                return simpleGetter(target, key)
+            }
+        }
+    },
+    "rect": {
+        name: () => 'Rect',
+        get: (target, key) => `${target}.get("${key}").asDouble()`,
+    },
+    "PageCoverageInfo": {
+        get: simpleGetter
+    },
+    "BrowserInfo": {
+        name: () => `BrowserInfo`,
+        get: (target, key) => key.startsWith('name') ? `${target}.getBrowserType().getName()` : simpleGetter(target, key),
+    },
+
+    "ChromeEmulationInfo": {
+        name: () => "ChromeEmulationInfo",
+        get: (target, key) => {
+            if (target.includes('Chrome')) {
+                target = target.replace("ChromeEmulationInfo", "EmulationInfo");
+                return simpleGetter(target, key);
+            } else { return simpleGetter(target, key) }
+        }
+    }
+
+}
+module.exports = types
