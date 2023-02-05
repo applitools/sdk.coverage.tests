@@ -21,7 +21,8 @@ const CHECK_SETTINGS_OPTIONS = [
     'pageId',
     'waitBeforeCapture',
     'lazyLoad',
-    'webview'
+    'webview',
+    'enablePatterns'
 ]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'

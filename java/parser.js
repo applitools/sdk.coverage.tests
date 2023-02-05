@@ -24,6 +24,7 @@ function checkSettings(cs, native) {
         }
         if (cs.region) element += region(cs.region)
     }
+    if (cs.enablePatterns) options += `.enablePatterns(${cs.enablePatterns})`
     if (cs.webview) options += webview(cs.webview);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions);

@@ -6,6 +6,7 @@ const { capitalizeFirstLetter } = require('../util')
 const ImageMatchSettings = {
     type: 'ImageMatchSettings',
     schema: {
+        enablePatterns: 'BooleanObject',
         ignoreDisplacements: 'BooleanObject',
         floating: { type: 'Array', items: 'FloatingRegion' },
         accessibility: { type: 'Array', items: 'AccessibilityRegion' },
@@ -157,8 +158,11 @@ module.exports = function (tracker, test) {
     if (test.config.defaultMatchSettings) {
         const defaultMatchSettings = test.config.defaultMatchSettings
         Object.keys(defaultMatchSettings)
-            .forEach(property => addHook('beforeEach',
-                java`set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`))
+            .forEach(property => {
+                if (property === 'enablePatterns') addHook('beforeEach', `set${capitalizeFirstLetter(property)}(${defaultMatchSettings[property]});`); 
+                else addHook('beforeEach',
+                java`set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
+            })
     }
     if (test.config.layoutBreakpoints) {
         addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
