@@ -50,7 +50,7 @@ module.exports = function (tracker, test) {
             length: {type: 'Number', rename: 'len', getter: ({target, key}) => `${key}(${target})`}
         }
     })
-
+    let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
     addHook('deps', `import pytest`)
     addHook('deps', `import selenium`)
@@ -61,7 +61,7 @@ module.exports = function (tracker, test) {
         addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
     }
     addHook('deps', `from test import *`)
-    addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, PlaywrightRunner, VisualGridPlaywrightRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
+    addHook('deps', `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
@@ -83,18 +83,10 @@ module.exports = function (tracker, test) {
     if (!mobile) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def eyes_runner_class():`)
-        if (test.playwright) {
-            if (test.vg) {
-                addHook('beforeEach', python`    return VisualGridPlaywrightRunner(10)`)
-            } else {
-                addHook('beforeEach', python`    return PlaywrightRunner()`)
-            }
+        if (test.vg) {
+            addHook('beforeEach', python`    return VisualGridRunner(10)`)
         } else {
-            if (test.vg) {
-                addHook('beforeEach', python`    return VisualGridRunner(10)`)
-            } else {
-                addHook('beforeEach', python`    return ClassicRunner()`)
-            }
+            addHook('beforeEach', python`    return ClassicRunner()`)
         }
         addHook('beforeEach', python`\n`)
 
