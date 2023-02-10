@@ -53,19 +53,20 @@ module.exports = function (tracker, test) {
     let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
     addHook('deps', `import pytest`)
-    addHook('deps', `import selenium`)
-    addHook('deps', `from selenium import webdriver`)
-    addHook('deps', `from selenium.webdriver.common.by import By`)
-    addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
-    if (mobile) {
-        addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
-    }
     addHook('deps', `from test import *`)
     addHook('deps', `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
-        addHook('deps', 'import playwright._impl._api_types')
+        addHook('deps', 'from playwright.sync_api import TimeoutError')
+    } else {
+        addHook('deps', `from selenium.common.exceptions import StaleElementReferenceException`)
+        addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
+        addHook('deps', `from selenium.webdriver.common.by import By`)
+        if (mobile) {
+            addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
+        }
+
     }
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
@@ -201,9 +202,9 @@ def execution_grid():
         constructor: {
             isStaleElementError(error) {
                 if (test.playwright) {
-                    addCommand(python`playwright._impl._api_types.TimeoutError`)
+                    addCommand(python`TimeoutError`)
                 } else {
-                    addCommand(python`selenium.common.exceptions.StaleElementReferenceException`)
+                    addCommand(python`StaleElementReferenceException`)
                 }
             },
         },
