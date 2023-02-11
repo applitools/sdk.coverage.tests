@@ -53,11 +53,12 @@ module.exports = function (tracker, test) {
     let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
     addHook('deps', `import pytest`)
-    addHook('deps', `from test import *`)
+    addHook('deps', `from test import get_test_info, get_dom, getNodesByAttribute`)
     addHook('deps', `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
+        addHook('deps', `from test import By`)
     } else {
         addHook('deps', `from selenium.webdriver.common.by import By`)
         if (mobile) {
