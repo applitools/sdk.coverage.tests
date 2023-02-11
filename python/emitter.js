@@ -59,7 +59,6 @@ module.exports = function (tracker, test) {
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
     } else {
-        addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
         addHook('deps', `from selenium.webdriver.common.by import By`)
         if (mobile) {
             addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
@@ -316,6 +315,7 @@ def execution_grid():
             if (test.playwright) {
                 return addCommand(python`${findElementFunc(element)}.hover()`)
             } else {
+                addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
                 return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
             }
