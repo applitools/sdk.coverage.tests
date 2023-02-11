@@ -58,9 +58,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
-        addHook('deps', 'from playwright.sync_api import TimeoutError')
     } else {
-        addHook('deps', `from selenium.common.exceptions import StaleElementReferenceException`)
         addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
         addHook('deps', `from selenium.webdriver.common.by import By`)
         if (mobile) {
@@ -202,8 +200,10 @@ def execution_grid():
         constructor: {
             isStaleElementError(error) {
                 if (test.playwright) {
+                    addHook('deps', 'from playwright.sync_api import TimeoutError')
                     addCommand(python`TimeoutError`)
                 } else {
+                    addHook('deps', `from selenium.common.exceptions import StaleElementReferenceException`)
                     addCommand(python`StaleElementReferenceException`)
                 }
             },
