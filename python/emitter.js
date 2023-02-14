@@ -83,7 +83,7 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def eyes_runner_class():`)
         if (test.vg) {
-            addHook('beforeEach', python`    return VisualGridRunner(10)`)
+                addHook("beforeEach", python`    return VisualGridRunner(10)`)
         } else {
             addHook('beforeEach', python`    return ClassicRunner()`)
         }
@@ -175,11 +175,11 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         if (test.playwright)
         {
-            addHook('beforeEach', python`def pw_browser(pw_${directString(toLowerSnakeCase(browser))}):`)
-            addHook('beforeEach', python`    return pw_${directString(toLowerSnakeCase(browser))}\n`)
+            addHook("beforeEach", python`def pw_browser(pw_${directString(toLowerSnakeCase(browser))}):`)
+            addHook("beforeEach", python`    return pw_${directString(toLowerSnakeCase(browser))}\n`)
         } else {
             addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(browser))}):`)
-            addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(browser))}\n`)
+            addHook("beforeEach", python`    return ${directString(toLowerSnakeCase(browser))}\n`)
         }
     }
 
@@ -235,7 +235,7 @@ def execution_grid():
             if (test.playwright) {
                 return addCommand(python`assert False, "switchToFrame not implemented"`)
             } else {
-                return addCommand(python`driver.switch_to.frame(` + framesClassic(selector) + `)`)
+            return addCommand(python`driver.switch_to.frame(` + framesClassic(selector) + ")")
             }
         },
         switchToParentFrame() {
@@ -248,7 +248,7 @@ def execution_grid():
         findElement(selector) {
             if (test.playwright) {
                 switch (typeof selector) {
-                    case 'string':
+                    case "string":
                         return addCommand(`page.locator('${selector}')`)
                     case "object":
                         return addCommand(`page.locator('${selector["selector"]}')`)
@@ -294,7 +294,7 @@ def execution_grid():
                 let selector = parseSelectorByType(element)
                 selector = selector.replace(/\[/g, "")
                 selector = selector.replace(/\]/g, "")
-                return addCommand(`driver.find_element(` + selector + `).click()`)
+                return addCommand("driver.find_element(" + selector + `).click()`)
             }
         },
         type(element, keys) {
