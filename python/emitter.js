@@ -52,17 +52,17 @@ module.exports = function (tracker, test) {
     })
     let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
-    addHook('deps', `import pytest`)
-    addHook('deps', `from test import get_test_info, get_dom, getNodesByAttribute`)
-    addHook('deps', `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
-    addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
-    addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
+    addHook("deps", `import pytest`)
+    addHook("deps", `from test import get_test_info, get_dom, getNodesByAttribute`)
+    addHook("deps", `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
+    addHook("deps", `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
+    addHook("deps", `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
-        addHook('deps', `from test import By`)
+        addHook("deps", `from test import By`)
     } else {
-        addHook('deps', `from selenium.webdriver.common.by import By`)
+        addHook("deps", `from selenium.webdriver.common.by import By`)
         if (mobile) {
-            addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
+            addHook("deps", `from appium.webdriver.common.mobileby import MobileBy`)
         }
 
     }
@@ -82,11 +82,8 @@ module.exports = function (tracker, test) {
     if (!mobile) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def eyes_runner_class():`)
-        if (test.vg) {
-            addHook('beforeEach', python`    return VisualGridRunner(10)`)
-        } else {
-            addHook('beforeEach', python`    return ClassicRunner()`)
-        }
+        if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
+        else addHook('beforeEach', python`    return ClassicRunner()`)
         addHook('beforeEach', python`\n`)
 
         if (test.config.stitchMode) {
@@ -172,14 +169,14 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`    return chrome_emulator\n`)
     } else {
         let browser = (test.env && test.env.browser) ? test.env.browser : "chrome"
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+        addHook("beforeEach", python`@pytest.fixture(scope="function")`)
         if (test.playwright)
         {
-            addHook('beforeEach', python`def pw_browser(pw_${directString(toLowerSnakeCase(browser))}):`)
-            addHook('beforeEach', python`    return pw_${directString(toLowerSnakeCase(browser))}\n`)
+            addHook("beforeEach", python`def pw_browser(pw_${directString(toLowerSnakeCase(browser))}):`)
+            addHook("beforeEach", python`    return pw_${directString(toLowerSnakeCase(browser))}\n`)
         } else {
-            addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(browser))}):`)
-            addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(browser))}\n`)
+            addHook("beforeEach", python`def driver_builder(${directString(toLowerSnakeCase(browser))}):`)
+            addHook("beforeEach", python`    return ${directString(toLowerSnakeCase(browser))}\n`)
         }
     }
 
@@ -200,10 +197,10 @@ def execution_grid():
         constructor: {
             isStaleElementError(error) {
                 if (test.playwright) {
-                    addHook('deps', 'from playwright.sync_api import TimeoutError')
+                    addHook("deps", "from playwright.sync_api import TimeoutError")
                     addCommand(python`TimeoutError`)
                 } else {
-                    addHook('deps', `from selenium.common.exceptions import StaleElementReferenceException`)
+                    addHook("deps", `from selenium.common.exceptions import StaleElementReferenceException`)
                     addCommand(python`StaleElementReferenceException`)
                 }
             },
@@ -248,7 +245,7 @@ def execution_grid():
         findElement(selector) {
             if (test.playwright) {
                 switch (typeof selector) {
-                    case 'string':
+                    case "string":
                         return addCommand(`page.locator('${selector}')`)
                     case "object":
                         return addCommand(`page.locator('${selector["selector"]}')`)
@@ -285,7 +282,7 @@ def execution_grid():
         click(element) {
             if (test.playwright) {
                     switch (typeof element) {
-                        case 'string':
+                        case "string":
                             return addCommand(`page.click('${element}')`)
                         case "object":
                             return addCommand(`page.click('${element["selector"]}')`)
@@ -316,7 +313,7 @@ def execution_grid():
             if (test.playwright) {
                 return addCommand(python`${findElementFunc(element)}.hover()`)
             } else {
-                addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
+                addHook("deps", `from selenium.webdriver.common.action_chains import ActionChains`)
                 return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
             }
