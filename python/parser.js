@@ -25,7 +25,6 @@ function checkSettings(cs) {
     if (cs.contentRegions) {options += regions("content", cs.contentRegions);}
     if (cs.strictRegions) {options += regions("strict", cs.strictRegions);}
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
-    if (cs.scrollRootElement) options += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.enablePatterns) options += '.enable_patterns()'
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.pageId) options += python`.page_id(${cs.pageId})`
@@ -53,20 +52,10 @@ function frame(frame) {
 }
 function parseSelectorByType(selector) {
      if ((typeof selector) === 'string') {
-         if (selector.includes('name=')) {
-             selector = selector.replace('name=', "")
-             return `By.NAME, ${parseSelector(selector)}`
-         }
-         else if (selector.includes('#')) {
-                  selector = selector.replace('#', "")
-                  return `By.ID, ${parseSelector(selector)}`
-              }
-              else if (selector.includes('.')) {
-                       selector = selector.replace('.', "")
-                       return `By.CLASS_NAME, ${parseSelector(selector)}`
-                   }
-                   else return `By.CSS_SELECTOR, ${parseSelector(selector)}`
-     } else return parseSelector(selector)
+         return `By.CSS_SELECTOR, '${selector}'`
+     } else {
+       return parseSelector(selector)
+     }
 }
 function parseSelector(selector) {
     let string

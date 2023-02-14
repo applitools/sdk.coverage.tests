@@ -28,6 +28,7 @@ module.exports = function (tracker, test) {
     if(test.vg && process.env.UFG_ON_EG) {
         test.executionGrid = true;
     }
+    test.playwright = process.env.AUTOMATION_FRAMEWORK === "playwright"
 
     let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
     if(emulator) {
@@ -49,20 +50,22 @@ module.exports = function (tracker, test) {
             length: {type: 'Number', rename: 'len', getter: ({target, key}) => `${key}(${target})`}
         }
     })
+    let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
+    addHook("deps", `import pytest`)
+    addHook("deps", `from test import get_test_info, get_dom, getNodesByAttribute`)
+    addHook("deps", `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
+    addHook("deps", `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
+    addHook("deps", `from applitools.core import VisualLocator, TextRegionSettings`)
+    if (test.playwright) {
+        addHook("deps", `from test import By`)
+    } else {
+        addHook("deps", `from selenium.webdriver.common.by import By`)
+        if (mobile) {
+            addHook("deps", `from appium.webdriver.common.mobileby import MobileBy`)
+        }
 
-    addHook('deps', `import pytest`)
-    addHook('deps', `import selenium`)
-    addHook('deps', `from selenium import webdriver`)
-    addHook('deps', `from selenium.webdriver.common.by import By`)
-    addHook('deps', `from selenium.webdriver.common.action_chains import ActionChains`)
-    if (mobile) {
-        addHook('deps', `from appium.webdriver.common.mobileby import MobileBy`)
     }
-    addHook('deps', `from test import *`)
-    addHook('deps', `from applitools.selenium import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
-    addHook('deps', `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
-    addHook('deps', `from applitools.core import VisualLocator, TextRegionSettings`)
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
     addSyntax('getter', ({target, key, type}) => {
@@ -164,10 +167,17 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
         addHook('beforeEach', python`    return chrome_emulator\n`)
-    } else if (test.env && test.env.browser){
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def driver_builder(${directString(toLowerSnakeCase(test.env.browser))}):`)
-        addHook('beforeEach', python`    return ${directString(toLowerSnakeCase(test.env.browser))}\n`)
+    } else {
+        let browser = (test.env && test.env.browser) ? test.env.browser : "chrome"
+        addHook("beforeEach", python`@pytest.fixture(scope="function")`)
+        if (test.playwright)
+        {
+            addHook("beforeEach", python`def pw_browser(pw_${directString(toLowerSnakeCase(browser))}):`)
+            addHook("beforeEach", python`    return pw_${directString(toLowerSnakeCase(browser))}\n`)
+        } else {
+            addHook("beforeEach", python`def driver_builder(${directString(toLowerSnakeCase(browser))}):`)
+            addHook("beforeEach", python`    return ${directString(toLowerSnakeCase(browser))}\n`)
+        }
     }
 
     if (legacy) {
@@ -186,21 +196,32 @@ def execution_grid():
     const driver = {
         constructor: {
             isStaleElementError(error) {
-                addCommand(python`selenium.common.exceptions.StaleElementReferenceException`)
+                if (test.playwright) {
+                    addHook("deps", "from playwright.sync_api import TimeoutError")
+                    addCommand(python`TimeoutError`)
+                } else {
+                    addHook("deps", `from selenium.common.exceptions import StaleElementReferenceException`)
+                    addCommand(python`StaleElementReferenceException`)
+                }
             },
         },
         cleanup() {
             return addCommand(python`driver.quit()`)
         },
         visit(url) {
-            return addCommand(python`driver.get(${url})`)
+            if (test.playwright) {
+                return addCommand(python`page.goto(${url})`)
+            }
+            else {
+                return addCommand(python`driver.get(${url})`)
+            }
         },
         executeScript(script, ...args) {
             if (args.length > 0) {
-                if (openPerformed) return addCommand(python`eyes_driver.execute_script(${script}, ${args[0]})`)
+                if (test.playwright) return addCommand(python`page.evaluate("function(arguments) {" + ${script} + "}", [${args[0]}.element_handle()])`)
                 else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
             }
-            if (openPerformed) return addCommand(python`eyes_driver.execute_script(${script})`)
+            if (test.playwright) return addCommand(python`page.evaluate("function() {" + ${script} + "}")`)
             else return addCommand(python`driver.execute_script(${script})`)
         },
         sleep(ms) {
@@ -208,23 +229,41 @@ def execution_grid():
             // TODO: implement if needed
         },
         switchToFrame(selector) {
-            //return addCommand(python`driver.switch_to.frame(${selector})`)
-            return addCommand(python`eyes_driver.switch_to.frame(` + framesClassic(selector) + `)`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "switchToFrame not implemented"`)
+            } else {
+                return addCommand(python`driver.switch_to.frame(` + framesClassic(selector) + `)`)
+            }
         },
         switchToParentFrame() {
-            return addCommand(python`eyes_driver.switch_to.parent_frame()`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "switchToParentFrame not implemented"`)
+            } else {
+                return addCommand(python`driver.switch_to.parent_frame()`)
+            }
         },
         findElement(selector) {
-            let drv = "driver"
-            if (openPerformed) drv = "eyes_driver"
-            if (selector.type) {
-                let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
-                return addCommand(python`` + drv + command)
+            if (test.playwright) {
+                switch (typeof selector) {
+                    case "string":
+                        return addCommand(`page.locator('${selector}')`)
+                    case "object":
+                        return addCommand(`page.locator('${selector["selector"]}')`)
+                }
+            } else {
+                if (selector.type) {
+                    let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
+                    return addCommand("driver" + command)
+                }
+                return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
             }
-            return addCommand(python`` + drv + `.find_element(` + parseSelectorByType(selector) + `)`)
         },
         findElements(selector) {
-            return addCommand(python`eyes_driver.find_elements_by_css_selector(${selector})`)
+            if (test.playwright) {
+                return addCommand(python`assert False, "findElements not implemented"`)
+            } else {
+                return addCommand(python`driver.find_elements_by_css_selector(${selector})`)
+            }
         },
         getWindowLocation() {
             // return addCommand(ruby`await specs.getWindowLocation(driver)`)
@@ -241,26 +280,43 @@ def execution_grid():
             return addCommand(python`driver.set_window_size(${size}["width"], ${size}["height"])`)
         },
         click(element) {
-            let drv = "driver"
-            if (openPerformed) drv = "eyes_driver"
-            let selector = parseSelectorByType(element)
-            selector = selector.replace(/\[/g, "")
-            selector = selector.replace(/\]/g, "")
-            return addCommand(python`` + drv + `.find_element(` + selector + `).click()`)
+            if (test.playwright) {
+                    switch (typeof element) {
+                        case "string":
+                            return addCommand(`page.click('${element}')`)
+                        case "object":
+                            return addCommand(`page.click('${element["selector"]}')`)
+                    }
+            } else {
+                let selector = parseSelectorByType(element)
+                selector = selector.replace(/\[/g, "")
+                selector = selector.replace(/\]/g, "")
+                return addCommand(`driver.find_element(` + selector + `).click()`)
+            }
         },
         type(element, keys) {
-            return addCommand(python`${element}.send_keys(${keys})`)
+            if (test.playwright) {
+                return addCommand(python`${element}.fill(${keys})`)
+            } else {
+                return addCommand(python`${element}.send_keys(${keys})`)
+            }
         },
         scrollIntoView(element, align) {
 			let alignTemp = (align) ? align : false
-            if (openPerformed) return addCommand(python`eyes_driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp});`)
-            return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${align});`)
+            if (test.playwright) {
+                return addCommand(python`${findElementFunc(element)}.evaluate("(elem, arg) => elem.scrollIntoView(arg)", ${alignTemp})`)
+            } else {
+                return addCommand(python`driver.execute_script("arguments[0].scrollIntoView(arguments[1])", ${findElementFunc(element)}, ${alignTemp})`)
+            }
         },
         hover(element, offset) {
-            if (openPerformed) return addCommand(python`hover = ActionChains(eyes_driver).move_to_element(${findElementFunc(element)})
+            if (test.playwright) {
+                return addCommand(python`${findElementFunc(element)}.hover()`)
+            } else {
+                addHook("deps", `from selenium.webdriver.common.action_chains import ActionChains`)
+                return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
     hover.perform()`)
-            return addCommand(python`hover = ActionChains(driver).move_to_element(${findElementFunc(element)})
-    hover.perform()`)
+            }
         },
     }
 
@@ -268,12 +324,20 @@ def execution_grid():
 
         constructor: {
             setViewportSize(viewportSize) {
-                return addCommand(python`Eyes.set_viewport_size(driver, ${viewportSize})`)
+                if (test.playwright) {
+                    return addCommand(python`Eyes.set_viewport_size(page, ${viewportSize})`)
+                } else {
+                    return addCommand(python`Eyes.set_viewport_size(driver, ${viewportSize})`)
+                }
             }
         },
 
         getViewportSize() {
-            return addCommand(python`eyes.get_viewport_size(driver)`)
+            if (test.playwright) {
+                return addCommand(python`eyes.get_viewport_size(page)`)
+            } else {
+                return addCommand(python`eyes.get_viewport_size(driver)`)
+            }
         },
 
         runner: {
@@ -313,11 +377,12 @@ def execution_grid():
 
         open({appName, viewportSize}) {
             let appNm = (appName) ? appName : test.config.appName
+            let driver_var = test.playwright ? "page" : "driver"
             openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
     eyes.set_configuration(configuration)
-    eyes_driver = eyes.open(driver)`)
+    eyes.open` + `(${driver_var})`)
         },
         check(checkSettings) {
 			if(checkSettings !== undefined && checkSettings.visualGridOptions)
