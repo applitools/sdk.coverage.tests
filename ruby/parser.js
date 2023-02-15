@@ -39,6 +39,7 @@ function checkSettings(cs, driver, native) {
     if (cs.hooks) options += hooks(cs.hooks);
     if (cs.name) name = `'${cs.name}', `;
     if (cs.matchLevel) options += `.match_level(${serialize(cs.matchLevel)})`
+    if (cs.enablePatterns) options += `.enable_patterns(${serialize(cs.enablePatterns)})`
     return name + target + element + options
 
     function hooks(obj) {
