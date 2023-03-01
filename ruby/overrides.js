@@ -20,9 +20,7 @@ module.exports = {
     'should be empty if page delayed by 1500': {skip: true},
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
-    // Universal server is still not latest for ruby
-    "should send correct ignore region if page scrolled before check with css stitching": {skip: true},
-   
+
     // need to add support for the webview property in check settings to the emitter
     "should capture webview when specified in check settings on ios": {skipEmit: true},
     "should capture webview when specified in check settings on android": {skipEmit: true},
@@ -37,8 +35,4 @@ module.exports = {
     "check image region": {skipEmit: true},
     "check image region classic": {skipEmit: true},
     "should send dom when check image": {skipEmit: true},
-
-    // server regression
-    "should extract text from regions": {skip: true},
-    "should extract text regions from image": {skip: true},
 }
