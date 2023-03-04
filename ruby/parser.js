@@ -40,6 +40,7 @@ function checkSettings(cs, driver, native) {
     if (cs.name) name = `'${cs.name}', `;
     if (cs.matchLevel) options += `.match_level(${serialize(cs.matchLevel)})`
     if (cs.enablePatterns) options += `.enable_patterns(${serialize(cs.enablePatterns)})`
+    if (cs.webview) options += webview(cs.webview);
     return name + target + element + options
 
     function hooks(obj) {
@@ -149,6 +150,22 @@ function checkSettings(cs, driver, native) {
     function lazyLoad(arg) {
         let args = Object.entries(arg).map(([key, value], _) => fromCamelCaseToSnakeCase(key) + ruby`: ${value}`)
         return `.lazy_load(${args.join(', ')})`
+    }
+
+    function webview(webview) {
+        let s;
+        switch(typeof webview) {
+            case "boolean":
+                s = `.webview(${cs.webview})`
+                break;
+            case "string":
+                s = `.webview(${JSON.stringify(cs.webview)})`
+                break;
+            default:
+                throw new Error(`webview parameter of the unimplemented type was used:  ${JSON.stringify(webview)}`);
+        }
+
+        return s;
     }
 }
 

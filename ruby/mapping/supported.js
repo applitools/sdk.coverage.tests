@@ -22,6 +22,7 @@ const CHECK_SETTINGS_OPTIONS = [
     "timeout",
     "lazyLoad",
     "enablePatterns",
+    "webview",
 ]
 
 module.exports = {
