@@ -4,14 +4,13 @@ const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 
 function checkSettings(cs) {
-    let name = ''
-    let target = `Target`
     if(cs === undefined){
-        return target + '.window()'
+        return 'Target.window()'
     }
+    let name = cs.name ? python`${cs.name}, ` : '';
+    let target = cs.webview ? python`Target.webview(${cs.webview})` : 'Target.window()'
     let element = ''
     let options = ''
-    element = '.window()'
     if (cs.scrollRootElement) element += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     //if (cs.frames === undefined && cs.region === undefined) element = '.window()'
     if (cs.frames !== undefined || cs.region !== undefined) {
@@ -33,7 +32,6 @@ function checkSettings(cs) {
     if (cs.matchLevel) options += `.match_level(MatchLevel.${cs.matchLevel.toUpperCase()})`
     if (cs.hooks) options += handleHooks(cs.hooks)
     if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
-    if (cs.name) name = python`${cs.name}, `
     if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     if (cs.lazyLoad !== undefined) options += lazyLoad(cs.lazyLoad)
     return name + target + element + options
