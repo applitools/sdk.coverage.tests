@@ -12,6 +12,7 @@ module.exports = {
     // Different ruby getAllTestResults returned value
     'should send agentRunId': {skip: true},
     'should abort after close': {skip: true},
+    'should abort after close with vg': {skip: true},
 	'should abort unclosed tests': {skip: true},
     'should abort unclosed tests with vg': {skip: true},
     'should return aborted tests in getAllTestResults': {skip: true},
