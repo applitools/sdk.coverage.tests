@@ -8,10 +8,6 @@ module.exports = {
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
 
-    // need to add support for the webview property in check settings to the emitter
-    "should capture webview when specified in check settings on ios": {skipEmit: true},
-    "should capture webview when specified in check settings on android": {skipEmit: true},
-
     // check image
     "check image file in png format": {skipEmit: true},
     "check image file in jpeg format": {skipEmit: true},
