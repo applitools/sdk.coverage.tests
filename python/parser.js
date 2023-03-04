@@ -8,11 +8,10 @@ function checkSettings(cs) {
         return 'Target.window()'
     }
     let name = cs.name ? python`${cs.name}, ` : '';
-    let target = cs.webview ? python`Target.webview(${cs.webview})` : 'Target.window()'
-    let element = ''
-    let options = ''
+    let target = cs.webview ? python`Target.webview(${cs.webview})` : 'Target.window()';
+    let element = '';
+    let options = cs.webview ? '.fully(False)' :'';
     if (cs.scrollRootElement) element += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
-    //if (cs.frames === undefined && cs.region === undefined) element = '.window()'
     if (cs.frames !== undefined || cs.region !== undefined) {
         if (cs.frames) element += frames(cs.frames)
         if (cs.region) element += region(cs.region, true)
