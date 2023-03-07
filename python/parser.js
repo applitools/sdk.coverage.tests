@@ -10,7 +10,7 @@ function checkSettings(cs) {
     let name = cs.name ? python`${cs.name}, ` : '';
     let target = cs.webview ? python`Target.webview(${cs.webview})` : 'Target.window()';
     let element = '';
-    let options = cs.webview ? '.fully(False)' :'';
+    let options = '';
     if (cs.scrollRootElement) element += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`
     if (cs.frames !== undefined || cs.region !== undefined) {
         if (cs.frames) element += frames(cs.frames)
