@@ -2411,6 +2411,7 @@ test('should capture webview when specified in check settings on ios', {
     device: 'iPhone 12',
     app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip'
   },
+  config: {forceFullPageScreenshot: false},
   test: ({driver, eyes}) => {
     driver.click({type: TYPE.ACCESSIBILITY_ID, selector: 'Web view'})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2429,6 +2430,7 @@ test('should capture webview when specified in check settings on android', {
     device: 'Pixel 3a XL',
     app: 'https://applitools.jfrog.io/artifactory/Examples/android/1.3/app-debug.apk',
   },
+  config: {forceFullPageScreenshot: false},
   test: ({driver, eyes}) => {
     driver.click({type: TYPE.ID, selector: 'com.applitools.eyes.android:id/btn_web_view'})
     eyes.open({appName: 'Applitools Eyes SDK'})
