@@ -56,11 +56,12 @@ module.exports = function(tracker, test) {
   addHook('vars', `let driver, transformedDriver, destroyDriver, eyes`)
 
   if (!process.env.NO_DRIVER) {
+    const env = test.env || {browser: 'chrome'}
     addHook('beforeEach', js`
       let attempt = 0
       while (!driver) {
         try {
-          ;[driver, destroyDriver] = await spec.build(${{eg: test.executionGrid, ...(test.env || {browser: 'chrome'})}})
+          ;[driver, destroyDriver] = await spec.build(${{...env, url: useRef({deref: process.env.APPLITOOLS_TEST_REMOTE === 'ec' && env.browser === 'chrome' ? js`await sdk.Eyes.getExecutionCloudUrl()` : undefined})}})
         } catch (err) {
           if (attempt++ > 7) throw err
         }
