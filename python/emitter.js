@@ -53,12 +53,12 @@ module.exports = function (tracker, test) {
     let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
     addHook("deps", `import pytest`)
-    addHook("deps", `from test import get_test_info, get_dom, getNodesByAttribute`)
     addHook("deps", `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
     addHook("deps", `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
     addHook("deps", `from applitools.core import VisualLocator, TextRegionSettings`)
     if (test.playwright) {
-        addHook("deps", `from test import By`)
+        addHook("deps", `from collections import namedtuple`)
+        addHook("beforeEach", `By = namedtuple("By", "CSS_SELECTOR XPATH")("css selector", "xpath")`)
     } else {
         addHook("deps", `from selenium.webdriver.common.by import By`)
         if (mobile) {
@@ -586,11 +586,11 @@ def execution_grid():
 
     const helpers = {
         getTestInfo(result) {
-            return addCommand(python`get_test_info(eyes.api_key, ${result})`)
+            return addCommand(python`helpers.get_test_info(${result})`)
         },
         getDom(result, domId) {
-            return addCommand(python`get_dom(${result}, ${domId})`).type({type: 'JsonNode'}).methods({
-                getNodesByAttribute: (dom, name) => addCommand(python`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
+            return addCommand(python`helpers.get_dom(${result}, ${domId})`).type({type: 'JsonNode'}).methods({
+                getNodesByAttribute: (dom, name) => addCommand(python`helpers.get_nodes_by_attribute(${dom}, ${name});`).type({type: 'JsonNode'})
             })
         },
         math: {
