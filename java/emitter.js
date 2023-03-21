@@ -95,7 +95,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `package coverage.generic;`)
     addHook('deps', ``)
     // EG for UFG
-    if (test.vg && process.env.UFG_ON_EG) {
+    if (test.vg && process.env.UFG_ON_EG != "false") {
         test.executionGrid = true;
     }
     // Dirty emulator workaround
