@@ -45,6 +45,7 @@ config({
     LazyLoadInsideScrollableArea: 'https://applitools.github.io/demo/TestPages/LazyLoad/insideScrollableArea.html',
     CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
     LongPage: 'https://applitools.github.io/demo/TestPages/LongPage/index.html',
+    AdjustDocumentHeight: 'http://applitools.github.io/demo/TestPages/ufg-options.html'
   },
 })
 
@@ -2436,6 +2437,22 @@ test('should capture webview when specified in check settings on android', {
     eyes.check({webview: 'WEBVIEW_com.applitools.eyes.android'})
     eyes.close()
   },
+})
+
+test('should send adjustDocumentHeight to ufg', {
+  page: 'AdjustDocumentHeight',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 640, height: 480},
+    ],
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
+    eyes.check({isFully: false, visualGridOptions: {'"chrome:adjustDocumentHeight"': false}})
+    eyes.check({isFully: false, visualGridOptions: {'"chrome:adjustDocumentHeight"': true}})
+    eyes.close()
+  }
 })
 
 // #endregion
