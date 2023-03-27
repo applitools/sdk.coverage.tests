@@ -18,4 +18,9 @@ module.exports = {
     "check image region": {skipEmit: true},
     "check image region classic": {skipEmit: true},
     "should send dom when check image": {skipEmit: true},
+
+    // Support removing duplicates:
+    // TODO: update the emitter to support passing the new runner option `removeDuplicateTestsPerBatch`
+    "should support removal of duplicate test results": {skipEmit: true},
+    "should skip removal of duplicate test results when baseline name used": {skipEmit: true},
 }
