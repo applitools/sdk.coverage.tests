@@ -2451,8 +2451,8 @@ test('should send ufg options', {
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({isFully: false, visualGridOptions: {'"chrome:adjustDocumentHeight"': false}})
-    eyes.check({isFully: false, visualGridOptions: {'"chrome:adjustDocumentHeight"': true}})
+    eyes.check({isFully: false, visualGridOptions: {adjustDocumentHeight: false}})
+    eyes.check({isFully: false, visualGridOptions: {adjustDocumentHeight: true}})
     eyes.close()
   }
 })
