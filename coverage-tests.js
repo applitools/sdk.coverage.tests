@@ -2439,7 +2439,7 @@ test('should capture webview when specified in check settings on android', {
   },
 })
 
-test('should send adjustDocumentHeight to ufg', {
+test('should send ufg options', {
   page: 'AdjustDocumentHeight',
   vg: true,
   config: {
