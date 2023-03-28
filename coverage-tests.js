@@ -2443,7 +2443,10 @@ test('should capture webview when specified in check settings on android', {
 
 test('should support removal of duplicate test results', {
   page: 'Default',
-  vg: true,
+  variants: {
+    'with classic': {vg: false},
+    'with ufg': {vg: true},
+  },
   config: {
     removeDuplicateTestsPerBatch: true,
   },
@@ -2461,7 +2464,10 @@ test('should support removal of duplicate test results', {
 
 test('should skip removal of duplicate test results when baseline name used', {
   page: 'Default',
-  vg: true,
+  variants: {
+    'with classic': {vg: false},
+    'with ufg': {vg: true},
+  },
   config: {
     removeDuplicateTestsPerBatch: true,
     baselineEnvName: 'default-page',
