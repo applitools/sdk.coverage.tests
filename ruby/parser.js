@@ -30,7 +30,11 @@ function checkSettings(cs, driver, native) {
     if (cs.sendDom !== undefined) options += `.send_dom(${serialize(cs.sendDom)})`
     if (cs.layoutBreakpoints) options += `.layout_breakpoints(${serialize(cs.layoutBreakpoints)})`
     if (cs.variationGroupId) options += `.variation_group_id(${serialize(cs.variationGroupId)})`
-    if (cs.visualGridOptions) options += `.visual_grid_options(polyfillAdoptedStyleSheets: ${cs.visualGridOptions.polyfillAdoptedStyleSheets})`
+    if (cs.visualGridOptions) {
+        const VGOptionsKeys = Object.keys(cs.visualGridOptions);
+        const vgOptions = VGOptionsKeys.map(key => `${key}: ${cs.visualGridOptions[key]}`).join(', ');
+        options += `.visual_grid_options(${vgOptions})`;
+    }
     if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     if (cs.pageId) options += `.page_id(${serialize(cs.pageId)})`
     if (cs.timeout !== undefined) options += `.timeout(${serialize(cs.timeout)})`
