@@ -2448,7 +2448,7 @@ test('should support removal of duplicate test results', {
     'with ufg': {vg: true},
   },
   config: {
-    removeDuplicateTestsPerBatch: true,
+    removeDuplicateTests: true,
   },
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
