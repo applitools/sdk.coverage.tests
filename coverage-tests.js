@@ -2441,6 +2441,49 @@ test('should capture webview when specified in check settings on android', {
   },
 })
 
+test('should support removal of duplicate test results', {
+  page: 'Default',
+  variants: {
+    'with classic': {vg: false},
+    'with ufg': {vg: true},
+  },
+  config: {
+    removeDuplicateTests: true,
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    eyes.close(false)
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    eyes.close(false)
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 1)
+  },
+})
+
+test('should skip removal of duplicate test results when baseline name used', {
+  page: 'Default',
+  variants: {
+    'with classic': {vg: false},
+    'with ufg': {vg: true},
+  },
+  config: {
+    removeDuplicateTestsPerBatch: true,
+    baselineEnvName: 'default-page',
+  },
+  test({eyes, assert}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    eyes.close(false)
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check({isFully: false})
+    eyes.close(false)
+    const results = eyes.runner.getAllTestResults(false)
+    assert.equal(results.getAllResults().length, 2)
+  },
+})
+
 test('should send ufg options', {
   page: 'AdjustDocumentHeight',
   vg: true,
