@@ -311,7 +311,7 @@ test('check window fully on page with burger menu', {
 })
 
 test('check window fully on android chrome emulator', {
-  env: {device: 'Android 8.0 Chrome Emulator'},
+  env: {browser: 'chrome', emulation: 'Android 8.0', args: ['--hide-scrollbars']},
   variants: {
     'on mobile page': {page: 'ResolutionMobile', config: {baselineName: 'Android Emulator 8.0 Portrait mobile fully', parentBranchName: 'default'}},
     'on mobile page with horizontal scroll': {page: 'ResolutionMobileHorizontalScroll', config: {baselineName: 'Android Emulator 8.0 Portrait scrolled_mobile fully', parentBranchName: 'default'}},
@@ -1656,7 +1656,7 @@ test('should set viewport size', {
 test('should not fail if scroll root is stale', {
   variants: {
     '': {env: {browser: 'chrome'}},
-    'on android': {env: {browser: 'chrome', device: 'Android 8.0 Chrome Emulator'}},
+    'on android': {env: {browser: 'chrome', emulation: 'Android 8.0', args: ['--hide-scrollbars']}},
   },
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
