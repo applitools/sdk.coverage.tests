@@ -404,10 +404,14 @@ def execution_grid():
 			}
             if (test.api === 'classic') {
                 if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
-                    let nm = ((checkSettings) && (checkSettings.name)) ? checkSettings.name : undefined
-                    let timeout = checkSettings ? checkSettings.timeout : undefined
-                    let isFully = checkSettings ? checkSettings.isFully : undefined
-                    eyes.checkWindow(nm, timeout, isFully)
+                    if (image) {
+                        addCommand(python`eyes.check_image(${image})`);
+                    } else {
+                        let nm = ((checkSettings) && (checkSettings.name)) ? checkSettings.name : undefined
+                        let timeout = checkSettings ? checkSettings.timeout : undefined
+                        let isFully = checkSettings ? checkSettings.isFully : undefined
+                        eyes.checkWindow(nm, timeout, isFully)
+                    }
                 } else if (checkSettings.frames && checkSettings.region) {
                     eyes.checkRegionInFrame(checkSettings.frames, checkSettings.region, checkSettings.timeout, checkSettings.tag, checkSettings.isFully)
                 } else if (checkSettings.frames) {
