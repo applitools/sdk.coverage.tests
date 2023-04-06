@@ -50,21 +50,24 @@ module.exports = function (tracker, test) {
             length: {type: 'Number', rename: 'len', getter: ({target, key}) => `${key}(${target})`}
         }
     })
-    let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
 
     addHook("deps", `import pytest`)
-    addHook("deps", `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`)
-    addHook("deps", `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
-    addHook("deps", `from applitools.core import VisualLocator, TextRegionSettings`)
-    if (test.playwright) {
-        addHook("deps", `from collections import namedtuple`)
-        addHook("beforeEach", `By = namedtuple("By", "CSS_SELECTOR XPATH")("css selector", "xpath")`)
+    if (test.features && test.features.includes('image')) {
+        addHook("deps", `from applitools.images import Target, Region`);
     } else {
-        addHook("deps", `from selenium.webdriver.common.by import By`)
-        if (mobile) {
-            addHook("deps", `from appium.webdriver.common.mobileby import MobileBy`)
+        let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
+        addHook("deps", `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`);
+        addHook("deps", `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
+        addHook("deps", `from applitools.core import VisualLocator, TextRegionSettings`)
+        if (test.playwright) {
+            addHook("deps", `from collections import namedtuple`)
+            addHook("beforeEach", `By = namedtuple("By", "CSS_SELECTOR XPATH")("css selector", "xpath")`)
+        } else {
+            addHook("deps", `from selenium.webdriver.common.by import By`)
+            if (mobile) {
+                addHook("deps", `from appium.webdriver.common.mobileby import MobileBy`)
+            }
         }
-
     }
 
     addSyntax('var', ({name, value}) => `${name} = ${value}`)
@@ -80,11 +83,13 @@ module.exports = function (tracker, test) {
     addSyntax('return', ({value}) => `return ${value}`)
 
     if (!mobile) {
-        addHook('beforeEach', python`@pytest.fixture(scope="function")`)
-        addHook('beforeEach', python`def eyes_runner_class():`)
-        if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`)
-        else addHook('beforeEach', python`    return ClassicRunner()`)
-        addHook('beforeEach', python`\n`)
+        if (!(test.features && test.features.includes('image'))) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`);
+            addHook('beforeEach', python`def eyes_runner_class():`);
+            if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`);
+            else addHook('beforeEach', python`    return ClassicRunner()`);
+            addHook('beforeEach', python`\n`);
+        }
 
         if (test.config.stitchMode) {
             addHook('beforeEach', python`@pytest.fixture(scope="function")`)
@@ -167,7 +172,7 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
         addHook('beforeEach', python`    return chrome_emulator\n`)
-    } else {
+    } else if (!(test.features && test.features.includes('image'))) {
         let browser = (test.env && test.env.browser) ? test.env.browser : "chrome"
         addHook("beforeEach", python`@pytest.fixture(scope="function")`)
         if (test.playwright)
@@ -376,15 +381,16 @@ def execution_grid():
         },
 
         open({appName, viewportSize}) {
-            let appNm = (appName) ? appName : test.config.appName
-            let driver_var = test.playwright ? "page" : "driver"
+            let image = test.features && test.features.includes("image")
+            let appNm = (appName) ? appName : test.config.appName;
+            let driver_var = image ? '' : test.playwright ? "page" : "driver"
             openPerformed = true
             return addCommand(python`configuration.app_name = ${appNm}
     configuration.viewport_size = ${viewportSize}
     eyes.set_configuration(configuration)
     eyes.open` + `(${driver_var})`)
         },
-        check(checkSettings) {
+        check({image, dom, ...checkSettings} = {}) {
 			if(checkSettings !== undefined && checkSettings.visualGridOptions)
 			{
 				addCommand(`conf = eyes.get_configuration()`)
@@ -398,21 +404,25 @@ def execution_grid():
 			}
             if (test.api === 'classic') {
                 if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
-                    let nm = ((checkSettings) && (checkSettings.name)) ? checkSettings.name : undefined
-                    let timeout = checkSettings ? checkSettings.timeout : undefined
-                    let isFully = checkSettings ? checkSettings.isFully : undefined
-                    eyes.checkWindow(nm, timeout, isFully)
+                    if (image) {
+                        addCommand(python`eyes.check_image(${image})`);
+                    } else {
+                        let nm = ((checkSettings) && (checkSettings.name)) ? checkSettings.name : undefined
+                        let timeout = checkSettings ? checkSettings.timeout : undefined
+                        let isFully = checkSettings ? checkSettings.isFully : undefined
+                        eyes.checkWindow(nm, timeout, isFully)
+                    }
                 } else if (checkSettings.frames && checkSettings.region) {
                     eyes.checkRegionInFrame(checkSettings.frames, checkSettings.region, checkSettings.timeout, checkSettings.tag, checkSettings.isFully)
                 } else if (checkSettings.frames) {
                     eyes.checkFrame(checkSettings.frames, checkSettings.timeout, checkSettings.tag)
                 } else if (checkSettings.region) {
-                    eyes.checkRegion(checkSettings.region, checkSettings.tag, checkSettings.timeout, checkSettings.isFully)
+                    eyes.checkRegion(image, checkSettings.region, checkSettings.tag, checkSettings.timeout, checkSettings.isFully)
                 } else {
                     throw new Error('Not implemented classic api method was tried to generate')
                 }
             } else {
-                addCommand(`eyes.check(${checkSettingsParser(checkSettings)})`)
+                addCommand(`eyes.check(${checkSettingsParser(image, dom, checkSettings)})`);
             }
         },
         checkWindow(tag, matchTimeout, stitchContent) {
@@ -441,15 +451,16 @@ def execution_grid():
         match_timeout=${matchTimeout},
       )`)
         },
-        checkRegion(region, tag, matchTimeout, isFully) {
+        checkRegion(image, region, tag, matchTimeout, isFully) {
             /*let args = `region='${region}'` +
                 `${tag ? `, tag=${tag}` : ''}` +
                 `${matchTimeout ? `, timeout=${matchTimeout}` : ''}`
             return addCommand(python`eyes.check_region(${args})`)*/
+            let image_arg = image ? python`${image}, ` : '';
             let Tag = !tag ? `` : `, tag="${tag}"`
             let MatchTimeout = !matchTimeout ? `` : `, match_timeout=${matchTimeout}`
             let fully = !isFully ? `` : `, stitch_content=${capitalizeFirstLetter(isFully)}`
-            return addCommand(python`eyes.check_region(` + regionParameter(region) + Tag + MatchTimeout + fully + `)`)
+            return addCommand('eyes.check_region(' + image_arg + regionParameter(region) + Tag + MatchTimeout + fully + `)`)
         },
         checkRegionByElement(element, matchTimeout, tag) {
             return addCommand(python`eyes.checkRegionByElement(

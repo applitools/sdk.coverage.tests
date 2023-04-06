@@ -3,12 +3,21 @@ const {capitalizeFirstLetter, fromCamelCaseToSnakeCase} = require('./util')
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 
-function checkSettings(cs) {
-    if(cs === undefined){
-        return 'Target.window()'
+function checkSettings(image, dom, cs) {
+    let target = "Target.window()";
+    if (image) {
+        target = python`Target.image(${image})`;
+    }
+    if (dom) {
+        target += python`.dom(${dom})`;
+    }
+    if (cs === undefined){
+        return target;
+    }
+    if (cs.webview) {
+        target = python`Target.webview(${cs.webview})`
     }
     let name = cs.name ? python`${cs.name}, ` : '';
-    let target = cs.webview ? python`Target.webview(${cs.webview})` : 'Target.window()';
     let element = '';
     let options = '';
     if (cs.scrollRootElement) element += `.scroll_root_element(${printSelector(cs.scrollRootElement)})`

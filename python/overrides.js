@@ -8,17 +8,6 @@ module.exports = {
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
 
-    // check image
-    "check image file in png format": {skipEmit: true},
-    "check image file in jpeg format": {skipEmit: true},
-    "check image file in bmp format": {skipEmit: true},
-    "check image base64 in png format": {skipEmit: true},
-    "check image url in png format": {skipEmit: true},
-    "check image file in png format classic": {skipEmit: true},
-    "check image region": {skipEmit: true},
-    "check image region classic": {skipEmit: true},
-    "should send dom when check image": {skipEmit: true},
-
     // Support removing duplicates:
     // TODO: update the emitter to support passing the new runner option `removeDuplicateTestsPerBatch`
     "should support removal of duplicate test results with classic": {skipEmit: true},
