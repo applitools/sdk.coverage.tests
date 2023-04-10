@@ -9,7 +9,7 @@ function checkSettings(image, dom, cs) {
         target = python`Target.image(${image})`;
     }
     if (dom) {
-        target += python`.dom(${dom})`;
+        target += python`.with_dom(${dom})`;
     }
     if (cs === undefined){
         return target;
