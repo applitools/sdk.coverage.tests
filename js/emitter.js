@@ -38,7 +38,7 @@ module.exports = function(tracker, test) {
   addSyntax('call', ({target, args}) => `${target}(${js`...${args}`})`)
   addSyntax('return', ({value}) => `return ${value}`)
   addSyntax('cast', ({target, currentType, castType}) => {
-    if (castType.name === 'JSON' && currentType.toJSON) {
+    if (castType.name === 'JSON' && currentType && currentType.toJSON) {
       return currentType.toJSON(target, currentType.generic)
     }
     return target
