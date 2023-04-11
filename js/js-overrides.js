@@ -6,4 +6,6 @@ module.exports = {
   'check window with default fully with scroll stitching classic': {config: {branchName: 'js-sdk'}},
   'check window with default fully with css stitching': {config: {branchName: 'js-sdk'}},
   'check window with default fully with css stitching classic': {config: {branchName: 'js-sdk'}},
+  'check window with default fully with css stitching classic': {config: {branchName: 'js-sdk'}},
+  'should send custom batch properties': {skip: true},
 }
