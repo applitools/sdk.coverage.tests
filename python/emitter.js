@@ -30,7 +30,7 @@ module.exports = function (tracker, test) {
     }
     test.playwright = process.env.AUTOMATION_FRAMEWORK === "playwright"
 
-    let emulator = test.env && test.env.device === "Android 8.0 Chrome Emulator"
+    let emulator = test.env ? test.env.emulation : undefined;
     if(emulator) {
         test.meta.native = false;
         test.meta.mobile = false;
@@ -171,7 +171,7 @@ module.exports = function (tracker, test) {
     else if (emulator) {
         addHook('beforeEach', python`@pytest.fixture(scope="function")`)
         addHook('beforeEach', python`def driver_builder(chrome_emulator):`)
-        addHook('beforeEach', python`    return chrome_emulator\n`)
+        addHook('beforeEach', python`    return chrome_emulator(${emulator}, ${test.env.args})\n`)
     } else if (!(test.features && test.features.includes('image'))) {
         let browser = (test.env && test.env.browser) ? test.env.browser : "chrome"
         addHook("beforeEach", python`@pytest.fixture(scope="function")`)
