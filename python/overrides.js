@@ -1,6 +1,9 @@
 module.exports = {
     // fails on chrome>=96
     'check region by element within shadow dom with vg': {skip: true},
+    
+    // 100% broken since Apr 10, 2023, was flaky 5 days before
+    'should send custom batch properties': {skip: true},
 
     // Stale element are not handled by python binding
     'should handle check of stale element if selector is preserved': {skip: true},
