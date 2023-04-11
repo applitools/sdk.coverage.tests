@@ -31,12 +31,32 @@ function serialize(data) {
 }
 
 module.exports = function(tracker, test) {
-  const {useRef, addSyntax, addCommand, addExpression, addHook, withScope} = tracker
+  const {useRef, addSyntax, addCommand, addExpression, addHook, addType, withScope} = tracker
 
   addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
   addSyntax('getter', ({target, key}) => `${target}['${key}']`)
   addSyntax('call', ({target, args}) => `${target}(${js`...${args}`})`)
   addSyntax('return', ({value}) => `return ${value}`)
+  addSyntax('cast', ({target, currentType, castType}) => {
+    if (castType.name === 'JSON' && currentType.toJSON) {
+      return currentType.toJSON(target, currentType.generic)
+    }
+    return target
+  })
+
+  addType('Record', {
+    toJSON: (target, generic) => js`Object.entries(${useRef({deref: target})}).reduce((json, [key, value]) => {
+      return Object.assign(json, {[${useRef({deref: 'key', type: generic[0]})}]: ${useRef({deref: 'value', type: generic[1]}).as('JSON')}})
+    }, {})`
+  })
+  addType('Array', {
+    toJSON: (target, generic) => js`${useRef({deref: target})}.map((item) => {
+      return ${useRef({deref: 'item', type: generic[0]}).as('JSON')}
+    })`
+  })
+  addType('Region', {
+    toJSON: (target) => `{left: ${target}.x, top: ${target}.y, width: ${target}.width, height: ${target}.height}`
+  })
 
   addHook('deps', `const path = require('path')`)
   addHook('deps', `const assert = require('assert')`)
@@ -73,7 +93,6 @@ module.exports = function(tracker, test) {
   addHook('beforeEach', js`
     eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})
   `)
-
 
   addHook('afterEach', js`
     try {
@@ -219,7 +238,7 @@ module.exports = function(tracker, test) {
       return addCommand(js`await eyes.getViewportSize()`).type('RectangleSize')
     },
     locate(visualLocatorSettings) {
-      return addCommand(js`await eyes.locate(${visualLocatorSettings})`)
+      return addCommand(js`await eyes.locate(${visualLocatorSettings})`).type('Record<string, Array<Region>>')
     },
     extractText(regions) {
       return addCommand(js`await eyes.extractText(${regions})`)
@@ -231,7 +250,7 @@ module.exports = function(tracker, test) {
 
   const assert = {
     equal(actual, expected, message) {
-      addCommand(js`assert.deepStrictEqual(${actual}, ${expected}, ${message})`)
+      addCommand(js`assert.deepStrictEqual(${actual.as('JSON')}, ${expected}, ${message})`)
     },
     notEqual(actual, expected, message) {
       addCommand(js`assert.notDeepStrictEqual(${actual}, ${expected}, ${message})`)
