@@ -56,7 +56,7 @@ module.exports = function (tracker, test) {
         addHook("deps", `from applitools.images import Target, Region`);
     } else {
         let framework_namespace = test.playwright ? "applitools.playwright" : "applitools.selenium"
-        addHook("deps", `from ${framework_namespace} import (Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`);
+        addHook("deps", `from ${framework_namespace} import (RunnerOptions, Region, OCRRegion, BrowserType, Configuration, Eyes, Target, TargetPath, VisualGridRunner, ClassicRunner, TestResults, AccessibilitySettings, AccessibilityLevel, AccessibilityGuidelinesVersion, AccessibilityRegionType)`);
         addHook("deps", `from applitools.common import StitchMode, MatchLevel, IosDeviceName, DeviceName, VisualGridOption`)
         addHook("deps", `from applitools.core import VisualLocator, TextRegionSettings`)
         if (test.playwright) {
@@ -84,10 +84,22 @@ module.exports = function (tracker, test) {
 
     if (!mobile) {
         if (!(test.features && test.features.includes('image'))) {
+            let removeDuplicateTests = test.config.removeDuplicateTests || test.config.removeDuplicateTestsPerBatch;
             addHook('beforeEach', python`@pytest.fixture(scope="function")`);
             addHook('beforeEach', python`def eyes_runner_class():`);
-            if (test.vg) addHook('beforeEach', python`    return VisualGridRunner(10)`);
-            else addHook('beforeEach', python`    return ClassicRunner()`);
+            if (test.vg) {
+                addHook('beforeEach', python`    options = RunnerOptions().test_concurrency(10)`);
+                if (removeDuplicateTests !== undefined) {
+                    addHook('beforeEach', python`    options = options.remove_duplicate_tests(${removeDuplicateTests})`);
+                }
+                addHook('beforeEach', python`    return VisualGridRunner(options)`);
+            } else {
+                addHook('beforeEach', python`    runner = ClassicRunner()`);
+                if (removeDuplicateTests !== undefined) {
+                    addHook('beforeEach', python`    runner.set_remove_duplicate_tests(${removeDuplicateTests})`);
+                }
+                addHook('beforeEach', python`    return runner`);
+            }
             addHook('beforeEach', python`\n`);
         }
 
