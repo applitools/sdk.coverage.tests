@@ -230,6 +230,14 @@ function parseObject(object) {
                 return typeBuilder.constructor(object.value);
             }
         } else throw new Error(`Constructor wasn't implemented for the type: ${object.type}`);
+    } else if (Array.isArray(object)) {
+            let arr = `Arrays.asList(`;
+            object.forEach((arg) => {
+                arr += `${JSON.stringify(arg)},`
+            })
+            arr = arr.slice(0, -1)
+            arr += ')'
+            return arr;
     } else return JSON.stringify(object);
 }
 
@@ -276,6 +284,8 @@ function parseEnv(env) {
     if (env) {
         if (env.browser) result += `.browser(${serialize(env.browser)})`
         if (env.device) result += `.device(${serialize(env.device)})`
+        if (env.emulation) result += `.emulator(${serialize(env.emulation)})`
+        if (env.args) result += `.args(${serialize(env.args)})`
         if (env.app) result += `.app(${serialize(env.app)})`
         if (env.orientation) result += `.orientation(${serialize(env.orientation)})`
         if (env.hasOwnProperty('headless')) result += `.headless(${serialize(env.headless)})`

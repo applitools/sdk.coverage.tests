@@ -52,6 +52,11 @@ module.exports = {
     "should capture webview when specified in check settings on android": {skipEmit: true},
     "should capture webview when specified in check settings on ios": {skipEmit: true},
     "check window on mobile web ios": {skipEmit: true},
+    // chrome emulations drivers:
+    "check window fully on android chrome emulator on mobile page": {skipEmit: true},
+    "check window fully on android chrome emulator on mobile page with horizontal scroll": {skipEmit: true},
+    "check window fully on android chrome emulator on desktop page": {skipEmit: true},
+    "should not fail if scroll root is stale on android": {skipEmit: true},
 
     // not in ./mapping/supported.js -> TAGS 
     "should send dom on ie": {skipEmit: true}, // "ie"

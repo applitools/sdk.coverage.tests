@@ -15,10 +15,7 @@ module.exports = {
     'should set viewport size on edge legacy': { skip: true },
     // Chrome emulator have minor diffs with JS sdk
     'should not fail if scroll root is stale on android': { config: { branchName: 'universal-java' } },
-    
-    // TODO - recheck Chrome emulator flaky test (was overridden by a specific branch, maybe default will work).
-    // 'check window fully on android chrome emulator on mobile page with horizontal scroll': { skip: true },
-    // New mobile web tests which is failing on the eyes.Open() with the error
+
     //
     // com.applitools.eyes.EyesException: unknown command: Cannot call non W3C standard command while in W3C mode
     // INFO: Detected dialect: W3C
@@ -46,15 +43,9 @@ module.exports = {
     "should send codded regions with padding": { skipEmit: true },
     "should send codded regions with padding with vg": { skipEmit: true },
 
-    // produces visual differences
-    "check window fully on android chrome emulator on mobile page": { skipEmit: true },
-    "check window fully on android chrome emulator on mobile page with horizontal scroll": { skipEmit: true },
     // sessionNotCreated exception
     "check window fully on page with horizontal scroll with css stitching": { skipEmit: true },
     "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: true },
-
-    // Test have diffs after JS unskip it.
-    'check window fully on android chrome emulator on desktop page': {skip: true}, // require a better understanding of how we handle it
 
     // check image
     "check image file in png format": {skipEmit: true},
@@ -73,10 +64,4 @@ module.exports = {
     "should support removal of duplicate test results with ufg": {skipEmit: true},
     "should skip removal of duplicate test results when baseline name used with classic": {skipEmit: true},
     "should skip removal of duplicate test results when baseline name used with ufg": {skipEmit: true},
-
-    // Support chrome emulations drivers:
-    "check window fully on android chrome emulator on mobile page": {skipEmit: true},
-    "check window fully on android chrome emulator on mobile page with horizontal scroll": {skipEmit: true},
-    "check window fully on android chrome emulator on desktop page": {skipEmit: true},
-    "should not fail if scroll root is stale on android": {skipEmit: true},
 }

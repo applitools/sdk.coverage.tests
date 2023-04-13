@@ -30,6 +30,7 @@ const CHECK_SETTINGS_HOOKS = [
 
 const ENV_PROPERTIES = [
     'browser',
+    'emulation',
     'device',
     'app',
     'headless',
