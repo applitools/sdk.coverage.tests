@@ -117,6 +117,7 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', python`    conf.test_name = ${test.config.baselineName}`)
     if ("branchName" in test.config) addHook('beforeEach', python`    conf.branch_name = ${test.config.branchName};`)
     if ("parentBranchName" in test.config) addHook('beforeEach', python`    conf.parent_branch_name = ${test.config.parentBranchName};`)
+    if ("baselineEnvName" in test.config) addHook('beforeEach', python`    conf.baseline_env_name = ${test.config.baselineEnvName};`)
     if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
     if ("forceFullPageScreenshot" in test.config) addHook('beforeEach', python`    conf.force_full_page_screenshot = ${test.config.forceFullPageScreenshot}`)
     if ("isDisabled" in test.config) addHook('beforeEach', python`    conf.is_disabled = ${test.config.isDisabled};`)
