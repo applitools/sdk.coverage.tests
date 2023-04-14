@@ -2469,7 +2469,7 @@ test('should skip removal of duplicate test results when baseline name used', {
     'with ufg': {vg: true},
   },
   config: {
-    removeDuplicateTestsPerBatch: true,
+    removeDuplicateTests: true,
     baselineEnvName: 'default-page',
   },
   test({eyes, assert}) {
