@@ -45,7 +45,7 @@ config({
     LazyLoadInsideScrollableArea: 'https://applitools.github.io/demo/TestPages/LazyLoad/insideScrollableArea.html',
     CodedRegionPage: 'https://applitools.github.io/demo/TestPages/CodedRegionPage/index.html',
     LongPage: 'https://applitools.github.io/demo/TestPages/LongPage/index.html',
-    AdjustDocumentHeight: 'http://applitools.github.io/demo/TestPages/ufg-options.html'
+    AdjustDocumentHeight: 'https://applitools.github.io/demo/TestPages/ufg-options.html'
   },
 })
 
