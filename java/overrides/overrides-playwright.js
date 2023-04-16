@@ -68,4 +68,7 @@ module.exports = {
     "check region by selector in overflowed frame after manual scroll with scroll stitching": {skipEmit: true}, // "webdriver"
     "check window after manual scroll on safari 12": {skipEmit: true}, // "webdriver"
     "should fail check of stale element": {skipEmit: true}, // "webdriver"
+
+    // server response has null properties
+    'should send custom batch properties': {skip: true},
 }

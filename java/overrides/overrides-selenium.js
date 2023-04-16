@@ -57,4 +57,7 @@ module.exports = {
     "check image region": {skipEmit: true},
     "check image region classic": {skipEmit: true},
     "should send dom when check image": {skipEmit: true},
+
+    // server response has null properties
+    'should send custom batch properties': {skip: true},
 }
