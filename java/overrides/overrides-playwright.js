@@ -68,11 +68,4 @@ module.exports = {
     "check region by selector in overflowed frame after manual scroll with scroll stitching": {skipEmit: true}, // "webdriver"
     "check window after manual scroll on safari 12": {skipEmit: true}, // "webdriver"
     "should fail check of stale element": {skipEmit: true}, // "webdriver"
-
-    // Support removing duplicates:
-    // TODO: update the emitter to support passing the new runner option `removeDuplicateTestsPerBatch`
-    "should support removal of duplicate test results with classic": {skipEmit: true},
-    "should support removal of duplicate test results with ufg": {skipEmit: true},
-    "should skip removal of duplicate test results when baseline name used with classic": {skipEmit: true},
-    "should skip removal of duplicate test results when baseline name used with ufg": {skipEmit: true},
 }
