@@ -148,7 +148,8 @@ module.exports = function (tracker, test) {
         else setUpBrowsers(test, addHook)
     }
 
-
+    if ("removeDuplicateTests" in test.config) addHook('beforeEach', dot_net`runner.SetRemoveDuplicateTests(${test.config.removeDuplicateTests});`)
+    if ("baselineEnvName" in test.config) addHook('beforeEach', dot_net`eyes.BaselineEnvName = ${test.config.baselineEnvName};`)
     if ("branchName" in test.config) addHook('beforeEach', dot_net`eyes.BranchName = ${test.config.branchName};`)
     if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
     if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
