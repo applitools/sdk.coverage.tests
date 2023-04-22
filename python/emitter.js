@@ -273,7 +273,15 @@ def execution_grid():
                     let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
                     return addCommand("driver" + command)
                 }
-                return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
+                return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`).methods({
+                    'getShadowRoot': (element) => addCommand(python`${element}.shadow_root`).methods({
+                        'findElement': (root, selector) => addCommand(python`${root}.find_element(By.CSS_SELECTOR, ${selector})`).methods({
+                            'getShadowRoot': (element) => addCommand(python`${element}.shadow_root`).methods({
+                                'findElement': (root, selector) => addCommand(python`${root}.find_element(By.CSS_SELECTOR, ${selector})`).methods({})
+                            })
+                        })
+                    })
+                })
             }
         },
         findElements(selector) {
