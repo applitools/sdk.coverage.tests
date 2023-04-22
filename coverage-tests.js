@@ -2296,7 +2296,7 @@ test('Should return exception in TestResultsSummary', {
     eyes.check({isFully: false})
     assert.throws(() => void eyes.close())
     const summary = eyes.runner.getAllTestResults(false)
-    assert.contains( summary.getAllResults()[0].getException().message, `This page's DOM has a feature, Adopted Stylesheets`)
+    assert.contains( summary.getAllResults()[0].exception.message, `This page's DOM has a feature, Adopted Stylesheets`)
   }
 })
 
