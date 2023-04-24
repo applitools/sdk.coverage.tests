@@ -604,7 +604,7 @@ test('check hovered region by element', {
   test({driver, eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const input = driver.findElement('#input')
-    driver.scrollIntoView(input)
+    driver.executeScript('arguments[0].scrollIntoView(false)', input)
     driver.hover(input)
     eyes.check({region: input})
     eyes.close()

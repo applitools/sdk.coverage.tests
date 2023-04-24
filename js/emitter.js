@@ -138,9 +138,6 @@ module.exports = function(tracker, test) {
     type(element, keys) {
       addCommand(js`await spec.setElementText(transformedDriver, spec.transformSelector(${element}), ${keys})`)
     },
-    scrollIntoView(element, align) {
-      addCommand(js`await spec.scrollIntoView(transformedDriver, spec.transformSelector(${element}), ${align})`)
-    },
     hover(element, offset) {
       addCommand(js`await spec.hover(transformedDriver, spec.transformSelector(${element}), ${offset})`)
     },
