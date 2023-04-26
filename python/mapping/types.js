@@ -131,6 +131,9 @@ const types = {
     },
     "ChromeEmulationInfo": {
         get: (target, key) => key === 'deviceName' ? `${target}.device_name.value` : simpleGetter(target, key),
+    },
+    "Exception": {
+        get: (target, key) => key === "message" ? `str(${target})`: simpleGetter(target, key),
     }
 }
 module.exports = types

@@ -366,6 +366,9 @@ def execution_grid():
                         items: {
                             type: 'TestResultContainer',
                             schema: {
+                                exception: {
+                                    type: "Exception",
+                                },
                                 testResults: {
                                     type: "TestResults",
                                     schema: {
@@ -574,6 +577,9 @@ def execution_grid():
     }
 
     const assert = {
+        contains(object, value) {
+            return addCommand(python`assert ${value} in ${object}`)
+        },
         equal(actual, expected, message) {
             if (expected === null) return addCommand(python`assert ${actual} is None`)
             if ((expected && expected.isRef) && (JSON.stringify(expected) === undefined)) return addCommand(python`assert ${actual} == ` + expected.ref())
