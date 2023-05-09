@@ -118,7 +118,8 @@ module.exports = function (tracker, test) {
         runner: {
             getAllTestResults(throwEx) {
                 return addCommand(ruby`@runner.get_all_test_results(${throwEx})`).methods({
-                    getAllResults: (target) => addCommand(ruby`${target}.all_results`).type({
+                    // getAllResults: (target) => addCommand(ruby`${target}.all_results`).type({
+                    getAllResults: (target) => addCommand(ruby`${target}`).type({
                         type: 'Array',
                         items: {
                             type: 'TestResultContainer',

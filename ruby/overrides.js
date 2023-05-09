@@ -18,13 +18,8 @@ module.exports = {
     'should return aborted tests in getAllTestResults': {skip: true},
     'should return aborted tests in getAllTestResults with vg': {skip: true},
     'should return browserInfo in getAllTestResults': {skip: true},
-    'should be empty if page delayed by 1500': {skip: true},
 
     "Should return exception in TestResultsSummary": {skipEmit: true},
-
-    // need to update fully logic in native tests helper
-    "should capture webview when specified in check settings on ios": {skip: true},
-    "should capture webview when specified in check settings on android": {skip: true},
 
     // check image
     "check image file in png format": {skipEmit: true},
@@ -37,19 +32,12 @@ module.exports = {
     "check image region classic": {skipEmit: true},
     "should send dom when check image": {skipEmit: true},
 
-    // Support removing duplicates:
-    // TODO: update the emitter to support passing the new runner option `removeDuplicateTestsPerBatch`
+    // Support removing duplicates: isAborted/error conflict
     "should support removal of duplicate test results with classic": {skipEmit: true},
     "should support removal of duplicate test results with ufg": {skipEmit: true},
     "should skip removal of duplicate test results when baseline name used with classic": {skipEmit: true},
     "should skip removal of duplicate test results when baseline name used with ufg": {skipEmit: true},
 
-    // Support chrome emulations drivers:
-    "check window fully on android chrome emulator on mobile page": {skipEmit: true},
-    "check window fully on android chrome emulator on mobile page with horizontal scroll": {skipEmit: true},
-    "check window fully on android chrome emulator on desktop page": {skipEmit: true},
-    "should not fail if scroll root is stale on android": {skipEmit: true},
-
     // broken test
-    'should send custom batch properties': {skip: true},
+    // 'should send custom batch properties': {skip: true},
 }
