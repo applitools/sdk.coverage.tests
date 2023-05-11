@@ -202,6 +202,27 @@ test('check window with layout breakpoints', {
   }
 })
 
+test('check window with reload layout breakpoints', {
+  page: 'OnLoad',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 400, height: 800},
+      {name: 'chrome', width: 1000, height: 800},
+    ],
+  },
+  test({eyes,}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    // For reload, the expected payload is as seen here.
+    eyes.check({layoutBreakpoints: {breakpoints: [400, 1000], reload: true}})
+    // And the user facing API would looking something like this:
+    // Target.window().layoutBreakpoints(boolean, {reload: true})
+    // or
+    // Target.window().layoutBreakpoints(number[], {reload: true})
+    eyes.close()
+  }
+})
+
 test('check window with layout breakpoints in config', {
   page: 'JsLayout',
   vg: true,
@@ -220,6 +241,24 @@ test('check window with layout breakpoints in config', {
   }
 })
 
+test('check window with reload layout breakpoints in config', {
+  page: 'OnLoad',
+  vg: true,
+  config: {
+    browsersInfo: [
+      {name: 'chrome', width: 400, height: 800},
+      {name: 'chrome', width: 1000, height: 800},
+    ],
+    layoutBreakpoints: {breakpoints: [400, 1000], reload: true},
+  },
+  test({eyes,}) {
+    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.check()
+    eyes.close()
+  }
+})
+
+
 test('check window with reload layout breakpoints', {
   page: 'OnLoad',
   vg: true,
@@ -231,7 +270,7 @@ test('check window with reload layout breakpoints', {
   },
   test({eyes,}) {
     eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({layoutBreakpoints: [400, 1000], reloadLayoutBreakpoints: true})
+    eyes.check({layoutBreakpoints: {breakpoints: [400, 1000], reload: true}})
     // Should equate to:
     // Target.window().layoutBreakpoints(boolean, {reload: true})
     // or

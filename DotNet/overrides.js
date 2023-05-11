@@ -81,5 +81,6 @@ module.exports = {
     "check window fully on android chrome emulator on desktop page": {skipEmit: true},
     "should not fail if scroll root is stale on android": {skipEmit: true},
 
-    "check window with reload layout breakpoints": {skipEmit: true}
+    "check window with reload layout breakpoints": {skipEmit: true},
+    "check window with reload layout breakpoints in config": {skipEmit: true}
 }
