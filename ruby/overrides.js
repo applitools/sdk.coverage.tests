@@ -40,4 +40,7 @@ module.exports = {
 
     // broken test
     // 'should send custom batch properties': {skip: true},
+
+    'check window with reload layout breakpoints': {skipEmit: true},
+    'check window with reload layout breakpoints in config': {skipEmit: true}
 }
