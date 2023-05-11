@@ -258,27 +258,6 @@ test('check window with reload layout breakpoints in config', {
   }
 })
 
-
-test('check window with reload layout breakpoints', {
-  page: 'OnLoad',
-  vg: true,
-  config: {
-    browsersInfo: [
-      {name: 'chrome', width: 400, height: 800},
-      {name: 'chrome', width: 1000, height: 800},
-    ],
-  },
-  test({eyes,}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check({layoutBreakpoints: {breakpoints: [400, 1000], reload: true}})
-    // Should equate to:
-    // Target.window().layoutBreakpoints(boolean, {reload: true})
-    // or
-    // Target.window().layoutBreakpoints(number[], {reload: true})
-    eyes.close()
-  }
-})
-
 test('check window on page with sticky header', {
   page: 'StickyHeader',
   variants: {
