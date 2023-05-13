@@ -1694,12 +1694,12 @@ test('should set viewport size', {
 
 test('should not fail if scroll root is stale', {
   variants: {
-    '': {env: {browser: 'chrome'}},
+    '': {env: {browser: 'chrome'}, config: {viewportSize: {width: 600, height: 500}}},
     'on android': {env: {browser: 'chrome', emulation: 'Android 8.0', args: ['--hide-scrollbars']}},
   },
   test({driver, eyes}) {
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
+    eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check()
     driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage')
     eyes.check()
