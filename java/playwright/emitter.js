@@ -165,7 +165,15 @@ module.exports = function (tracker, test) {
             })
     }
     if (test.config.layoutBreakpoints) {
-        addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
+        if (typeof test.config.layoutBreakpoints == 'object' && !Array.isArray(test.config.layoutBreakpoints)) {
+            let breakpoints;
+            if (typeof test.config.layoutBreakpoints.breakpoints == 'object') { breakpoints = `new int[] {${test.config.layoutBreakpoints.breakpoints.join(', ')}}` }
+            else { breakpoints = test.config.layoutBreakpoints.breakpoints }
+
+            addHook('beforeEach', `setLayoutBreakpoints(${breakpoints}, new LayoutBreakpointsOptions().reload(${test.config.layoutBreakpoints.reload}));`)
+        } else {
+            addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
+        }
     }
     if (test.config.batch) {
         addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {

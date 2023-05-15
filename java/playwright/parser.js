@@ -38,7 +38,7 @@ function checkSettings(cs, native) {
     if (cs.sendDom !== undefined) options += `.sendDom(${serialize(cs.sendDom)})`;
     if (cs.matchLevel) options += `.matchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
     if (cs.name) options += `.withName("${cs.name}")`;
-    if (cs.layoutBreakpoints) options += `.layoutBreakpoints(${cs.layoutBreakpoints})`;
+    if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints);
     if (cs.waitBeforeCapture) options += `.waitBeforeCapture(${cs.waitBeforeCapture})`;
     if (cs.isFully === true) {
         options += '.fully()';
@@ -63,6 +63,22 @@ function checkSettings(cs, native) {
     return java + element + options;
 
     // check settings
+
+    function layoutBreakpoints(layoutBreakpoints) {
+        let option = `.layoutBreakpoints(`
+        if (typeof layoutBreakpoints == 'object' && !Array.isArray(layoutBreakpoints)) {
+            if (typeof layoutBreakpoints.breakpoints == 'boolean') option += layoutBreakpoints.breakpoints;
+            if (typeof layoutBreakpoints.breakpoints == 'object') option += `new int[] {${layoutBreakpoints.breakpoints.join(', ')}}`
+        } else {
+            option += layoutBreakpoints
+        }
+        if (layoutBreakpoints.reload) {
+            option += `, new LayoutBreakpointsOptions().reload(${layoutBreakpoints.reload})`
+        }
+        option += `)`
+        
+        return option;
+    }
 
     function webview(webview) {
         let s;
