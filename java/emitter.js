@@ -137,7 +137,7 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', java`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
     addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
     addHook('beforeEach', java`System.out.println(getClass().getName());`)
-    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
+    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch', 'viewportSize'];
     Object.keys(test.config).filter(property => !specific.includes(property))
         .forEach(property => addHook('beforeEach', java`set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
     if (test.config.browsersInfo) {
@@ -169,6 +169,11 @@ module.exports = function (tracker, test) {
         addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
             return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
         }).map(property => java`${property}`).join(',\n    ')}});`)
+    }
+    if(test.config.viewportSize) {
+        const width = test.config.viewportSize.width
+        const heigh = test.config.viewportSize.height
+        addHook('beforeEach', `setViewportSize(${width}, ${heigh});`)
     }
 
     addHook('afterEach', java`if (driver != null) driver.quit();`)
