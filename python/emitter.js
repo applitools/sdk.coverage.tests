@@ -408,7 +408,11 @@ def execution_grid():
                 openArgs.push(python`app_name=${appName}`)
             }
             if (viewportSize) {
-                openArgs.push(python`viewport_size=${viewportSize}`)
+                if (image) {
+                    openArgs.push(python`dimension=${viewportSize}`)
+                } else {
+                    openArgs.push(python`viewport_size=${viewportSize}`)
+                }
             }
             return addCommand(`eyes.open(${openArgs.join()})`)
         },
