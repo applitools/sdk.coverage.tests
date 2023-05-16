@@ -1625,7 +1625,7 @@ test('should extract text regions from image', {
 
 test('should return actual viewport size', {
   page: 'Default',
-  env: {browser: 'chrome', headless: false},
+  env: {browser: 'chrome'},
   test({driver, eyes, assert}) {
     eyes.open({
       appName: 'Eyes Selenium SDK - Fluent API',
