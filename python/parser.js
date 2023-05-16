@@ -32,6 +32,10 @@ function checkSettings(image, dom, cs) {
     if (cs.contentRegions) {options += regions("content", cs.contentRegions);}
     if (cs.strictRegions) {options += regions("strict", cs.strictRegions);}
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
+    if (cs.visualGridOptions) {
+        let vgo = Object.entries(cs.visualGridOptions).map(([k, v]) => python`VisualGridOption(${k}, ${v})`)
+        options += `.visual_grid_options(${vgo.join()})`
+    }
     if (cs.enablePatterns) options += '.enable_patterns()'
     if (cs.ignoreDisplacements) options += `.ignore_displacements(${capitalizeFirstLetter(cs.ignoreDisplacements)})`
     if (cs.pageId) options += python`.page_id(${cs.pageId})`
