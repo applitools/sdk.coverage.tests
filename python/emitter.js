@@ -38,7 +38,6 @@ module.exports = function (tracker, test) {
 
     let mobile = test.meta.mobile
     let legacy = test.env && (test.env.legacy === true)
-    let openPerformed = false
 
     addType('JsonNode', {
         getter: ({target, key}) => {
@@ -114,10 +113,12 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', python`@pytest.fixture(scope="function")`)
     addHook('beforeEach', python`def configuration(eyes):`)
     addHook('beforeEach', python`    conf = eyes.get_configuration()`)
+    if ("appName" in test.config) addHook('beforeEach', python`    conf.app_name = ${test.config.appName}`)
     addHook('beforeEach', python`    conf.test_name = ${test.config.baselineName}`)
     if ("branchName" in test.config) addHook('beforeEach', python`    conf.branch_name = ${test.config.branchName};`)
     if ("parentBranchName" in test.config) addHook('beforeEach', python`    conf.parent_branch_name = ${test.config.parentBranchName};`)
     if ("baselineEnvName" in test.config) addHook('beforeEach', python`    conf.baseline_env_name = ${test.config.baselineEnvName};`)
+    if ("viewportSize" in test.config) addHook('beforeEach', python`    conf.viewport_size = ${test.config.viewportSize}`)
     if ("hideScrollbars" in test.config) addHook('beforeEach', python`    conf.hide_scrollbars = ${test.config.hideScrollbars};`)
     if ("forceFullPageScreenshot" in test.config) addHook('beforeEach', python`    conf.force_full_page_screenshot = ${test.config.forceFullPageScreenshot}`)
     if ("isDisabled" in test.config) addHook('beforeEach', python`    conf.is_disabled = ${test.config.isDisabled};`)
@@ -158,6 +159,7 @@ module.exports = function (tracker, test) {
     }
 
 
+    addHook('beforeEach', python`    eyes.set_configuration(conf)`)
     addHook('beforeEach', python`    return conf`)
     addHook('beforeEach', python`\n`)
 
@@ -398,26 +400,23 @@ def execution_grid():
 
         open({appName, viewportSize}) {
             let image = test.features && test.features.includes("image")
-            let appNm = (appName) ? appName : test.config.appName;
-            let driver_var = image ? '' : test.playwright ? "page" : "driver"
-            openPerformed = true
-            return addCommand(python`configuration.app_name = ${appNm}
-    configuration.viewport_size = ${viewportSize}
-    eyes.set_configuration(configuration)
-    eyes.open` + `(${driver_var})`)
+            let openArgs = []
+            if (!image) {
+                openArgs.push(test.playwright ? "page" : "driver")
+            }
+            if (appName) {
+                openArgs.push(python`app_name=${appName}`)
+            }
+            if (viewportSize) {
+                if (image) {
+                    openArgs.push(python`dimension=${viewportSize}`)
+                } else {
+                    openArgs.push(python`viewport_size=${viewportSize}`)
+                }
+            }
+            return addCommand(`eyes.open(${openArgs.join()})`)
         },
         check({image, dom, ...checkSettings} = {}) {
-			if(checkSettings !== undefined && checkSettings.visualGridOptions)
-			{
-				addCommand(`conf = eyes.get_configuration()`)
-				var options = checkSettings.visualGridOptions
-				for (var key of Object.keys(options))
-				{
-					let value = ((typeof options[key]) === "boolean") ? capitalizeFirstLetter(options[key]) : options[key]
-					addCommand(`conf.set_visual_grid_options(VisualGridOption("${key}", ${value}))`)
-				}
-				addCommand(`eyes.set_configuration(conf)`)
-			}
             if (test.api === 'classic') {
                 if (checkSettings === undefined || (checkSettings.frames === undefined && checkSettings.region === undefined)) {
                     if (image) {
