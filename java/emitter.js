@@ -173,7 +173,7 @@ module.exports = function (tracker, test) {
     if(test.config.viewportSize) {
         const width = test.config.viewportSize.width
         const heigh = test.config.viewportSize.height
-        addHook('beforeEach', `setViewportSize(${width}, ${heigh});`)
+        addHook('beforeEach', `setViewportSize(new RectangleSize(${width}, ${heigh}));`)
     }
 
     addHook('afterEach', java`if (driver != null) driver.quit();`)
