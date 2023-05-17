@@ -65,15 +65,15 @@ function checkSettings(cs, native) {
     // check settings
 
     function layoutBreakpoints(layoutBreakpoints) {
-        let option = `.layoutBreakpoints(`
+        let option = `.layoutBreakpoints(new LayoutBreakpointsOptions()`
         if (typeof layoutBreakpoints == 'object' && !Array.isArray(layoutBreakpoints)) {
-            if (typeof layoutBreakpoints.breakpoints == 'boolean') option += layoutBreakpoints.breakpoints;
-            if (typeof layoutBreakpoints.breakpoints == 'object') option += `new int[] {${layoutBreakpoints.breakpoints.join(', ')}}`
+            if (typeof layoutBreakpoints.breakpoints == 'boolean') option += `.breakpoints(${layoutBreakpoints.breakpoints})`;
+            if (typeof layoutBreakpoints.breakpoints == 'object') option += `.breakpoints(${layoutBreakpoints.breakpoints.join(', ')})`
         } else {
-            option += layoutBreakpoints
+            option += `.breakpoints(${layoutBreakpoints})`
         }
         if (layoutBreakpoints.reload) {
-            option += `, new LayoutBreakpointsOptions().reload(${layoutBreakpoints.reload})`
+            option += `.reload(${layoutBreakpoints.reload})`
         }
         option += `)`
         
