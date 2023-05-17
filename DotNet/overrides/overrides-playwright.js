@@ -71,4 +71,11 @@ module.exports = {
 
     // server response has null properties
     'should send custom batch properties': {skip: true},
+
+    // disabled during development
+    // "should send dom and location when check window": {skipEmit: true},
+    // "should send dom and location when check window with vg": {skipEmit: true},
+    // "should send dom and location when check window fully": {skipEmit: true},
+    // "should send dom and location when check window fully with vg": {skipEmit: true},
+    
 }

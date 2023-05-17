@@ -8,59 +8,59 @@ const { CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES } = require
 
 function checkSettings(cs, native) {
     checkOptions(cs, CHECK_SETTINGS_OPTIONS)
-    let java = `Target`
+    let dot_net = `Target`
     if (cs === undefined || isEmpty(cs)) {
-        return java + '.window()'
+        return dot_net + '.Window()'
     }
     let element = ''
     let options = ''
-    if (cs.frames === undefined && cs.region === undefined) element = '.window()'
+    if (cs.frames === undefined && cs.region === undefined) element = '.Window()'
     else {
         if (cs.frames) {
             if (cs.scrollRootElement) {
-                element += `.window().scrollRootElement(${printSelector(cs.scrollRootElement)})`
+                element += `.Window().ScrollRootElement(${printSelector(cs.scrollRootElement)})`
             }
             element += frames(cs.frames)
         }
         if (cs.region) element += region(cs.region)
     }
-    if (cs.enablePatterns) options += `.enablePatterns(${cs.enablePatterns})`
+    if (cs.enablePatterns) options += `.EnablePatterns(${cs.enablePatterns})`
     if (cs.webview) options += webview(cs.webview);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions);
-    if (cs.ignoreRegions) options += typeRegions('ignore', cs.ignoreRegions);
-    if (cs.strictRegions) options += typeRegions('strict', cs.strictRegions);
-    if (cs.contentRegions) options += typeRegions('content', cs.contentRegions);
-    if (cs.layoutRegions) options += typeRegions('layout', cs.layoutRegions);
-    if (cs.scrollRootElement && !cs.frames) options += `.scrollRootElement(${printSelector(cs.scrollRootElement)})`;
-    if (cs.ignoreDisplacements !== undefined) options += `.ignoreDisplacements(${cs.ignoreDisplacements})`;
-    if (cs.timeout) options += `.timeout(${serialize(cs.timeout)})`;
-    if (cs.sendDom !== undefined) options += `.sendDom(${serialize(cs.sendDom)})`;
-    if (cs.matchLevel) options += `.matchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
-    if (cs.name) options += `.withName("${cs.name}")`;
-    if (cs.layoutBreakpoints) options += `.layoutBreakpoints(${cs.layoutBreakpoints})`;
-    if (cs.waitBeforeCapture) options += `.waitBeforeCapture(${cs.waitBeforeCapture})`;
+    if (cs.ignoreRegions) options += typeRegions('Ignore', cs.ignoreRegions);
+    if (cs.strictRegions) options += typeRegions('Strict', cs.strictRegions);
+    if (cs.contentRegions) options += typeRegions('Content', cs.contentRegions);
+    if (cs.layoutRegions) options += typeRegions('Layout', cs.layoutRegions);
+    if (cs.scrollRootElement && !cs.frames) options += `.ScrollRootElement(${printSelector(cs.scrollRootElement)})`;
+    if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`;
+    if (cs.timeout) options += `.Timeout(${serialize(cs.timeout)})`;
+    if (cs.sendDom !== undefined) options += `.SendDom(${serialize(cs.sendDom)})`;
+    if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
+    if (cs.name) options += `.WithName("${cs.name}")`;
+    if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`;
+    if (cs.waitBeforeCapture) options += `.WaitBeforeCapture(${cs.waitBeforeCapture})`;
     if (cs.isFully === true) {
-        options += '.fully()';
+        options += '.Fully()';
     } else if (cs.isFully === false) {
-        options += '.fully(false)';
+        options += '.Fully(false)';
     }
     if (cs.visualGridOptions) {
         const VGOptionsKeys = Object.keys(cs.visualGridOptions);
         const vgOptions = VGOptionsKeys.map(key => `new VisualGridOption("${key}", ${cs.visualGridOptions[key]})`).join(', ');
-        options += `.visualGridOptions(${vgOptions})`;
+        options += `.VisualGridOptions(${vgOptions})`;
     }
-    if (cs.variationGroupId) options += `.variationGroupId("${cs.variationGroupId}")`;
+    if (cs.variationGroupId) options += `.VariationGroupId("${cs.variationGroupId}")`;
     if (cs.hooks) {
         checkOptions(cs.hooks, CHECK_SETTINGS_HOOKS);
         if (cs.hooks.beforeCaptureScreenshot) {
-            options += `.beforeRenderScreenshotHook("${cs.hooks.beforeCaptureScreenshot}")`;
+            options += `.BeforeRenderScreenshotHook("${cs.hooks.beforeCaptureScreenshot}")`;
         }
     }
-    if (cs.pageId) { options += `.pageId("${cs.pageId}")`; }
+    if (cs.pageId) { options += `.PageId("${cs.pageId}")`; }
     if (cs.lazyLoad) { options += lazyLoad(cs.lazyLoad); }
 
-    return java + element + options;
+    return dot_net + element + options;
 
     // check settings
 
@@ -68,10 +68,10 @@ function checkSettings(cs, native) {
         let s;
         switch(typeof webview) {
             case "boolean":
-                s = `.webview(${cs.webview})`
+                s = `.Webview(${cs.webview})`
                 break;
             case "string":
-                s = `.webview(${JSON.stringify(cs.webview)})`
+                s = `.Webview(${JSON.stringify(cs.webview)})`
                 break;
             default:
                 throw new Error(`webview parameter of the unimplemented type was used:  ${JSON.stringify(webview)}`);
@@ -85,7 +85,7 @@ function checkSettings(cs, native) {
     }
 
     function frame(frame) {
-        return (!frame.isRef && frame.frame) ? `.frame(${frameSelector(frame.frame)}).scrollRootElement(${printSelector(frame.scrollRootElement)})` : `.frame(${frameSelector(frame)})`;
+        return (!frame.isRef && frame.frame) ? `.Frame(${frameSelector(frame.frame)}).ScrollRootElement(${printSelector(frame.scrollRootElement)})` : `.Frame(${frameSelector(frame)})`;
     }
 
     function frameSelector(selector) {
@@ -109,7 +109,7 @@ function checkSettings(cs, native) {
     }
 
     function floatingRegions(arr) {
-        return arr.reduce((acc, val) => `${acc}.floating(${floating(val)})`, ``);
+        return arr.reduce((acc, val) => `${acc}.Floating(${floating(val)})`, ``);
     }
 
     function floating(floating) {
@@ -120,7 +120,7 @@ function checkSettings(cs, native) {
     }
 
     function accessibilityRegions(arr) {
-        return arr.reduce((acc, val) => `${acc}.accessibility(${accessibility(val)})`, ``);
+        return arr.reduce((acc, val) => `${acc}.Accessibility(${accessibility(val)})`, ``);
     }
 
     function accessibility(val) {
@@ -176,17 +176,17 @@ function checkSettings(cs, native) {
         if (LLOptionsKeys.length == 3) {
             llOptions = LLOptionsKeys.map(key => `${lazyLoad[key]}`).join(', ');
             string = `new LazyLoadOptions(${llOptions})`;
-            return `.lazyLoad(${string})`
+            return `.LazyLoad(${string})`
         }
         else {
             llOptions = LLOptionsKeys.map(key => `${key}(${lazyLoad[key]})`).join('.');
             string = `new LazyLoadOptions().${llOptions}`;
-            return `.lazyLoad(${string})`;
+            return `.LazyLoad(${string})`;
         }
     }
     function lazyLoad(lazyLoad) {
         if (isEmpty(lazyLoad))
-            return `.lazyLoad()`
+            return `.LazyLoad()`
         else
             return lazyLoadOptions(lazyLoad)
     }
@@ -195,7 +195,7 @@ function checkSettings(cs, native) {
 
 // General
 
-function java(chunks, ...values) {
+function dot_net(chunks, ...values) {
     const commands = [];
     let code = '';
     values.forEach((value, index) => {
@@ -217,13 +217,13 @@ function serialize(value) {
     if (value && value.isRef) {
         stringified = value.ref();
     } else if (value === null) {
-        throw Error(`Null shouldn't be passed to the java code. \n ${value}`);
+        throw Error(`Null shouldn't be passed to the c# code. \n ${value}`);
     } else if (typeof value === 'object') {
         stringified = parseObject(value);
     } else if (typeof value === 'function') {
         stringified = value.toString();
     } else if (typeof value === 'undefined') {
-        throw Error(`Undefined shouldn't be passed to the java code. \n ${value}`);
+        throw Error(`Undefined shouldn't be passed to the c# code. \n ${value}`);
     } else {
         stringified = JSON.stringify(value);
     }
@@ -299,7 +299,7 @@ function parseEnv(env) {
 
 module.exports = {
     checkSettingsParser: checkSettings,
-    java: java,
+    dot_net: dot_net,
     getter: getter,
     variable: variable,
     call: call,

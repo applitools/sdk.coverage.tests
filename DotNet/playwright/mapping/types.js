@@ -27,9 +27,10 @@ const types = {
             const param = generic[0]
             const paramType = types[param.name]
             return `new ArrayList<${paramType.name(param)}>()
-            {{ ${value.map(region => `add(${paramType.constructor(region)});`).join(' ')} }}`
+            {{ ${value.map(region => `Add(${paramType.constructor(region)});`).join(' ')} }}`
         },
-        name: (type) => `List<${type.generic[0].name}>`
+        name: (type) => `List<${type.generic[0].name}>`,
+        get: (target, key) => Number.isInteger(Number(key)) ? `${target}.get(${key})` : `${target}.${key}()`
     },
     "RectangleSize": {
         constructor: (value) => `new RectangleSize(${value.width}, ${value.height})`,

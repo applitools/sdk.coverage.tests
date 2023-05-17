@@ -1,7 +1,7 @@
 'use strict'
 const types = require('./mapping/types')
 const { TAGS } = require('./mapping/supported')
-const { checkSettingsParser, java, getter, variable, call, returnSyntax, wrapSelector, parseEnv } = require('./parser')
+const { checkSettingsParser, dot_net: dot_net, getter, variable, call, returnSyntax, wrapSelector, parseEnv } = require('./parser')
 const { capitalizeFirstLetter } = require('../util')
 const ImageMatchSettings = {
     type: 'ImageMatchSettings',
@@ -94,18 +94,15 @@ module.exports = function (tracker, test) {
                 if (param === undefined) break
                 i += 1;
                 if (i < params.length)
-                    result += java`${param}, `
+                    result += dot_net`${param}, `
                 else
-                    result += java`${param}`
+                    result += dot_net`${param}`
             }
             result += `)`
         }
         return insert(result)
     }
 
-    addHook('deps', `namespace Applitools.Generated.Playwright;`)
-    addHook('deps', ``)
-    
     // EG for UFG
     if (test.vg && process.env.UFG_ON_EG) {
         test.executionGrid = true;
@@ -119,11 +116,11 @@ module.exports = function (tracker, test) {
 
     // Playwright has no mobile testing
     addHook('deps', `using NUnit.Framework;`)
-    addHook('deps', `using Applitools.Generated.PlaywrightTestSetup;`)
     addHook('deps', `using Applitools.Playwright;`)
     addHook('deps', `using Applitools.Playwright.Fluent;`)
     addHook('deps', `using Applitools.Playwright.Universal;`)
-    addHook('afterEach', `runner.getAllTestResults(false);`)
+    addHook('deps', `using Applitools.Utils.Geometry;`) 
+    addHook('afterEach', `runner.GetAllTestResults(false);`)
     
     // Not specific
     addHook('deps', `using Applitools;`)
@@ -132,20 +129,27 @@ module.exports = function (tracker, test) {
     addHook('deps', `using System;`)
     addHook('deps', `using System.Linq;`)
 
+    addHook('deps', ``)
+
+    addHook('deps', `namespace Applitools.Generated.Playwright.Tests`)
+    addHook('deps', `{`)
+    addHook('deps', `[TestFixture]`)
+    addHook('deps', `[Parallelizable]`)
+    addHook('deps', `public class ${test.key}Class : TestSetupGenerated`)
+
     addSyntax('var', variable)
     addSyntax('getter', getter)
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
 
-    addHook('beforeEach', java`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
+    addHook('beforeEach', dot_net`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
     addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
-    addHook('beforeEach', java`System.out.println(getClass().getName());`)
     const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
     Object.keys(test.config).filter(property => !specific.includes(property))
-        .forEach(property => addHook('beforeEach', java`set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
+        .forEach(property => addHook('beforeEach', dot_net`set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
     if (test.config.browsersInfo) {
         addHook('deps', 'using Applitools.Visualgrid;')
-        addHook('beforeEach', java`setBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
+        addHook('beforeEach', dot_net`setBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
     }
     if (test.config.defaultMatchSettings) {
         const defaultMatchSettings = test.config.defaultMatchSettings
@@ -153,7 +157,7 @@ module.exports = function (tracker, test) {
             .forEach(property => {
                 if (property === 'enablePatterns') addHook('beforeEach', `set${capitalizeFirstLetter(property)}(${defaultMatchSettings[property]});`); 
                 else addHook('beforeEach',
-                java`set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
+                dot_net`set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
             })
     }
     if (test.config.layoutBreakpoints) {
@@ -162,71 +166,72 @@ module.exports = function (tracker, test) {
     if (test.config.batch) {
         addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
             return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
-        }).map(property => java`${property}`).join(',\n    ')}});`)
+        }).map(property => dot_net`${property}`).join(',\n    ')}});`)
     }
 
-    addHook('afterEach', java`if (driver != null) { driver.close(); getBuilder().quit(); }`)
-    addHook('afterEach', java`eyes.abort();`)
+    addHook('afterEach', dot_net`driver?.Close();`)
+    addHook('afterEach', dot_net`getBuilder()?.Quit();`)
+    addHook('afterEach', dot_net`eyes?.Abort();`)
 
     const driver = {
         constructor: {
             isStaleElementError: () => 'PlaywrightStaleElementReferenceException.class'
         },
         visit(url) {
-            addCommand(java`getPage().navigate(${url});`)
+            addCommand(dot_net`getPage().navigate(${url});`)
         },
         executeScript(script, ...args) {
             let actualScript = script;
             if (script.startsWith("arguments[0]")) {
                 actualScript = `arguments => { ${script} };`
-                return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+                return addCommand(dot_net`getPage().evaluate(${actualScript}${extraParameters(args)});`)
             } else if (script.startsWith('return')) {
                 actualScript = `() => { ${script} };`
-                return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+                return addCommand(dot_net`getPage().evaluate(${actualScript}${extraParameters(args)});`)
             }
-            return addCommand(java`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+            return addCommand(dot_net`getPage().evaluate(${actualScript}${extraParameters(args)});`)
         },
         switchToFrame(selector) {
             if (selector === null) {
-                addCommand(java`getPage().mainFrame();`)
+                addCommand(dot_net`getPage().mainFrame();`)
             } else {
-                addCommand(java`${selector}.contentFrame();`)
+                addCommand(dot_net`${selector}.contentFrame();`)
             }
         },
         switchToParentFrame() {
-            addCommand(java`getPage().mainFrame().parentFrame();`)
+            addCommand(dot_net`getPage().mainFrame().parentFrame();`)
         },
         findElement(selector) {
-            return addCommand(java`getPage().locator(${wrapSelector(selector)}).elementHandle();`).type('Element')
+            return addCommand(dot_net`getPage().locator(${wrapSelector(selector)}).elementHandle();`).type('Element')
         },
         findElements(selector) {
-            return addCommand(java`getDriver().findElements(${wrapSelector(selector)}));`).type('Array<Element>')
+            return addCommand(dot_net`getDriver().findElements(${wrapSelector(selector)}));`).type('Array<Element>')
         },
         click(element) {
-            if (element.isRef) addCommand(java`${element}.click();`)
-            else addCommand(java`getPage().locator(${element}).click();`)
+            if (element.isRef) addCommand(dot_net`${element}.click();`)
+            else addCommand(dot_net`getPage().locator(${element}).click();`)
         },
         type(element, keys) {
-            addCommand(java`${element}.fill(${keys});`)
+            addCommand(dot_net`${element}.fill(${keys});`)
         },
         scrollIntoView(element, align = false) {
-            addCommand(java`${element}.scrollIntoViewIfNeeded();`)
+            addCommand(dot_net`${element}.scrollIntoViewIfNeeded();`)
         },
         hover(element, offset) {
-            addCommand(java`${findElement(element)}.hover();`)
+            addCommand(dot_net`${findElement(element)}.hover();`)
         }
     }
 
     const eyes = {
         constructor: {
             setViewportSize(viewportSize) {
-                return addCommand(java`Eyes.setViewportSize(getDriver(), ${addType(viewportSize, 'RectangleSize')});`)
+                return addCommand(dot_net`Eyes.setViewportSize(getDriver(), ${addType(viewportSize, 'RectangleSize')});`)
             }
         },
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(java`getRunner().getAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
-                    getAllResults: (target) => addCommand(java`${target}.getAllResults();`).type({
+                return addCommand(dot_net`getRunner().getAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
+                    getAllResults: (target) => addCommand(dot_net`${target}.getAllResults();`).type({
                         type: 'Array',
                         items: {
                             type: 'TestResultContainer',
@@ -255,10 +260,10 @@ module.exports = function (tracker, test) {
         },
         open({ appName, testName, viewportSize }) {
             let command = []
-            command.push('open(driver')
-            command.push(java`, ${appName || test.config.appName}`)
-            command.push(java`, ${testName || test.config.baselineName}`)
-            if (viewportSize) command.push(java`, new RectangleSize(${viewportSize.width}, ${viewportSize.height})`)
+            command.push('eyes.Open(driver')
+            command.push(dot_net`, ${appName || test.config.appName}`)
+            command.push(dot_net`, ${testName || test.config.baselineName}`)
+            if (viewportSize) command.push(dot_net`, new RectangleSize(${viewportSize.width}, ${viewportSize.height})`)
             command.push(');')
             addCommand(command.join(''))
         },
@@ -276,57 +281,57 @@ module.exports = function (tracker, test) {
                     throw new Error('Not implemented classic api method was tried to generate')
                 }
             } else {
-                addCommand(`eyes.check(${checkSettingsParser(checkSettings, test.meta.native)});`)
+                addCommand(`eyes.Check(${checkSettingsParser(checkSettings, test.meta.native)});`)
             }
         },
         checkWindow(tag, matchTimeout, stitchContent) {
-            if (matchTimeout && stitchContent) throw new Error(`There is no signature in java SDK for usage both matchTimeout and stitchContent`)
+            if (matchTimeout && stitchContent) throw new Error(`There is no signature in dotnet SDK for usage both matchTimeout and stitchContent`)
             const commands = []
-            commands.push(java`eyes.check(Target`)
-            commands.push(java`.window()`)
-            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
-            if (stitchContent !== undefined) commands.push(java`.fully(${stitchContent})`)
-            if (tag) commands.push(java`.withName(${tag})`)
-            commands.push(java`);`)
+            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`.Window()`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (stitchContent !== undefined) commands.push(dot_net`.Fully(${stitchContent})`)
+            if (tag) commands.push(dot_net`.WithName(${tag})`)
+            commands.push(dot_net`);`)
             addCommand([commands.join('')])
         },
         checkFrame(element, matchTimeout, tag) {
             const commands = []
-            commands.push(java`eyes.check(Target`)
-            commands.push(java`.frame(${findFrame(element)})`)
-            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
-            if (tag) commands.push(java`.withName(${tag})`)
-            commands.push(java`.fully());`)
+            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`.Frame(${findFrame(element)})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (tag) commands.push(dot_net`.WithName(${tag})`)
+            commands.push(dot_net`.Fully());`)
             addCommand([commands.join('')])
         },
         checkRegion(region, matchTimeout, tag) {
             const commands = []
-            commands.push(java`eyes.check(Target`)
-            commands.push(java`.region(${wrapSelector(region)})`)
-            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
-            if (tag) commands.push(java`.withName(${tag})`)
-            commands.push(java`);`)
+            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`.Region(${wrapSelector(region)})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (tag) commands.push(dot_net`.WithName(${tag})`)
+            commands.push(dot_net`);`)
             addCommand([commands.join('')])
         },
         checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
             const commands = []
-            commands.push(java`eyes.check(Target`)
-            commands.push(java`.frame(${findFrame(frameReference)})`)
-            commands.push(java`.region(${wrapSelector(selector)})`)
-            if (matchTimeout) commands.push(java`.timeout(${matchTimeout})`)
-            if (tag) commands.push(java`.withName(${tag})`)
-            if (stitchContent) commands.push(java`.fully(${stitchContent})`)
-            commands.push(java`);`)
+            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`.Frame(${findFrame(frameReference)})`)
+            commands.push(dot_net`.Region(${wrapSelector(selector)})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (tag) commands.push(dot_net`.WithName(${tag})`)
+            if (stitchContent) commands.push(dot_net`.Fully(${stitchContent})`)
+            commands.push(dot_net`);`)
             addCommand([commands.join('')])
         },
         close(throwEx) {
-            return addCommand(java`eyes.close(${argumentCheck(throwEx, true)});`).type(TestResults)
+            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`).type(TestResults)
         },
         abort() {
-            return addCommand(java`eyes.abort();`).type(TestResults)
+            return addCommand(dot_net`eyes.Abort();`).type(TestResults)
         },
         getViewportSize() {
-            return addCommand(java`eyes.getViewportSize();`).type({
+            return addCommand(dot_net`eyes.GetViewportSize();`).type({
                 type: 'RectangleSize',
                 schema: {
                     height: {
@@ -339,35 +344,35 @@ module.exports = function (tracker, test) {
             })
         },
         locate(visualLocator) {
-            return addCommand(java`eyes.locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
+            return addCommand(dot_net`eyes.locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
         },
         extractText(ocrRegions) {
             const commands = []
-            commands.push(java`eyes.extractText(`)
+            commands.push(dot_net`eyes.extractText(`)
             for (const index in ocrRegions) {
-                commands.push(java`new OcrRegion(`)
+                commands.push(dot_net`new OcrRegion(`)
                 const region = ocrRegions[index]
                 if (typeof (region.target) === "string") {
-                    commands.push(java`${region.target})`)
+                    commands.push(dot_net`${region.target})`)
                 } else if (typeof (region.target) === "object") {
-                    commands.push(java`new Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
+                    commands.push(dot_net`new Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
                 } else {
-                    commands.push(java`${region.target})`)
+                    commands.push(dot_net`${region.target})`)
                 }
 
                 if (region.hint) {
-                    commands.push(java`.hint(${region.hint})`)
+                    commands.push(dot_net`.Hint(${region.hint})`)
                 }
                 if (region.minMatch) {
-                    commands.push(java`.minMatch(${region.minMatch})`)
+                    commands.push(dot_net`.MinMatch(${region.minMatch})`)
                 }
                 if (region.language) {
-                    commands.push(java`.language(${region.language})`)
+                    commands.push(dot_net`.language(${region.language})`)
                 }
-                commands.push(java`, `)
+                commands.push(dot_net`, `)
             }
             commands.pop()
-            commands.push(java`);`)
+            commands.push(dot_net`);`)
             return addCommand([commands.join('')]).type({
                 type: 'List<String>',
                 items: {
@@ -377,11 +382,11 @@ module.exports = function (tracker, test) {
         },
         extractTextRegions({ patterns, ignoreCase, firstOnly, language }) {
             const commands = []
-            commands.push(java`eyes.extractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
-            if (ignoreCase) commands.push(java`.ignoreCase(${ignoreCase})`)
-            if (firstOnly) commands.push(java`.firstOnly(${firstOnly})`)
-            if (language) commands.push(java`.language(${language})`)
-            commands.push(java`);`)
+            commands.push(dot_net`eyes.ExtractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
+            if (ignoreCase) commands.push(dot_net`.IgnoreCase(${ignoreCase})`)
+            if (firstOnly) commands.push(dot_net`.FirstOnly(${firstOnly})`)
+            if (language) commands.push(dot_net`.Language(${language})`)
+            commands.push(dot_net`);`)
             return addCommand([commands.join('')]).type({
                 type: 'Map<String, List<TextRegion>>',
                 items: {
@@ -401,53 +406,53 @@ module.exports = function (tracker, test) {
     const assert = {
         equal(actual, expected, message) {
             if (expected === null) {
-                addCommand(java`Assert.assertNull(${actual}${assertMessage(message)});`)
+                addCommand(dot_net`Assert.assertNull(${actual}${assertMessage(message)});`)
             } else if (expected.isRef) {
                 const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
-                addCommand(java`Assert.assertEquals(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
+                addCommand(dot_net`Assert.assertEquals(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
             } else {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {
-                    addCommand(java`Assert.assertEquals(${actual}.asText(""), ${expected}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.assertEquals(${actual}.asText(""), ${expected}${assertMessage(message)});`)
                 } else if (type === 'Array') {
-                    addCommand(java`Assert.assertEquals(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.assertEquals(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
                 } else if (type !== 'Map') {
-                    addCommand(java`Assert.assertEquals(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.assertEquals(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
                 } else {
-                    addCommand(java`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
                 }
             }
         },
         notEqual(actual, expected, message) {
-            addCommand(java`Assert.assertNotEquals(${actual}, ${expected}${assertMessage(message)});`)
+            addCommand(dot_net`Assert.assertNotEquals(${actual}, ${expected}${assertMessage(message)});`)
         },
         instanceOf(object, typeName) {
-            addCommand(java`Assert.assertTrue(${object} instanceof ${insert(types[typeName].name())});`)
+            addCommand(dot_net`Assert.assertTrue(${object} instanceof ${insert(types[typeName].name())});`)
         },
         throws(func, check) {
             let command
             if (check) {
-                command = java`Assert.assertThrows(${insert(check())} , new Assert.ThrowingRunnable(){
+                command = dot_net`Assert.assertThrows(${insert(check())} , new Assert.ThrowingRunnable(){
           public void run() {${func}}
         });`
             } else {
-                command = java`Assert.assertThrows(new Assert.ThrowingRunnable(){ 
+                command = dot_net`Assert.assertThrows(new Assert.ThrowingRunnable(){ 
         public void run() {${func}}
         });`
             }
             addCommand(command)
         },
         ok(arg, message) {
-            addCommand(java`Assert.assertNotNull(${arg}${assertMessage(message)});`)
+            addCommand(dot_net`Assert.assertNotNull(${arg}${assertMessage(message)});`)
         },
         contains(args, expectedToHave) {
-            addCommand(java`Assert.assertTrue(${args}.contains(${expectedToHave}));`)
+            addCommand(dot_net`Assert.assertTrue(${args}.contains(${expectedToHave}));`)
         }
     }
 
     const helpers = {
         getTestInfo(result) {
-            return addCommand(java`getTestInfo(${result});`).type({
+            return addCommand(dot_net`getTestInfo(${result});`).type({
                 type: 'TestInfo',
                 schema: {
                     actualAppOutput: {
@@ -508,8 +513,8 @@ module.exports = function (tracker, test) {
             })
         },
         getDom(result, domId) {
-            return addCommand(java`getDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
-                getNodesByAttribute: (dom, attr) => addCommand(java`getNodesByAttributes(${dom}, ${attr});`).type({
+            return addCommand(dot_net`getDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
+                getNodesByAttribute: (dom, attr) => addCommand(dot_net`getNodesByAttributes(${dom}, ${attr});`).type({
                     type: 'List<JsonNode>',
                     schema: { length: { rename: 'size' } },
                     items: {
@@ -528,7 +533,7 @@ module.exports = function (tracker, test) {
         },
         math: {
             round(number) {
-                return addExpression(java`Math.round(${number})`)
+                return addExpression(dot_net`Math.round(${number})`)
             }
         }
     }
