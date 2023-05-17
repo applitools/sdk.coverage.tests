@@ -1,6 +1,6 @@
-//const iosDeviceName = require('./iosDeviceName')
-//const deviceName = require('./deviceName')
-//const {capitalizeFirstLetter} = require('../util')
+const iosDeviceName = require('../../mapping/iosDeviceName')
+const deviceName = require('../../mapping/deviceName')
+const { capitalizeFirstLetter } = require('../../util')
 const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
 const types = {
     "Map": {
@@ -40,12 +40,13 @@ const types = {
         get: simpleGetter,
         name: () => 'SessionResults',
     },
-    "TestResults": {
-        name: () => `TestResults`,
-        get: (target, key) => key.startsWith('is') ? `${target}.${key}()` : simpleGetter(target, key)
+    "JsonNode": {
+        get: (target, key) => `${target}.get(${Number.isInteger(Number(key)) ? key : `"${key}"`})`,
+        name: () => 'JsonNode'
     },
     "Element": {
-        name: () => 'WebElement',
+        name: () => 'ElementHandle',
+        get: simpleGetter,
     },
     "Region": {
         name: () => 'Region',
@@ -54,9 +55,10 @@ const types = {
     "FloatingRegion": {
         constructor: (value) => {
             let region;
-            if(value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
+            if (value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
             else region = `${value.left}, ${value.top}, ${value.width}, ${value.height}`
-            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`}
+            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`
+        }
     },
     "Array": {
         get: (target, key) => `${target}[${key}]`,
@@ -76,6 +78,14 @@ const types = {
         constructor: (value) => `${JSON.stringify(value)}L`,
         name: () => `Number`,
     },
+    "Long": {
+        constructor: (value) => `new Long(${JSON.stringify(value)})`,
+        name: () => `Long`,
+    },
+    "int": {
+        constructor: (value) => `${JSON.stringify(value)}`,
+        name: () => `int`,
+    },
     "Image": {
         get: simpleGetter,
     },
@@ -85,41 +95,86 @@ const types = {
     "AppOutput": {
         get: simpleGetter,
     },
-    "AccessibilitySettings":{
+    "AccessibilitySettings": {
         constructor: function (value) {
             return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
-        } ,
+        },
         get: (target, key) => (key === 'version') ? `${target}.getGuidelinesVersion()` : simpleGetter(target, key)
     },
-    "AccessibilityRegion":{
+    "AccessibilityRegion": {
         constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
     },
-    "AccessibilityLevel":{
+    "AccessibilityLevel": {
         constructor: (value) => `AccessibilityLevel.${value}`
     },
-    "AccessibilityGuidelinesVersion":{
+    "AccessibilityGuidelinesVersion": {
         constructor: (value) => `AccessibilityGuidelinesVersion.${value}`
+    },
+    "Location": {
+        constructor: (value) => `new Location(${value.x}, ${value.y})`,
+        name: () => `Location`,
+        get: simpleGetter,
     },
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
-                if(render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
+                if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
                 else if (render.iosDeviceInfo) return `new IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
                 else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
             }).join(', ')
         },
     },
-    "PaddingBounds": {
-        constructor: (bounds) => {
-            switch (typeof bounds) {
-                case "object":
-                    return `new Padding(${bounds.left || 0}, ${bounds.top || 0}, ${bounds.right || 0}, ${bounds.bottom || 0})`
-                case "number":
-                    return `new Padding(${bounds}, ${bounds}, ${bounds}, ${bounds})`
-                default:
-                    throw new Error(`PaddingBounds object: ${bounds}, isn't correct. It should number for all paddings or object containing values directions`)
+    "TextRegion": {
+        get: simpleGetter
+    },
+    "BatchInfo": {
+        get: simpleGetter
+    },
+    "StartInfo": {
+        get: simpleGetter
+    },
+    "TestResultsSummary": {
+        name: () => `TestResultsSummary`,
+        get: simpleGetter
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key)
+    },
+    "TestResults": {
+        name: () => `TestResults`,
+        get: (target, key) => {
+            if (key.startsWith('is')) {
+                return `${target}.${key}()`
+            }
+            else if (key == 'status') {
+                return `${target}.getStatus().name()`
+            } else {
+                return simpleGetter(target, key)
             }
         }
     },
+    "rect": {
+        name: () => 'Rect',
+        get: (target, key) => `${target}.get("${key}").asDouble()`,
+    },
+    "PageCoverageInfo": {
+        get: simpleGetter
+    },
+    "BrowserInfo": {
+        name: () => `BrowserInfo`,
+        get: (target, key) => key.startsWith('name') ? `${target}.getBrowserType().getName()` : simpleGetter(target, key),
+    },
+
+    "ChromeEmulationInfo": {
+        name: () => "ChromeEmulationInfo",
+        get: (target, key) => {
+            if (target.includes('Chrome')) {
+                target = target.replace("ChromeEmulationInfo", "EmulationInfo");
+                return simpleGetter(target, key);
+            } else { return simpleGetter(target, key) }
+        }
+    }
+
 }
 module.exports = types
