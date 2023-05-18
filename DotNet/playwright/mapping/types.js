@@ -166,7 +166,9 @@ const types = {
         name: () => `BrowserInfo`,
         get: (target, key) => key.startsWith('name') ? `${target}.getBrowserType().getName()` : simpleGetter(target, key),
     },
-
+    "StitchModes": {
+        get: simpleGetter
+    },
     "ChromeEmulationInfo": {
         name: () => "ChromeEmulationInfo",
         get: (target, key) => {

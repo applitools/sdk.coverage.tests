@@ -116,35 +116,31 @@ module.exports = function (tracker, test) {
 
     // Playwright has no mobile testing
     addHook('deps', `using NUnit.Framework;`)
+    addHook('deps', `using Applitools;`)
     addHook('deps', `using Applitools.Playwright;`)
     addHook('deps', `using Applitools.Playwright.Fluent;`)
     addHook('deps', `using Applitools.Playwright.Universal;`)
     addHook('deps', `using Applitools.Utils.Geometry;`) 
-    addHook('afterEach', `runner.GetAllTestResults(false);`)
-    
-    // Not specific
-    addHook('deps', `using Applitools;`)
-    addHook('deps', `using Applitools.Playwright;`)
     addHook('deps', `using Microsoft.Playwright;`)
     addHook('deps', `using System;`)
     addHook('deps', `using System.Linq;`)
-
     addHook('deps', ``)
-
     addHook('deps', `namespace Applitools.Generated.Playwright.Tests`)
     addHook('deps', `{`)
     addHook('deps', `[TestFixture]`)
     addHook('deps', `[Parallelizable]`)
     addHook('deps', `public class ${test.key}Class : TestSetupGenerated`)
-
+    
     addSyntax('var', variable)
     addSyntax('getter', getter)
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
+    
+    addHook('afterEach', `Runner.GetAllTestResults(false);`)
 
-    addHook('beforeEach', dot_net`initEyes(${argumentCheck(test.vg, false)}, ${argumentCheck(test.config.stitchMode, 'Scroll')}, ${argumentCheck(test.branchName, "master")});`,)
+    addHook('beforeEach', dot_net`InitEyes(${argumentCheck(test.vg, false)}, StitchModes.${{value: test.config.stitchMode, type: 'StitchModes'}}, ${argumentCheck(test.branchName, "master")});`,)
     addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
-    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch'];
+    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch', 'stitchMode'];
     Object.keys(test.config).filter(property => !specific.includes(property))
         .forEach(property => addHook('beforeEach', dot_net`set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
     if (test.config.browsersInfo) {
@@ -169,68 +165,68 @@ module.exports = function (tracker, test) {
         }).map(property => dot_net`${property}`).join(',\n    ')}});`)
     }
 
-    addHook('afterEach', dot_net`driver?.Close();`)
-    addHook('afterEach', dot_net`getBuilder()?.Quit();`)
-    addHook('afterEach', dot_net`eyes?.Abort();`)
+    addHook('afterEach', dot_net`Driver?.CloseAsync().GetAwaiter().GetResult();`)
+    addHook('afterEach', dot_net`Builder?.Quit();`)
+    addHook('afterEach', dot_net`Eyes?.Abort();`)
 
     const driver = {
         constructor: {
             isStaleElementError: () => 'PlaywrightStaleElementReferenceException.class'
         },
         visit(url) {
-            addCommand(dot_net`getPage().navigate(${url});`)
+            addCommand(dot_net`GetPage().GotoAsync(${url}).GetAwaiter().GetResult();`)
         },
         executeScript(script, ...args) {
             let actualScript = script;
             if (script.startsWith("arguments[0]")) {
                 actualScript = `arguments => { ${script} };`
-                return addCommand(dot_net`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+                return addCommand(dot_net`GetPage().Evaluate(${actualScript}${extraParameters(args)});`)
             } else if (script.startsWith('return')) {
                 actualScript = `() => { ${script} };`
-                return addCommand(dot_net`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+                return addCommand(dot_net`GetPage().Evaluate(${actualScript}${extraParameters(args)});`)
             }
-            return addCommand(dot_net`getPage().evaluate(${actualScript}${extraParameters(args)});`)
+            return addCommand(dot_net`GetPage().Evaluate(${actualScript}${extraParameters(args)});`)
         },
         switchToFrame(selector) {
             if (selector === null) {
-                addCommand(dot_net`getPage().mainFrame();`)
+                addCommand(dot_net`GetPage().MainFrame();`)
             } else {
-                addCommand(dot_net`${selector}.contentFrame();`)
+                addCommand(dot_net`${selector}.ContentFrame();`)
             }
         },
         switchToParentFrame() {
-            addCommand(dot_net`getPage().mainFrame().parentFrame();`)
+            addCommand(dot_net`GetPage().MainFrame().ParentFrame();`)
         },
         findElement(selector) {
-            return addCommand(dot_net`getPage().locator(${wrapSelector(selector)}).elementHandle();`).type('Element')
+            return addCommand(dot_net`GetPage().Locator(${wrapSelector(selector)}).ElementHandle();`).type('Element')
         },
         findElements(selector) {
-            return addCommand(dot_net`getDriver().findElements(${wrapSelector(selector)}));`).type('Array<Element>')
+            return addCommand(dot_net`Driver.FindElements(${wrapSelector(selector)}));`).type('Array<Element>')
         },
         click(element) {
-            if (element.isRef) addCommand(dot_net`${element}.click();`)
-            else addCommand(dot_net`getPage().locator(${element}).click();`)
+            if (element.isRef) addCommand(dot_net`${element}.Click();`)
+            else addCommand(dot_net`GetPage().Locator(${element}).Click();`)
         },
         type(element, keys) {
-            addCommand(dot_net`${element}.fill(${keys});`)
+            addCommand(dot_net`${element}.Fill(${keys});`)
         },
         scrollIntoView(element, align = false) {
-            addCommand(dot_net`${element}.scrollIntoViewIfNeeded();`)
+            addCommand(dot_net`${element}.ScrollIntoViewIfNeeded();`)
         },
         hover(element, offset) {
-            addCommand(dot_net`${findElement(element)}.hover();`)
+            addCommand(dot_net`${findElement(element)}.Hover();`)
         }
     }
 
     const eyes = {
         constructor: {
             setViewportSize(viewportSize) {
-                return addCommand(dot_net`Eyes.setViewportSize(getDriver(), ${addType(viewportSize, 'RectangleSize')});`)
+                return addCommand(dot_net`Eyes.SetViewportSize(getDriver(), ${addType(viewportSize, 'RectangleSize')});`)
             }
         },
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(dot_net`getRunner().getAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
+                return addCommand(dot_net`Runner.GetAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
                     getAllResults: (target) => addCommand(dot_net`${target}.getAllResults();`).type({
                         type: 'Array',
                         items: {
@@ -260,7 +256,7 @@ module.exports = function (tracker, test) {
         },
         open({ appName, testName, viewportSize }) {
             let command = []
-            command.push('eyes.Open(driver')
+            command.push('Eyes.Open(Driver')
             command.push(dot_net`, ${appName || test.config.appName}`)
             command.push(dot_net`, ${testName || test.config.baselineName}`)
             if (viewportSize) command.push(dot_net`, new RectangleSize(${viewportSize.width}, ${viewportSize.height})`)
@@ -281,13 +277,13 @@ module.exports = function (tracker, test) {
                     throw new Error('Not implemented classic api method was tried to generate')
                 }
             } else {
-                addCommand(`eyes.Check(${checkSettingsParser(checkSettings, test.meta.native)});`)
+                addCommand(`Eyes.Check(${checkSettingsParser(checkSettings, test.meta.native)});`)
             }
         },
         checkWindow(tag, matchTimeout, stitchContent) {
             if (matchTimeout && stitchContent) throw new Error(`There is no signature in dotnet SDK for usage both matchTimeout and stitchContent`)
             const commands = []
-            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Window()`)
             if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
             if (stitchContent !== undefined) commands.push(dot_net`.Fully(${stitchContent})`)
@@ -297,7 +293,7 @@ module.exports = function (tracker, test) {
         },
         checkFrame(element, matchTimeout, tag) {
             const commands = []
-            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Frame(${findFrame(element)})`)
             if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
             if (tag) commands.push(dot_net`.WithName(${tag})`)
@@ -306,7 +302,7 @@ module.exports = function (tracker, test) {
         },
         checkRegion(region, matchTimeout, tag) {
             const commands = []
-            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Region(${wrapSelector(region)})`)
             if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
             if (tag) commands.push(dot_net`.WithName(${tag})`)
@@ -315,7 +311,7 @@ module.exports = function (tracker, test) {
         },
         checkRegionInFrame(frameReference, selector, matchTimeout, tag, stitchContent) {
             const commands = []
-            commands.push(dot_net`eyes.Check(Target`)
+            commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Frame(${findFrame(frameReference)})`)
             commands.push(dot_net`.Region(${wrapSelector(selector)})`)
             if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
@@ -325,13 +321,13 @@ module.exports = function (tracker, test) {
             addCommand([commands.join('')])
         },
         close(throwEx) {
-            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`).type(TestResults)
+            return addCommand(dot_net`Eyes.Close(${argumentCheck(throwEx, true)});`).type(TestResults)
         },
         abort() {
-            return addCommand(dot_net`eyes.Abort();`).type(TestResults)
+            return addCommand(dot_net`Eyes.Abort();`).type(TestResults)
         },
         getViewportSize() {
-            return addCommand(dot_net`eyes.GetViewportSize();`).type({
+            return addCommand(dot_net`Eyes.GetViewportSize();`).type({
                 type: 'RectangleSize',
                 schema: {
                     height: {
@@ -344,11 +340,11 @@ module.exports = function (tracker, test) {
             })
         },
         locate(visualLocator) {
-            return addCommand(dot_net`eyes.locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
+            return addCommand(dot_net`Eyes.Locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
         },
         extractText(ocrRegions) {
             const commands = []
-            commands.push(dot_net`eyes.extractText(`)
+            commands.push(dot_net`Eyes.ExtractText(`)
             for (const index in ocrRegions) {
                 commands.push(dot_net`new OcrRegion(`)
                 const region = ocrRegions[index]
@@ -382,7 +378,7 @@ module.exports = function (tracker, test) {
         },
         extractTextRegions({ patterns, ignoreCase, firstOnly, language }) {
             const commands = []
-            commands.push(dot_net`eyes.ExtractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
+            commands.push(dot_net`Eyes.ExtractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
             if (ignoreCase) commands.push(dot_net`.IgnoreCase(${ignoreCase})`)
             if (firstOnly) commands.push(dot_net`.FirstOnly(${firstOnly})`)
             if (language) commands.push(dot_net`.Language(${language})`)

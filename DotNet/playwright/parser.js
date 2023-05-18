@@ -156,7 +156,7 @@ function checkSettings(cs, native) {
                         }
                     }
                 } else if (region.type) {
-                    string = native ? `getDriver().locator(${parseObject(region)})` : parseObject(region);
+                    string = native ? `Driver.Locator(${parseObject(region)})` : parseObject(region);
                 } else {
                     string = parseObject({ value: region, type: 'Region' });
                 }
@@ -284,7 +284,7 @@ const returnSyntax = ({ value }) => {
 
 function parseEnv(env) {
     checkOptions(env, ENV_PROPERTIES)
-    let result = 'driver = buildDriver()'
+    let result = 'Driver = BuildDriver()'
     if (env) {
         if (env.browser) result += `.browser(${serialize(env.browser)})`
         if (env.device) result += `.device(${serialize(env.device)})`
@@ -294,7 +294,7 @@ function parseEnv(env) {
         if (env.hasOwnProperty('legacy')) result += `.legacy(${serialize(env.legacy)})`
         if (env.hasOwnProperty('executionGrid') && env.executionGrid !== undefined) result += `.executionGrid(${serialize(env.executionGrid)})`
     }
-    return result + '.build();'
+    return result + '.Build();'
 }
 
 module.exports = {
