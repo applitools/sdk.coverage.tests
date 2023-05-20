@@ -31,7 +31,7 @@ function checkSettings(image, dom, cs) {
     if (cs.layoutRegions) {options += regions("layout", cs.layoutRegions);}
     if (cs.contentRegions) {options += regions("content", cs.contentRegions);}
     if (cs.strictRegions) {options += regions("strict", cs.strictRegions);}
-    if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints)
+    if (cs.layoutBreakpoints) options += `.layout_breakpoints(${layoutBreakpointsArgs(cs.layoutBreakpoints)})`
     if (cs.visualGridOptions) {
         let vgo = Object.entries(cs.visualGridOptions).map(([k, v]) => python`VisualGridOption(${k}, ${v})`)
         options += `.visual_grid_options(${vgo.join()})`
@@ -98,13 +98,7 @@ function region(region_param, first_call) {
 function regions(kind, arr) {
     return arr.reduce((acc, val) => `${acc}.${kind}(${regionParameter(val)})`, "");
 }
-function layoutBreakpoints(arg){
-    if (Array.isArray(arg)) {
-        return python`.layout_breakpoints(*${arg})`
-    } else {
-        return python`.layout_breakpoints(${arg})`
-    }
-}
+
 function lazyLoad(arg) {
     let args = Object.entries(arg).map(([key, value], _) => fromCamelCaseToSnakeCase(key) + python`=${value}`)
     return `.lazy_load(${args.join(', ')})`
@@ -157,6 +151,19 @@ function regionParameter(region) {
             break;
     }
     return string
+}
+
+function layoutBreakpointsArgs(arg) {
+        let breakpoints, reload;
+    if (typeof arg == "object" && ! Array.isArray(arg)) {
+        breakpoints = arg["breakpoints"];
+        reload = "reload" in arg ? python`, reload=${arg["reload"]}` : "";
+    } else {
+        breakpoints = arg;
+        reload = "";
+    }
+    breakpoints = Array.isArray(breakpoints) ? breakpoints.join() : python`${breakpoints}`;
+    return breakpoints + reload;
 }
 
 // General functions
@@ -256,6 +263,7 @@ function handleHooks(hooks) {
 
 module.exports = {
     checkSettingsParser: checkSettings,
+    layoutBreakpointsArgs: layoutBreakpointsArgs,
     python: python,
     getter: getter,
     variable: variable,
