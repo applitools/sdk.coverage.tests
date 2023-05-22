@@ -1,5 +1,5 @@
 'use strict'
-const {checkSettingsParser, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
+const {checkSettingsParser, layoutBreakpointsArgs, python, framesClassic, parseSelector, parseSelectorByType, regionParameter} = require('./parser')
 const {capitalizeFirstLetter, fromCamelCaseToSnakeCase, toLowerSnakeCase} = require('./util')
 const find_commands = require('./mapping/find_commands')
 const types = require('./mapping/types')
@@ -139,14 +139,9 @@ module.exports = function (tracker, test) {
         addHook('deps', 'from applitools.common.ultrafastgrid import DesktopBrowserInfo, IosDeviceInfo, ChromeEmulationInfo, ScreenOrientation')
         addHook('beforeEach', python`    ${{value: test.config.browsersInfo, type: 'BrowsersInfo'}}`)
     }
-    if (test.config.layoutBreakpoints) {
-        let breakpoints = test.config.layoutBreakpoints
-        if (Array.isArray(breakpoints)) {
-            addHook('beforeEach', python`    conf.set_layout_breakpoints(*${breakpoints})`)
-        }
-        else {
-            addHook('beforeEach', python`    conf.set_layout_breakpoints(${breakpoints})`)
-        }
+    if ("layoutBreakpoints" in test.config) {
+        let args = test.config.layoutBreakpoints
+        addHook('beforeEach', `    conf.set_layout_breakpoints(${layoutBreakpointsArgs(args)})`)
     }
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
