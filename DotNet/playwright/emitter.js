@@ -125,6 +125,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Applitools.Playwright.Universal;`)
     addHook('deps', `using Applitools.Utils.Geometry;`) 
     addHook('deps', `using Microsoft.Playwright;`)
+    addHook('deps', `using Newtonsoft.Json.Linq;`)
     addHook('deps', `using System;`)
     addHook('deps', `using System.Collections.Generic;`)
     addHook('deps', `using System.Linq;`)
@@ -534,8 +535,8 @@ module.exports = function (tracker, test) {
         getDom(result, domId) {
             return addCommand(dot_net`GetDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
                 getNodesByAttribute: (dom, attr) => addCommand(dot_net`GetNodesByAttributes(${dom}, ${attr});`).type({
-                    type: 'List<JsonNode>',
-                    schema: { length: { rename: 'size' } },
+                    type: 'List<JObject>',
+                    schema: { length: { rename: 'Count' } },
                     items: {
                         type: 'JsonNode', schema: {
                             rect: {
@@ -552,7 +553,7 @@ module.exports = function (tracker, test) {
         },
         math: {
             round(number) {
-                return addExpression(dot_net`Math.round(${number})`)
+                return addExpression(dot_net`Math.Round(${number})`)
             }
         }
     }

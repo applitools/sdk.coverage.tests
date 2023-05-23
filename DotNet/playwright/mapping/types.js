@@ -44,7 +44,7 @@ const types = {
     },
     "JsonNode": {
         get: (target, key) => `${target}.get(${Number.isInteger(Number(key)) ? key : `"${key}"`})`,
-        name: () => 'JsonNode'
+        name: () => 'JObject'
     },
     "Element": {
         name: () => 'IElementHandle',
@@ -90,7 +90,7 @@ const types = {
         name: () => `int`,
     },
     "Image": {
-        get: simpleGetter,
+        get: propertyGetter,
     },
     "ImageMatchSettings": {
         get: propertyGetter,
@@ -116,7 +116,7 @@ const types = {
     "Location": {
         constructor: (value) => `new Location(${value.x}, ${value.y})`,
         name: () => `Location`,
-        get: simpleGetter,
+        get: propertyGetter,
     },
     "BrowsersInfo": {
         constructor: (value) => {
