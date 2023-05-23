@@ -89,7 +89,7 @@ module.exports = function (tracker, test) {
         let result = ''
         if (params.length > 0) {
             let i = 0;
-            result += `, Arrays.asList(`
+            result += `, new object[] {`
             for (const param of params) {
                 if (param === undefined) break
                 i += 1;
@@ -98,7 +98,7 @@ module.exports = function (tracker, test) {
                 else
                     result += dot_net`${param}`
             }
-            result += `)`
+            result += `}`
         }
         return insert(result)
     }
@@ -117,12 +117,15 @@ module.exports = function (tracker, test) {
     // Playwright has no mobile testing
     addHook('deps', `using NUnit.Framework;`)
     addHook('deps', `using Applitools;`)
+    addHook('deps', `using Applitools.Commands;`)
+    addHook('deps', `using Applitools.Tests.Utils;`)
     addHook('deps', `using Applitools.Playwright;`)
     addHook('deps', `using Applitools.Playwright.Fluent;`)
     addHook('deps', `using Applitools.Playwright.Universal;`)
     addHook('deps', `using Applitools.Utils.Geometry;`) 
     addHook('deps', `using Microsoft.Playwright;`)
     addHook('deps', `using System;`)
+    addHook('deps', `using System.Collections.Generic;`)
     addHook('deps', `using System.Linq;`)
     addSyntax('var', variable)
     addSyntax('getter', getter)
@@ -135,7 +138,7 @@ module.exports = function (tracker, test) {
     addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
     const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch', 'stitchMode'];
     Object.keys(test.config).filter(property => !specific.includes(property))
-    .forEach(property => addHook('beforeEach', dot_net`Set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
+    .forEach(property => addHook('beforeEach', dot_net`Eyes.${insert(capitalizeFirstLetter(property))} = ${test.config[property]};`))
     if (test.config.browsersInfo) {
         addHook('deps', 'using Applitools.VisualGrid;')
         addHook('beforeEach', dot_net`SetBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
@@ -157,8 +160,24 @@ module.exports = function (tracker, test) {
             })
     }
     if (test.config.layoutBreakpoints) {
-        addHook('beforeEach', `SetLayoutBreakpoints(${test.config.layoutBreakpoints});`)
+
+        if (typeof test.config.layoutBreakpoints == 'object' && !Array.isArray(test.config.layoutBreakpoints)) {
+            let breakpoints;
+            if (typeof test.config.layoutBreakpoints.breakpoints == 'object') { 
+                breakpoints = test.config.layoutBreakpoints.breakpoints.join(', ')
+            }
+            else { 
+                breakpoints = test.config.layoutBreakpoints.breakpoints 
+            }
+
+            addHook('beforeEach', `SetLayoutBreakpoints(${breakpoints});`)
+            //addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
+        } else {
+            addHook('beforeEach', `SetLayoutBreakpoints(${test.config.layoutBreakpoints});`)
+            //addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
+        }
     }
+
     if (test.config.batch) {
         addHook('beforeEach', `SetBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
             return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
@@ -221,13 +240,13 @@ module.exports = function (tracker, test) {
     const eyes = {
         constructor: {
             setViewportSize(viewportSize) {
-                return addCommand(dot_net`Eyes.SetViewportSize(getDriver(), ${addType(viewportSize, 'RectangleSize')});`)
+                return addCommand(dot_net`Eyes.SetViewportSize(Driver, ${addType(viewportSize, 'RectangleSize')});`)
             }
         },
         runner: {
             getAllTestResults(throwEx) {
                 return addCommand(dot_net`Runner.GetAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
-                    getAllResults: (target) => addCommand(dot_net`${target}.getAllResults();`).type({
+                    getAllResults: (target) => addCommand(dot_net`${target}.GetAllResults();`).type({
                         type: 'Array',
                         items: {
                             type: 'TestResultContainer',
@@ -285,7 +304,7 @@ module.exports = function (tracker, test) {
             const commands = []
             commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Window()`)
-            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(TimeSpan.FromMilliseconds(${matchTimeout}))`)
             if (stitchContent !== undefined) commands.push(dot_net`.Fully(${stitchContent})`)
             if (tag) commands.push(dot_net`.WithName(${tag})`)
             commands.push(dot_net`);`)
@@ -295,7 +314,7 @@ module.exports = function (tracker, test) {
             const commands = []
             commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Frame(${findFrame(element)})`)
-            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(TimeSpan.FromMilliseconds(${matchTimeout}))`)
             if (tag) commands.push(dot_net`.WithName(${tag})`)
             commands.push(dot_net`.Fully());`)
             addCommand([commands.join('')])
@@ -304,7 +323,7 @@ module.exports = function (tracker, test) {
             const commands = []
             commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Region(${wrapSelector(region)})`)
-            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(TimeSpan.FromMilliseconds(${matchTimeout}))`)
             if (tag) commands.push(dot_net`.WithName(${tag})`)
             commands.push(dot_net`);`)
             addCommand([commands.join('')])
@@ -314,7 +333,7 @@ module.exports = function (tracker, test) {
             commands.push(dot_net`Eyes.Check(Target`)
             commands.push(dot_net`.Frame(${findFrame(frameReference)})`)
             commands.push(dot_net`.Region(${wrapSelector(selector)})`)
-            if (matchTimeout) commands.push(dot_net`.Timeout(${matchTimeout})`)
+            if (matchTimeout) commands.push(dot_net`.Timeout(TimeSpan.FromMilliseconds(${matchTimeout}))`)
             if (tag) commands.push(dot_net`.WithName(${tag})`)
             if (stitchContent) commands.push(dot_net`.Fully(${stitchContent})`)
             commands.push(dot_net`);`)
@@ -379,16 +398,16 @@ module.exports = function (tracker, test) {
         extractTextRegions({ patterns, ignoreCase, firstOnly, language }) {
             const commands = []
             commands.push(dot_net`Eyes.ExtractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
-            if (ignoreCase) commands.push(dot_net`.IgnoreCase(${ignoreCase})`)
-            if (firstOnly) commands.push(dot_net`.FirstOnly(${firstOnly})`)
-            if (language) commands.push(dot_net`.Language(${language})`)
+            if (ignoreCase) commands.push(dot_net`.SetIgnoreCase(${ignoreCase})`)
+            if (firstOnly) commands.push(dot_net`.SetFirstOnly(${firstOnly})`)
+            if (language) commands.push(dot_net`.SetLanguage(${language})`)
             commands.push(dot_net`);`)
             return addCommand([commands.join('')]).type({
                 type: 'Map<String, List<TextRegion>>',
                 items: {
                     type: 'List<TextRegion>',
                     schema: {
-                        length: { rename: 'size' }
+                        length: { rename: 'Count' }
                     },
                     items: {
                         type: 'TextRegion',
@@ -402,53 +421,44 @@ module.exports = function (tracker, test) {
     const assert = {
         equal(actual, expected, message) {
             if (expected === null) {
-                addCommand(dot_net`Assert.assertNull(${actual}${assertMessage(message)});`)
+                addCommand(dot_net`Assert.Null(${actual}${assertMessage(message)});`)
             } else if (expected.isRef) {
                 const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
-                addCommand(dot_net`Assert.assertEquals(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
+                addCommand(dot_net`Assert.AreEqual(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
             } else {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {
-                    addCommand(dot_net`Assert.assertEquals(${actual}.asText(""), ${expected}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${actual}.asText(""), ${expected}${assertMessage(message)});`)
                 } else if (type === 'Array') {
-                    addCommand(dot_net`Assert.assertEquals(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
                 } else if (type !== 'Map') {
-                    addCommand(dot_net`Assert.assertEquals(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
                 } else {
                     addCommand(dot_net`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
                 }
             }
         },
         notEqual(actual, expected, message) {
-            addCommand(dot_net`Assert.assertNotEquals(${actual}, ${expected}${assertMessage(message)});`)
+            addCommand(dot_net`Assert.AreNotEqual(${actual}, ${expected}${assertMessage(message)});`)
         },
         instanceOf(object, typeName) {
-            addCommand(dot_net`Assert.assertTrue(${object} instanceof ${insert(types[typeName].name())});`)
+            addCommand(dot_net`Assert.IsInstanceOf<${insert(types[typeName].name())}>(${object});`)
         },
         throws(func, check) {
-            let command
-            if (check) {
-                command = dot_net`Assert.assertThrows(${insert(check())} , new Assert.ThrowingRunnable(){
-          public void run() {${func}}
-        });`
-            } else {
-                command = dot_net`Assert.assertThrows(new Assert.ThrowingRunnable(){ 
-        public void run() {${func}}
-        });`
-            }
+            let command = dot_net`Assert.Throws<Exception>(()=>{${func}});`
             addCommand(command)
         },
         ok(arg, message) {
-            addCommand(dot_net`Assert.assertNotNull(${arg}${assertMessage(message)});`)
+            addCommand(dot_net`Assert.NotNull(${arg}${assertMessage(message)});`)
         },
         contains(args, expectedToHave) {
-            addCommand(dot_net`Assert.assertTrue(${args}.contains(${expectedToHave}));`)
+            addCommand(dot_net`StringAssert.Contains(${expectedToHave}, (${args});`)
         }
     }
 
     const helpers = {
         getTestInfo(result) {
-            return addCommand(dot_net`getTestInfo(${result});`).type({
+            return addCommand(dot_net`GetTestInfo(${result});`).type({
                 type: 'TestInfo',
                 schema: {
                     actualAppOutput: {
@@ -491,7 +501,7 @@ module.exports = function (tracker, test) {
                                     properties: {
                                         type: 'List<Map<String, String>>',
                                         schema: {
-                                            length: { rename: 'size' }
+                                            length: { rename: 'Count' }
                                         },
                                         items: {
                                             type: 'Map<String, String>',
@@ -509,8 +519,8 @@ module.exports = function (tracker, test) {
             })
         },
         getDom(result, domId) {
-            return addCommand(dot_net`getDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
-                getNodesByAttribute: (dom, attr) => addCommand(dot_net`getNodesByAttributes(${dom}, ${attr});`).type({
+            return addCommand(dot_net`GetDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
+                getNodesByAttribute: (dom, attr) => addCommand(dot_net`GetNodesByAttributes(${dom}, ${attr});`).type({
                     type: 'List<JsonNode>',
                     schema: { length: { rename: 'size' } },
                     items: {

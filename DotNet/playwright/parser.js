@@ -34,11 +34,11 @@ function checkSettings(cs, native) {
     if (cs.layoutRegions) options += typeRegions('Layout', cs.layoutRegions);
     if (cs.scrollRootElement && !cs.frames) options += `.ScrollRootElement(${printSelector(cs.scrollRootElement)})`;
     if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`;
-    if (cs.timeout) options += `.Timeout(${serialize(cs.timeout)})`;
+    if (cs.timeout) options += `.Timeout(TimeSpan.FromMilliseconds(${serialize(cs.timeout)}))`;
     if (cs.sendDom !== undefined) options += `.SendDom(${serialize(cs.sendDom)})`;
-    if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${cs.matchLevel.toUpperCase()})`;
+    if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${capitalizeFirstLetter(cs.matchLevel)})`;
     if (cs.name) options += `.WithName("${cs.name}")`;
-    if (cs.layoutBreakpoints) options += `.LayoutBreakpoints(${cs.layoutBreakpoints})`;
+    if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints);
     if (cs.waitBeforeCapture) options += `.WaitBeforeCapture(${cs.waitBeforeCapture})`;
     if (cs.isFully === true) {
         options += '.Fully()';
@@ -63,6 +63,30 @@ function checkSettings(cs, native) {
     return dot_net + element + options;
 
     // check settings
+    
+    function layoutBreakpoints(layoutBreakpoints) {
+        // let option = `.LayoutBreakpoints(new LayoutBreakpointsOptions()`
+        // if (typeof layoutBreakpoints == 'object' && !Array.isArray(layoutBreakpoints)) {
+        //     if (typeof layoutBreakpoints.breakpoints == 'boolean') option += `.Breakpoints(${layoutBreakpoints.breakpoints})`;
+        //     if (typeof layoutBreakpoints.breakpoints == 'object') option += `.Breakpoints(${layoutBreakpoints.breakpoints.join(', ')})`
+        // } else {
+        //     option += `.Breakpoints(${layoutBreakpoints})`
+        // }
+        // if (layoutBreakpoints.reload) {
+        //     option += `.Reload(${layoutBreakpoints.reload})`
+        // }
+        // option += `)`
+        let option = `.LayoutBreakpoints(`
+        if (typeof layoutBreakpoints == 'object' && !Array.isArray(layoutBreakpoints)) {
+            if (typeof layoutBreakpoints.breakpoints == 'boolean') option += `${layoutBreakpoints.breakpoints}`;
+            if (typeof layoutBreakpoints.breakpoints == 'object') option += `${layoutBreakpoints.breakpoints.join(', ')}`
+        } else {
+            option += layoutBreakpoints
+        }
+        option += `)`
+        
+        return option;
+    }
 
     function webview(webview) {
         let s;
@@ -173,16 +197,9 @@ function checkSettings(cs, native) {
         let string;
         let llOptions;
         const LLOptionsKeys = Object.keys(lazyLoad);
-        if (LLOptionsKeys.length == 3) {
-            llOptions = LLOptionsKeys.map(key => `${lazyLoad[key]}`).join(', ');
-            string = `new LazyLoadOptions(${llOptions})`;
-            return `.LazyLoad(${string})`
-        }
-        else {
-            llOptions = LLOptionsKeys.map(key => `${key}(${lazyLoad[key]})`).join('.');
-            string = `new LazyLoadOptions().${llOptions}`;
-            return `.LazyLoad(${string})`;
-        }
+        llOptions = LLOptionsKeys.map(key => `${key}: ${lazyLoad[key]}`).join(',');
+        string = `new LazyLoadOptions(${llOptions})`;
+        return `.LazyLoad(${string})`;
     }
     function lazyLoad(lazyLoad) {
         if (isEmpty(lazyLoad))

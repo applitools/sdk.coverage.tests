@@ -9,8 +9,8 @@ const types = {
             const mapValue = generic[1]
             const keyType = types[mapKey.name]
             const valueType = types[mapValue.name]
-            return `new HashMap<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
-    {{ ${Object.keys(value).map(key => `put(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
+            return `new Dictionary<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
+    {{ ${Object.keys(value).map(key => `Add(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
         },
         get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
@@ -30,7 +30,7 @@ const types = {
             {{ ${value.map(region => `Add(${paramType.constructor(region)});`).join(' ')} }}`
         },
         name: (type) => `List<${type.generic[0].name}>`,
-        get: (target, key) => Number.isInteger(Number(key)) ? `${target}.get(${key})` : `${target}.${key}()`
+        get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : `${target}.${key}()`
     },
     "RectangleSize": {
         constructor: (value) => `new RectangleSize(${value.width}, ${value.height})`,
@@ -78,11 +78,11 @@ const types = {
     },
     "Number": {
         constructor: (value) => `${JSON.stringify(value)}L`,
-        name: () => `Number`,
+        name: () => `long`,
     },
     "Long": {
-        constructor: (value) => `new Long(${JSON.stringify(value)})`,
-        name: () => `Long`,
+        constructor: (value) => `(long)${JSON.stringify(value)}`,
+        name: () => `long`,
     },
     "int": {
         constructor: (value) => `${JSON.stringify(value)}`,
