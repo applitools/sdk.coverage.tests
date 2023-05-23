@@ -46,7 +46,7 @@ const types = {
         name: () => 'JsonNode'
     },
     "Element": {
-        name: () => 'ElementHandle',
+        name: () => 'IElementHandle',
         get: simpleGetter,
     },
     "Region": {
@@ -63,6 +63,7 @@ const types = {
     },
     "Array": {
         get: (target, key) => `${target}[${key}]`,
+        name: (arr) => `${arr.items.type}[]`,
     },
     "Boolean": {
         constructor: (value) => `${value}`,
@@ -167,7 +168,10 @@ const types = {
         get: (target, key) => key.startsWith('name') ? `${target}.getBrowserType().getName()` : simpleGetter(target, key),
     },
     "StitchModes": {
-        get: simpleGetter
+        constructor: (value)=>{
+            if (value === undefined) return null
+            return `StitchModes.${value}`
+        }
     },
     "ChromeEmulationInfo": {
         name: () => "ChromeEmulationInfo",

@@ -101,7 +101,7 @@ function checkSettings(cs, native) {
     }
 
     function region(region) {
-        return `.region(${regionParameter(region)})`;
+        return `.Region(${regionParameter(region)})`;
     }
 
     function typeRegions(type, arr) {
@@ -274,7 +274,7 @@ function printSelector(val) {
     return serialize((val && val.isRef) ? val : wrapSelector(val))
 }
 
-const variable = ({ name, value, type }) => `final ${mapTypes(type)} ${name} = (${mapTypes(type)}) ${value}`
+const variable = ({ name, value, type }) => `${mapTypes(type)} ${name} = (${mapTypes(type)}) ${value}`
 const call = ({ target, args }) => {
     return args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}()`
 }
@@ -286,13 +286,13 @@ function parseEnv(env) {
     checkOptions(env, ENV_PROPERTIES)
     let result = 'Driver = BuildDriver()'
     if (env) {
-        if (env.browser) result += `.browser(${serialize(env.browser)})`
-        if (env.device) result += `.device(${serialize(env.device)})`
-        if (env.app) result += `.app(${serialize(env.app)})`
-        if (env.orientation) result += `.orientation(${serialize(env.orientation)})`
-        if (env.hasOwnProperty('headless')) result += `.headless(${serialize(env.headless)})`
-        if (env.hasOwnProperty('legacy')) result += `.legacy(${serialize(env.legacy)})`
-        if (env.hasOwnProperty('executionGrid') && env.executionGrid !== undefined) result += `.executionGrid(${serialize(env.executionGrid)})`
+        if (env.browser) result += `.Browser(${serialize(env.browser)})`
+        if (env.device) result += `.Device(${serialize(env.device)})`
+        if (env.app) result += `.App(${serialize(env.app)})`
+        if (env.orientation) result += `.Orientation(${serialize(env.orientation)})`
+        if (env.hasOwnProperty('headless')) result += `.Headless(${serialize(env.headless)})`
+        if (env.hasOwnProperty('legacy')) result += `.Legacy(${serialize(env.legacy)})`
+        if (env.hasOwnProperty('executionGrid') && env.executionGrid !== undefined) result += `.ExecutionGrid(${serialize(env.executionGrid)})`
     }
     return result + '.Build();'
 }

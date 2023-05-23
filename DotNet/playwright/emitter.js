@@ -124,6 +124,22 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Microsoft.Playwright;`)
     addHook('deps', `using System;`)
     addHook('deps', `using System.Linq;`)
+    addSyntax('var', variable)
+    addSyntax('getter', getter)
+    addSyntax('call', call)
+    addSyntax('return', returnSyntax)
+    
+    addHook('afterEach', `Runner.GetAllTestResults(false);`)
+    
+    addHook('beforeEach', dot_net`InitEyes(${argumentCheck(test.vg, false)}, ${{value: test.config.stitchMode, type: "StitchModes"}}, ${argumentCheck(test.branchName, "master")});`,)
+    addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
+    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch', 'stitchMode'];
+    Object.keys(test.config).filter(property => !specific.includes(property))
+    .forEach(property => addHook('beforeEach', dot_net`Set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
+    if (test.config.browsersInfo) {
+        addHook('deps', 'using Applitools.VisualGrid;')
+        addHook('beforeEach', dot_net`SetBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
+    }
     addHook('deps', ``)
     addHook('deps', `namespace Applitools.Generated.Playwright.Tests`)
     addHook('deps', `{`)
@@ -131,36 +147,20 @@ module.exports = function (tracker, test) {
     addHook('deps', `[Parallelizable]`)
     addHook('deps', `public class ${test.key}Class : TestSetupGenerated`)
     
-    addSyntax('var', variable)
-    addSyntax('getter', getter)
-    addSyntax('call', call)
-    addSyntax('return', returnSyntax)
-    
-    addHook('afterEach', `Runner.GetAllTestResults(false);`)
-
-    addHook('beforeEach', dot_net`InitEyes(${argumentCheck(test.vg, false)}, StitchModes.${{value: test.config.stitchMode, type: 'StitchModes'}}, ${argumentCheck(test.branchName, "master")});`,)
-    addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
-    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch', 'stitchMode'];
-    Object.keys(test.config).filter(property => !specific.includes(property))
-        .forEach(property => addHook('beforeEach', dot_net`set${insert(capitalizeFirstLetter(property))}(${test.config[property]});`))
-    if (test.config.browsersInfo) {
-        addHook('deps', 'using Applitools.Visualgrid;')
-        addHook('beforeEach', dot_net`setBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
-    }
     if (test.config.defaultMatchSettings) {
         const defaultMatchSettings = test.config.defaultMatchSettings
         Object.keys(defaultMatchSettings)
             .forEach(property => {
-                if (property === 'enablePatterns') addHook('beforeEach', `set${capitalizeFirstLetter(property)}(${defaultMatchSettings[property]});`); 
+                if (property === 'enablePatterns') addHook('beforeEach', `Set${capitalizeFirstLetter(property)}(${defaultMatchSettings[property]});`); 
                 else addHook('beforeEach',
-                dot_net`set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
+                dot_net`Set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
             })
     }
     if (test.config.layoutBreakpoints) {
-        addHook('beforeEach', `setLayoutBreakpoints(${test.config.layoutBreakpoints});`)
+        addHook('beforeEach', `SetLayoutBreakpoints(${test.config.layoutBreakpoints});`)
     }
     if (test.config.batch) {
-        addHook('beforeEach', `setBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
+        addHook('beforeEach', `SetBatch("${test.config.baselineName}", new HashMap[] {\n    ${test.config.batch.properties.map(val => {
             return { value: val, type: 'Map', generic: [{ name: 'String' }, { name: 'String' }] }
         }).map(property => dot_net`${property}`).join(',\n    ')}});`)
     }
@@ -180,12 +180,12 @@ module.exports = function (tracker, test) {
             let actualScript = script;
             if (script.startsWith("arguments[0]")) {
                 actualScript = `arguments => { ${script} };`
-                return addCommand(dot_net`GetPage().Evaluate(${actualScript}${extraParameters(args)});`)
+                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
             } else if (script.startsWith('return')) {
                 actualScript = `() => { ${script} };`
-                return addCommand(dot_net`GetPage().Evaluate(${actualScript}${extraParameters(args)});`)
+                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
             }
-            return addCommand(dot_net`GetPage().Evaluate(${actualScript}${extraParameters(args)});`)
+            return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
         },
         switchToFrame(selector) {
             if (selector === null) {
@@ -198,14 +198,14 @@ module.exports = function (tracker, test) {
             addCommand(dot_net`GetPage().MainFrame().ParentFrame();`)
         },
         findElement(selector) {
-            return addCommand(dot_net`GetPage().Locator(${wrapSelector(selector)}).ElementHandle();`).type('Element')
+            return addCommand(dot_net`GetPage().Locator(${wrapSelector(selector)}).ElementHandleAsync().GetAwaiter().GetResult();`).type('Element')
         },
         findElements(selector) {
             return addCommand(dot_net`Driver.FindElements(${wrapSelector(selector)}));`).type('Array<Element>')
         },
         click(element) {
-            if (element.isRef) addCommand(dot_net`${element}.Click();`)
-            else addCommand(dot_net`GetPage().Locator(${element}).Click();`)
+            if (element.isRef) addCommand(dot_net`${element}.ClickAsync().GetAwaiter().GetResult();`)
+            else addCommand(dot_net`GetPage().Locator(${element}).ClickAsync().GetAwaiter().GetResult();`)
         },
         type(element, keys) {
             addCommand(dot_net`${element}.Fill(${keys});`)
@@ -214,7 +214,7 @@ module.exports = function (tracker, test) {
             addCommand(dot_net`${element}.ScrollIntoViewIfNeeded();`)
         },
         hover(element, offset) {
-            addCommand(dot_net`${findElement(element)}.Hover();`)
+            addCommand(dot_net`${findElement(element)}.HoverAsync().GetAwaiter().GetResult();`)
         }
     }
 
