@@ -1,7 +1,8 @@
 const iosDeviceName = require('../../mapping/iosDeviceName')
 const deviceName = require('../../mapping/deviceName')
 const { capitalizeFirstLetter } = require('../../util')
-const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
+const simpleGetter = (target, key) => `${target}.Get${capitalizeFirstLetter(key)}()`;
+const propertyGetter = (target, key) => `${target}.${capitalizeFirstLetter(key)}`;
 const types = {
     "Map": {
         constructor: (value, generic) => {
@@ -9,8 +10,8 @@ const types = {
             const mapValue = generic[1]
             const keyType = types[mapKey.name]
             const valueType = types[mapValue.name]
-            return `new Dictionary<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
-    {{ ${Object.keys(value).map(key => `Add(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
+            return `new Dictionary<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>
+    {{ ${Object.keys(value).map(key => `{${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)}}`).join(', ')} }}}`
         },
         get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
@@ -38,7 +39,7 @@ const types = {
         name: () => 'RectangleSize',
     },
     "TestInfo": {
-        get: simpleGetter,
+        get: propertyGetter,
         name: () => 'SessionResults',
     },
     "JsonNode": {
@@ -74,7 +75,7 @@ const types = {
     },
     "String": {
         constructor: (value) => JSON.stringify(value),
-        name: () => `String`,
+        name: () => `string`,
     },
     "Number": {
         constructor: (value) => `${JSON.stringify(value)}L`,
@@ -92,16 +93,16 @@ const types = {
         get: simpleGetter,
     },
     "ImageMatchSettings": {
-        get: simpleGetter,
+        get: propertyGetter,
     },
     "AppOutput": {
-        get: simpleGetter,
+        get: propertyGetter,
     },
     "AccessibilitySettings": {
         constructor: function (value) {
             return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
         },
-        get: (target, key) => (key === 'version') ? `${target}.getGuidelinesVersion()` : simpleGetter(target, key)
+        get: (target, key) => (key === 'version') ? `${target}.GetGuidelinesVersion()` : simpleGetter(target, key)
     },
     "AccessibilityRegion": {
         constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
@@ -127,13 +128,13 @@ const types = {
         },
     },
     "TextRegion": {
-        get: simpleGetter
+        get: propertyGetter
     },
     "BatchInfo": {
-        get: simpleGetter
+        get: propertyGetter
     },
     "StartInfo": {
-        get: simpleGetter
+        get: propertyGetter
     },
     "TestResultsSummary": {
         name: () => `TestResultsSummary`,
