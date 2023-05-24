@@ -138,7 +138,16 @@ module.exports = function (tracker, test) {
     
     addHook('beforeEach', dot_net`InitEyes(${argumentCheck(test.vg, false)}, ${{value: test.config.stitchMode, type: "StitchModes"}}, ${argumentCheck(test.branchName, "master")});`,)
     addHook('beforeEach', parseEnv({ ...test.env, executionGrid: test.executionGrid }))
-    const specific = ['baselineName', 'browsersInfo', 'appName', 'defaultMatchSettings', 'layoutBreakpoints', 'batch', 'stitchMode', 'viewportSize'];
+    const specific = [
+        'baselineName', 
+        'browsersInfo', 
+        'appName', 
+        'defaultMatchSettings',
+        'layoutBreakpoints',
+        'batch',
+        'stitchMode',
+        'viewportSize', 
+        'removeDuplicateTests'];
     Object.keys(test.config).filter(property => !specific.includes(property))
     .forEach(property => addHook('beforeEach', dot_net`Eyes.${insert(capitalizeFirstLetter(property))} = ${test.config[property]};`))
     if (test.config.browsersInfo) {
@@ -160,6 +169,9 @@ module.exports = function (tracker, test) {
                 else addHook('beforeEach',
                 dot_net`Set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
             })
+    }
+    if (test.config.removeDuplicateTests) {
+        addHook('beforeEach', dot_net`Runner.SetRemoveDuplicateTests(${test.config.removeDuplicateTests});`)
     }
     if (test.config.layoutBreakpoints) {
 

@@ -63,7 +63,7 @@ const types = {
         }
     },
     "Array": {
-        get: (target, key) => `${target}[${key}]`,
+        get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : propertyGetter(target, key),
         name: (arr) => `${arr.items.type}[]`,
     },
     "Boolean": {
@@ -123,7 +123,7 @@ const types = {
             return value.map(render => {
                 if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
                 else if (render.iosDeviceInfo) return `new IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
-                else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
+                else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.Portrait)`
             }).join(', ')
         },
     },
@@ -142,18 +142,18 @@ const types = {
     },
     "TestResultContainer": {
         name: () => `TestResultContainer`,
-        get: (target, key) => key.includes('get') ? `${target}.${key}` : simpleGetter(target, key)
+        get: (target, key) => key.includes('get') ? `${target}.${key}` : propertyGetter(target, key)
     },
     "TestResults": {
         name: () => `TestResults`,
         get: (target, key) => {
             if (key.startsWith('is')) {
-                return `${target}.${key}()`
+                return propertyGetter(target, key)
             }
             else if (key == 'status') {
                 return `${target}.getStatus().name()`
             } else {
-                return simpleGetter(target, key)
+                return propertyGetter(target, key)
             }
         }
     },
