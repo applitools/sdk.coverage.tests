@@ -395,7 +395,7 @@ module.exports = function (tracker, test) {
             const commands = []
             commands.push(dot_net`Eyes.ExtractText(`)
             for (const index in ocrRegions) {
-                commands.push(dot_net`new OcrRegion(`)
+                commands.push(dot_net`new Applitools.Playwright.OcrRegion(`)
                 const region = ocrRegions[index]
                 if (typeof (region.target) === "string") {
                     commands.push(dot_net`${region.target})`)
@@ -412,14 +412,14 @@ module.exports = function (tracker, test) {
                     commands.push(dot_net`.MinMatch(${region.minMatch})`)
                 }
                 if (region.language) {
-                    commands.push(dot_net`.language(${region.language})`)
+                    commands.push(dot_net`.Language(${region.language})`)
                 }
                 commands.push(dot_net`, `)
             }
             commands.pop()
             commands.push(dot_net`);`)
             return addCommand([commands.join('')]).type({
-                type: 'List<String>',
+                type: 'List<string>',
                 items: {
                     type: 'String'
                 }
