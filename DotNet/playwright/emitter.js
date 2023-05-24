@@ -125,6 +125,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Applitools.Playwright.Universal;`)
     addHook('deps', `using Applitools.Utils.Geometry;`) 
     addHook('deps', `using Microsoft.Playwright;`)
+    addHook('deps', `using Newtonsoft.Json;`)
     addHook('deps', `using Newtonsoft.Json.Linq;`)
     addHook('deps', `using System;`)
     addHook('deps', `using System.Collections.Generic;`)
@@ -464,8 +465,7 @@ module.exports = function (tracker, test) {
                 } else if (type !== 'Map') {
                     addCommand(dot_net`Assert.AreEqual(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
                 } else {
-                    // TODO - find some other way to check if objects are exactly the same.
-                    // addCommand(dot_net`Assert.assertEqualsDeep(${actual}, ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(JsonConvert.SerializeObject(${actual}),\n        JsonConvert.SerializeObject(${addType(expected, type, actual.type().generic)})${assertMessage(message)});`)
                 }
             }
         },

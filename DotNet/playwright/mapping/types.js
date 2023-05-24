@@ -11,7 +11,7 @@ const types = {
             const keyType = types[mapKey.name]
             const valueType = types[mapValue.name]
             return `new Dictionary<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>
-    {{ ${Object.keys(value).map(key => `{${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)}}`).join(', ')} }}}`
+    { ${Object.keys(value).map(key => `{${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)}}`).join(', ')} }`
         },
         get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
@@ -27,8 +27,8 @@ const types = {
         constructor: (value, generic) => {
             const param = generic[0]
             const paramType = types[param.name]
-            return `new ArrayList<${paramType.name(param)}>()
-            {{ ${value.map(region => `Add(${paramType.constructor(region)});`).join(' ')} }}`
+            return `new List<${paramType.name(param)}>
+            { ${value.map(region => `${paramType.constructor(region)}`).join(', ')} }`
         },
         name: (type) => `List<${type.generic[0].name}>`,
         get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : `${target}.${key}()`
