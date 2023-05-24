@@ -147,7 +147,9 @@ module.exports = function (tracker, test) {
         'batch',
         'stitchMode',
         'viewportSize', 
-        'removeDuplicateTests'];
+        'removeDuplicateTests',
+        'waitBeforeCapture'
+    ];
     Object.keys(test.config).filter(property => !specific.includes(property))
     .forEach(property => addHook('beforeEach', dot_net`Eyes.${insert(capitalizeFirstLetter(property))} = ${test.config[property]};`))
     if (test.config.browsersInfo) {
@@ -172,6 +174,9 @@ module.exports = function (tracker, test) {
     }
     if (test.config.removeDuplicateTests) {
         addHook('beforeEach', dot_net`Runner.SetRemoveDuplicateTests(${test.config.removeDuplicateTests});`)
+    }
+    if (test.config.waitBeforeCapture) {
+        addHook('beforeEach', dot_net`WaitBeforeCapture(${test.config.waitBeforeCapture});`)
     }
     if (test.config.layoutBreakpoints) {
 
@@ -252,7 +257,7 @@ module.exports = function (tracker, test) {
             else addCommand(dot_net`GetPage().Locator(${element}).ClickAsync().GetAwaiter().GetResult();`)
         },
         type(element, keys) {
-            addCommand(dot_net`${element}.Fill(${keys});`)
+            addCommand(dot_net`${element}.FillAsync(${keys}).GetAwaiter().GetResult();`)
         },
         scrollIntoView(element, align = false) {
             addCommand(dot_net`${element}.ScrollIntoViewIfNeeded();`)

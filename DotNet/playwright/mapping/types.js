@@ -102,7 +102,7 @@ const types = {
         constructor: function (value) {
             return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
         },
-        get: (target, key) => (key === 'version') ? `${target}.GetGuidelinesVersion()` : propertyGetter(target, key)
+        get: (target, key) => (key === 'version') ? `${target}.GuidelinesVersion` : propertyGetter(target, key)
     },
     "AccessibilityRegion": {
         constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
@@ -162,7 +162,7 @@ const types = {
         get: (target, key) => `${target}["${key}"].Value<double>()`,
     },
     "PageCoverageInfo": {
-        get: simpleGetter
+        get: propertyGetter
     },
     "BrowserInfo": {
         name: () => `BrowserInfo`,
@@ -181,12 +181,7 @@ const types = {
     },
     "ChromeEmulationInfo": {
         name: () => "ChromeEmulationInfo",
-        get: (target, key) => {
-            if (target.includes('Chrome')) {
-                target = target.replace("ChromeEmulationInfo", "EmulationInfo");
-                return simpleGetter(target, key);
-            } else { return simpleGetter(target, key) }
-        }
+        get: propertyGetter
     }
 
 }

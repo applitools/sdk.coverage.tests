@@ -39,7 +39,7 @@ function checkSettings(cs, native) {
     if (cs.matchLevel) options += `.MatchLevel(MatchLevel.${capitalizeFirstLetter(cs.matchLevel)})`;
     if (cs.name) options += `.WithName("${cs.name}")`;
     if (cs.layoutBreakpoints) options += layoutBreakpoints(cs.layoutBreakpoints);
-    if (cs.waitBeforeCapture) options += `.WaitBeforeCapture(${cs.waitBeforeCapture})`;
+    if (cs.waitBeforeCapture) options += `.WaitBeforeCapture(TimeSpan.FromMilliseconds(${cs.waitBeforeCapture}))`;
     if (cs.isFully === true) {
         options += '.Fully()';
     } else if (cs.isFully === false) {
