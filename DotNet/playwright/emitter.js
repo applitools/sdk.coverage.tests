@@ -384,7 +384,7 @@ module.exports = function (tracker, test) {
             })
         },
         locate(visualLocator) {
-            return addCommand(dot_net`Eyes.Locate(new VisualLocatorSettings().names(Arrays.asList(${visualLocator.locatorNames.join(', ')})));`).type('Map<String, List<Region>>')
+            return addCommand(dot_net`Eyes.Locate(new VisualLocatorSettings().Names(${visualLocator.locatorNames.join(', ')}));`).type('Map<String, List<Region>>')
         },
         extractText(ocrRegions) {
             const commands = []
@@ -453,7 +453,7 @@ module.exports = function (tracker, test) {
             } else {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {
-                    addCommand(dot_net`Assert.AreEqual(${actual}.asText(""), ${expected}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${actual}.ToString(), ${expected}${assertMessage(message)});`)
                 } else if (type === 'Array') {
                     addCommand(dot_net`Assert.AreEqual(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
                 } else if (type !== 'Map') {

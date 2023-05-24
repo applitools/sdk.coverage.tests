@@ -169,11 +169,16 @@ function checkSettings(cs, native) {
                                 string += `, new Padding(${region.padding})`
                                 break;
                             case 'object':
-                                string += `, new Padding()`
-                                if (region.padding.top) string += `.setTop(${region.padding.top})`
-                                if (region.padding.right) string += `.setRight(${region.padding.right})`
-                                if (region.padding.bottom) string += `.setBottom(${region.padding.bottom})`
-                                if (region.padding.left) string += `.setLeft(${region.padding.left})`
+                                string += `, new Padding(`
+                                let paddingArgs = '';
+                                if (region.padding.left) paddingArgs += `left: ${region.padding.left}, `
+                                if (region.padding.top) paddingArgs += `top: ${region.padding.top}, `
+                                if (region.padding.right) paddingArgs += `right: ${region.padding.right}, `
+                                if (region.padding.bottom) paddingArgs += `bottom: ${region.padding.bottom}, `
+                                if (paddingArgs !== '') {
+                                    paddingArgs = paddingArgs.slice(0, -2)
+                                }
+                                string += `${paddingArgs})`
                                 break;
                             default:
                                 throw new Error(`Padding parameter of the unimplemented type was used:  ${JSON.stringify(region.padding)}`);

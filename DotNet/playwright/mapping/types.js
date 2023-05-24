@@ -43,7 +43,7 @@ const types = {
         name: () => 'SessionResults',
     },
     "JsonNode": {
-        get: (target, key) => `${target}.get(${Number.isInteger(Number(key)) ? key : `"${key}"`})`,
+        get: (target, key) => `${target}[${Number.isInteger(Number(key)) ? key : `"${key}"`}]`,
         name: () => 'JObject'
     },
     "Element": {
@@ -68,10 +68,10 @@ const types = {
     },
     "Boolean": {
         constructor: (value) => `${value}`,
-        name: () => `Boolean`
+        name: () => `bool`
     },
     "BooleanObject": {
-        constructor: (value) => `Boolean.${value.toString().toUpperCase()}`
+        constructor: (value) => `${value.toString().toLowerCase()}`
     },
     "String": {
         constructor: (value) => JSON.stringify(value),
@@ -102,7 +102,7 @@ const types = {
         constructor: function (value) {
             return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
         },
-        get: (target, key) => (key === 'version') ? `${target}.GetGuidelinesVersion()` : simpleGetter(target, key)
+        get: (target, key) => (key === 'version') ? `${target}.GetGuidelinesVersion()` : propertyGetter(target, key)
     },
     "AccessibilityRegion": {
         constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
@@ -150,8 +150,8 @@ const types = {
             if (key.startsWith('is')) {
                 return propertyGetter(target, key)
             }
-            else if (key == 'status') {
-                return `${target}.getStatus().name()`
+            else if (key === 'status') {
+                return `${target}.Status.ToString()`
             } else {
                 return propertyGetter(target, key)
             }
@@ -159,14 +159,19 @@ const types = {
     },
     "rect": {
         name: () => 'Rect',
-        get: (target, key) => `${target}.get("${key}").asDouble()`,
+        get: (target, key) => `${target}["${key}"].Value<double>()`,
     },
     "PageCoverageInfo": {
         get: simpleGetter
     },
     "BrowserInfo": {
         name: () => `BrowserInfo`,
-        get: (target, key) => key.startsWith('name') ? `${target}.getBrowserType().getName()` : simpleGetter(target, key),
+        get: (target, key) => {
+            if (key === 'name'){
+                return `${target}.BrowserType.ToString().ToLower()`
+            }
+            return propertyGetter(target, key)
+        },
     },
     "StitchModes": {
         constructor: (value)=>{
