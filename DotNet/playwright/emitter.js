@@ -118,11 +118,12 @@ module.exports = function (tracker, test) {
     addHook('deps', `using NUnit.Framework;`)
     addHook('deps', `using Applitools;`)
     addHook('deps', `using Applitools.Commands;`)
+    addHook('deps', `using Applitools.Generated.Utils;`) 
     addHook('deps', `using Applitools.Metadata;`)
-    addHook('deps', `using Applitools.Tests.Utils;`)
     addHook('deps', `using Applitools.Playwright;`)
     addHook('deps', `using Applitools.Playwright.Fluent;`)
     addHook('deps', `using Applitools.Playwright.Universal;`)
+    addHook('deps', `using Applitools.Tests.Utils;`)
     addHook('deps', `using Applitools.Utils.Geometry;`) 
     addHook('deps', `using Microsoft.Playwright;`)
     addHook('deps', `using Newtonsoft.Json;`)
@@ -230,12 +231,12 @@ module.exports = function (tracker, test) {
             let actualScript = script;
             if (script.startsWith("arguments[0]")) {
                 actualScript = `arguments => { ${script} };`
-                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
+                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult().ToObject<Dictionary<string, object>>();`)
             } else if (script.startsWith('return')) {
                 actualScript = `() => { ${script} };`
-                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
+                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult().ToObject<Dictionary<string, object>>();`)
             }
-            return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
+            return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult().ToObject<Dictionary<string, object>>();`)
         },
         switchToFrame(selector) {
             if (selector === null) {
@@ -455,7 +456,11 @@ module.exports = function (tracker, test) {
                 addCommand(dot_net`Assert.Null(${actual}${assertMessage(message)});`)
             } else if (expected.isRef) {
                 const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
-                addCommand(dot_net`Assert.AreEqual(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
+                if (actual.type().name === 'Map') {
+                    addCommand(dot_net`GeneratedTestUtils.compareProcedure(${typeCasting}${actual}, ${expected}${assertMessage(message)}, null);`)
+                } else {
+                    addCommand(dot_net`Assert.AreEqual(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
+                }
             } else {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {

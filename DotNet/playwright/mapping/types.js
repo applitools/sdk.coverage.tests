@@ -20,7 +20,13 @@ const types = {
             const genericKey = type.generic[0]
             const value = type.generic[1].name
             const genericValue = type.generic[1]
-            return `Dictionary<${types[key].name(genericKey)},${types[value].name(genericValue)}>`
+            let genVal;
+            if (value === 'List') {
+                genVal = types[value].name(genericValue);
+            } else {
+                genVal = 'object'
+            }
+            return `Dictionary<${types[key].name(genericKey)}, ${genVal}>`
         },
     },
     "List": {

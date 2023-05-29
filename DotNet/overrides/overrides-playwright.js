@@ -71,8 +71,5 @@ module.exports = {
 
     // server response has null properties
     'should send custom batch properties': {skip: true},
-
-    // test should be modified for broader support
-    'check window with layout breakpoints': {skipEmit: true}
     
 }
