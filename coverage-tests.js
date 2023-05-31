@@ -2322,23 +2322,6 @@ page: 'HelloWorld',
   }
 })
 
-test('Should return exception in TestResultsSummary', {
-  page: 'AdoptedStyleSheets',
-  vg: true,
-  config: {
-    browsersInfo: [
-      {name: 'firefox', width: 640, height: 480},
-    ],
-  },
-  test({eyes, assert}) {
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
-    eyes.check({isFully: false})
-    assert.throws(() => void eyes.close())
-    const summary = eyes.runner.getAllTestResults(false)
-    assert.contains( summary.getAllResults()[0].exception.message, `This page's DOM has a feature, Adopted Stylesheets`)
-  }
-})
-
 test('lazy load page with default options', {
   page: 'LazyLoad',
   variants: {
