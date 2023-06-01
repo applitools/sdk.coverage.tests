@@ -36,7 +36,7 @@ const types = {
             return `new List<${paramType.name(param)}>
             { ${value.map(region => `${paramType.constructor(region)}`).join(', ')} }`
         },
-        name: (type) => `List<${type.generic[0].name}>`,
+        name: (type) => `IList<${type.generic[0].name}>`,
         get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : `${target}.${key}()`
     },
     "RectangleSize": {
