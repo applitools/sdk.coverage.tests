@@ -231,12 +231,12 @@ module.exports = function (tracker, test) {
             let actualScript = script;
             if (script.startsWith("arguments[0]")) {
                 actualScript = `arguments => { ${script} };`
-                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult().ToObject<Dictionary<string, object>>();`)
+                return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
             } else if (script.startsWith('return')) {
                 actualScript = `() => { ${script} };`
                 return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult().ToObject<Dictionary<string, object>>();`)
             }
-            return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult().ToObject<Dictionary<string, object>>();`)
+            return addCommand(dot_net`GetPage().EvaluateAsync(${actualScript}${extraParameters(args)}).GetAwaiter().GetResult();`)
         },
         switchToFrame(selector) {
             if (selector === null) {
@@ -459,29 +459,29 @@ module.exports = function (tracker, test) {
                 if (actual.type().name === 'Map') {
                     addCommand(dot_net`GeneratedTestUtils.compareProcedure(${typeCasting}${actual}, ${expected}${assertMessage(message)}, null);`)
                 } else {
-                    addCommand(dot_net`Assert.AreEqual(${typeCasting}${actual}, ${expected}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${expected}, ${typeCasting}${actual}${assertMessage(message)});`)
                 }
             } else {
                 const type = getTypeName(actual)
                 if (type === 'JsonNode') {
-                    addCommand(dot_net`Assert.AreEqual(${actual}.ToString(), ${expected}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${expected}, ${actual}.ToString()${assertMessage(message)});`)
                 } else if (type === 'Array') {
-                    addCommand(dot_net`Assert.AreEqual(${actual[0]}, ${addType(expected[0], 'Region')}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${addType(expected[0], 'Region')}, ${actual[0]}${assertMessage(message)});`)
                 } else if (type !== 'Map') {
-                    addCommand(dot_net`Assert.AreEqual(${actual}, ${addType(expected, type)}${assertMessage(message)});`)
+                    addCommand(dot_net`Assert.AreEqual(${addType(expected, type)}, ${actual}${assertMessage(message)});`)
                 } else {
-                    addCommand(dot_net`Assert.AreEqual(JsonConvert.SerializeObject(${actual}),\n        JsonConvert.SerializeObject(${addType(expected, type, actual.type().generic)})${assertMessage(message)});`)
+                    addCommand(dot_net`GeneratedTestUtils.compareProcedure(${actual},\n        ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
                 }
             }
         },
         notEqual(actual, expected, message) {
-            addCommand(dot_net`Assert.AreNotEqual(${actual}, ${expected}${assertMessage(message)});`)
+            addCommand(dot_net`Assert.AreNotEqual(${expected}${assertMessage(message)}, ${actual});`)
         },
         instanceOf(object, typeName) {
             addCommand(dot_net`Assert.IsInstanceOf<${insert(types[typeName].name())}>(${object});`)
         },
         throws(func, check) {
-            let command = dot_net`Assert.Throws<Exception>(()=>{${func}});`
+            let command = dot_net`Assert.Catch<Exception>(()=>{${func}});`
             addCommand(command)
         },
         ok(arg, message) {
