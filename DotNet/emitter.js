@@ -432,7 +432,7 @@ module.exports = function (tracker, test) {
             let objectToString = Object.prototype.toString;
             let expect = expected
             if (expected === null) {
-                addCommand(dot_net`Assert.IsNotNull(${actual});`)
+                addCommand(dot_net`Assert.IsNull(${actual});`)
             } else {
                 if (expected.isRef) expect = expected.ref()
                 else {
