@@ -28,7 +28,7 @@ function checkSettings(cs, native) {
     if (cs.webview) options += webview(cs.webview);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions);
-    if (cs.ignoreRegions) options += typeRegions('Ignore', cs.ignoreRegions);
+    if (cs.ignoreRegions) {options += typeRegions('Ignore', cs.ignoreRegions);}
     if (cs.strictRegions) options += typeRegions('Strict', cs.strictRegions);
     if (cs.contentRegions) options += typeRegions('Content', cs.contentRegions);
     if (cs.layoutRegions) options += typeRegions('Layout', cs.layoutRegions);
