@@ -6,7 +6,7 @@ const { capitalizeFirstLetter } = require('../util')
 const ImageMatchSettings = {
     type: 'ImageMatchSettings',
     schema: {
-        enablePatterns: 'BooleanObject',
+        enablePatterns: "BooleanObject",
         ignoreDisplacements: 'BooleanObject',
         floating: { type: 'Array', items: 'FloatingRegion' },
         accessibility: { type: 'Array', items: 'AccessibilityRegion' },
