@@ -84,7 +84,6 @@ module.exports = function(tracker, test) {
           ;[driver, destroyDriver] = await spec.build(${{
             ...env,
             url: useRef({deref: process.env.APPLITOOLS_TEST_REMOTE === 'ec' && env.browser === 'chrome' && !env.device ? js`await sdk.Eyes.getExecutionCloudUrl()` : undefined}),
-            framework: require(Object.keys(require(path.resolve('./package.json')).peerDependencies)[0])
           }})
         } catch (err) {
           if (attempt++ > 7) throw err
