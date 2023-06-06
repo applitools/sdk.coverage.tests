@@ -11,7 +11,7 @@ const types = {
             const keyType = types[mapKey.name]
             const valueType = types[mapValue.name]
             return `new Dictionary<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>
-    { ${Object.keys(value).map(key => `{${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)}}`).join(', ')} }`
+    { ${Object.keys(value).map(key => `{${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)}}`).join(", ")} }`
         },
         get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
