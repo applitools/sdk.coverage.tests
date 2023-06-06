@@ -13,7 +13,7 @@ const CHECK_SETTINGS_OPTIONS = [
     'matchLevel',
     'name',
     'layoutBreakpoints',
-    'isFully',
+    "isFully",
     'visualGridOptions',
     'variationGroupId',
     'hooks',
