@@ -34,7 +34,7 @@ const types = {
             const param = generic[0]
             const paramType = types[param.name]
             return `new List<${paramType.name(param)}>
-            { ${value.map(region => `${paramType.constructor(region)}`).join(', ')} }`
+            { ${value.map(region => `${paramType.constructor(region)}`).join(", ")} }`
         },
         name: (type) => `IList<${type.generic[0].name}>`,
         get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : `${target}.${key}()`
