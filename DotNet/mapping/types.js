@@ -65,7 +65,7 @@ const types = {
         constructor: (value) => `${value}`,
         name: () => `Boolean`
     },
-    "BooleanObject":{
+    "BooleanObject": {
         constructor: (value) => `Boolean.${value.toString().toUpperCase()}`
     },
     "String": {
