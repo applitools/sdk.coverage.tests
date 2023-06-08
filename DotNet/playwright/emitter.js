@@ -82,7 +82,7 @@ module.exports = function (tracker, test) {
     }
 
     function assertMessage(param, addToEnd = true) {
-        return (typeof param === 'undefined') ? emptyValue() : (addToEnd) ? insert(`, "${param}"`) : insert(`"${param}", `)
+        return (typeof param === "undefined") ? emptyValue() : (addToEnd) ? insert(`, "${param}"`) : insert(`"${param}", `)
     }
 
     function extraParameters(params) {
