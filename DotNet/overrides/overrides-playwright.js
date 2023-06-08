@@ -7,7 +7,7 @@ module.exports = {
     // Feature not present
     'should handle check of stale element if selector is preserved': { skipEmit: true },
     'should handle check of stale element in frame if selector is preserved': { skipEmit: true }, 
-    'check window after manual scroll on safari 11': { skipEmit: true },
+    "check window after manual scroll on safari 11": { skipEmit: true },
 
     // Functionality no longer exists in the SDK.
     'should return actual viewport size': { skipEmit: true },
