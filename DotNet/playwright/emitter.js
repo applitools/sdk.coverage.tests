@@ -4,7 +4,7 @@ const { TAGS } = require('./mapping/supported')
 const { checkSettingsParser, dot_net: dot_net, getter, variable, call, returnSyntax, wrapSelector, parseEnv } = require('./parser')
 const { capitalizeFirstLetter } = require('../util')
 const ImageMatchSettings = {
-    type: 'ImageMatchSettings',
+    type: "ImageMatchSettings",
     schema: {
         enablePatterns: "BooleanObject",
         ignoreDisplacements: 'BooleanObject',
