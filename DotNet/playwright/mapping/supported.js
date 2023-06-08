@@ -11,7 +11,7 @@ const CHECK_SETTINGS_OPTIONS = [
     'ignoreDisplacements',
     'sendDom',
     'matchLevel',
-    'name',
+    "name",
     'layoutBreakpoints',
     "isFully",
     'visualGridOptions',
