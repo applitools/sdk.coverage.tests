@@ -65,23 +65,15 @@ function checkSettings(cs, native) {
     // check settings
     
     function layoutBreakpoints(layoutBreakpoints) {
-        // let option = `.LayoutBreakpoints(new LayoutBreakpointsOptions()`
-        // if (typeof layoutBreakpoints == 'object' && !Array.isArray(layoutBreakpoints)) {
-        //     if (typeof layoutBreakpoints.breakpoints == 'boolean') option += `.Breakpoints(${layoutBreakpoints.breakpoints})`;
-        //     if (typeof layoutBreakpoints.breakpoints == 'object') option += `.Breakpoints(${layoutBreakpoints.breakpoints.join(', ')})`
-        // } else {
-        //     option += `.Breakpoints(${layoutBreakpoints})`
-        // }
-        // if (layoutBreakpoints.reload) {
-        //     option += `.Reload(${layoutBreakpoints.reload})`
-        // }
-        // option += `)`
-        let option = `.LayoutBreakpoints(`
+        let option = `.LayoutBreakpoints(new LayoutBreakpointsOptions()`
         if (typeof layoutBreakpoints == 'object' && !Array.isArray(layoutBreakpoints)) {
-            if (typeof layoutBreakpoints.breakpoints == 'boolean') option += `${layoutBreakpoints.breakpoints}`;
-            if (typeof layoutBreakpoints.breakpoints == 'object') option += `${layoutBreakpoints.breakpoints.join(', ')}`
+            if (typeof layoutBreakpoints.breakpoints == 'boolean') option += `.Breakpoints(${layoutBreakpoints.breakpoints})`;
+            if (typeof layoutBreakpoints.breakpoints == 'object') option += `.Breakpoints(${layoutBreakpoints.breakpoints.join(', ')})`
         } else {
-            option += layoutBreakpoints
+            option += `.Breakpoints(${layoutBreakpoints})`
+        }
+        if (layoutBreakpoints.reload) {
+            option += `.Reload(${layoutBreakpoints.reload})`
         }
         option += `)`
         

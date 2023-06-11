@@ -191,11 +191,9 @@ module.exports = function (tracker, test) {
                 breakpoints = test.config.layoutBreakpoints.breakpoints 
             }
 
-            addHook('beforeEach', `SetLayoutBreakpoints(${breakpoints});`)
-            //addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
+            addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
         } else {
-            addHook('beforeEach', `SetLayoutBreakpoints(${test.config.layoutBreakpoints});`)
-            //addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
+            addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
         }
     }
     if (test.config.viewportSize) {
