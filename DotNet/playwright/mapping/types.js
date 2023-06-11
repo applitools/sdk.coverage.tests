@@ -187,7 +187,12 @@ const types = {
     },
     "ChromeEmulationInfo": {
         name: () => "ChromeEmulationInfo",
-        get: propertyGetter
+        get: (target, key) => {
+            if (key == "deviceName") {
+                return `${target}.DeviceName.ToString().Replace('_', ' ')`;
+            }
+            return propertyGetter(target, key);
+        }
     }
 
 }
