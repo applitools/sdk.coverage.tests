@@ -96,20 +96,8 @@ test('check window', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_VG'}},
-    'on mobile web android': {
-      env: {
-        device: 'Pixel 3a XL',
-        browser: 'chrome',
-      },
-      page: 'HelloWorld',
-    },
-    'on mobile web ios': {
-      env: {
-        device: 'iPhone XS',
-        browser: 'safari',
-      },
-      page: 'HelloWorld',
-    },
+    'on mobile web android': {page: 'HelloWorld', env: {device: 'Pixel 3a XL', browser: 'chrome',}, features: ['sauce']},
+    'on mobile web ios': {page: 'HelloWorld', env: {device: 'iPhone XS', browser: 'safari'}, features: ['sauce']},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -155,9 +143,8 @@ test('check window after manual scroll', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowAfterScroll'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowAfterScroll_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowAfterScroll_VG'}},
-
-    'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver', 'jsonwire']},
-    'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver', 'jsonwire']}
+    'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver', 'jsonwire', 'sauce']},
+    'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver', 'jsonwire', 'sauce']}
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -453,7 +440,7 @@ test('check region by selector', {
     'with css stitching classic': {api: 'classic', config: {stitchMode: 'CSS', baselineName: 'TestCheckRegion'}},
     'with scroll stitching classic': {api: 'classic', config: {stitchMode: 'Scroll', baselineName: 'TestCheckRegion_Scroll'}},
     'with vg classic': {api: 'classic', vg: true, config: {baselineName: 'TestCheckRegion_VG'}},
-    'on ie': {env: {browser: 'ie-11'}},
+    'on ie': {env: {browser: 'ie-11'}, features: ['sauce']},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -1258,8 +1245,8 @@ test('should send ignore displacements', {
 test('should send dom', {
   page: 'DomCaptureSurge',
   variants: {
-    'on edge legacy': {env: {browser: 'edge-18'}},
-    'on ie': {env: {browser: 'ie-11'}},
+    'on edge legacy': {env: {browser: 'edge-18'}, features: ['sauce']},
+    'on ie': {env: {browser: 'ie-11'}, features: ['sauce']},
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes SDK', viewportSize})
@@ -1682,7 +1669,7 @@ test('should set viewport size', {
   page: 'Default',
   variants: {
     '': {env: {browser: 'chrome'}},
-    'on edge legacy': {env: {browser: 'edge-18'}},
+    'on edge legacy': {env: {browser: 'edge-18'}, features: ['sauce']},
   },
   test({driver, eyes, assert}) {
     const expectedViewportSize = {width: 600, height: 600}
@@ -1903,7 +1890,7 @@ test('check window fully with html scrollRootElement after scroll when fail to s
 test('appium android check window', {
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckWindow'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({driver, eyes, helpers, assert}) => {
     driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -1920,7 +1907,7 @@ test('appium android check window', {
 test('appium android check region with ignore region', {
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckRegionWithIgnoreRegion'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({driver, eyes, helpers, assert}) => {
     driver.click({type: TYPE.CLASSNAME, selector: 'android.widget.Button'})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -1941,7 +1928,7 @@ test('appium android check region with ignore region', {
 test('appium android check region', {
   env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk'},
   config: {baselineName: 'Appium_Android_CheckRegion'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({eyes}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({region: {type: TYPE.CLASSNAME, selector: 'android.widget.Button'}})
@@ -1952,7 +1939,7 @@ test('appium android check region', {
 test('appium iOS check window', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckWindow'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({driver, eyes, helpers, assert}) => {
     driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -1967,9 +1954,9 @@ test('appium iOS check window', {
 })
 
 test('appium iOS check fully window with scroll and pageCoverage', {
-  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
-  config: { baselineName: 'Appium_iOS_CheckWindow_with_scroll' },
-  features: ['native-selectors'],
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip'},
+  config: {baselineName: 'Appium_iOS_CheckWindow_with_scroll'},
+  features: ['sauce'],
   test: ({ driver, eyes, helpers, assert }) => {
     driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view' })
     eyes.open({ appName: 'Applitools Eyes SDK' })
@@ -1992,9 +1979,9 @@ test('appium iOS check fully window with scroll and pageCoverage', {
 })
 
 test('appium iOS check window region with scroll and pageCoverage', {
-  env: { device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip' },
-  config: { baselineName: 'Appium_iOS_CheckWindow_with_region_scroll' },
-  features: ['native-selectors'],
+  env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip'},
+  config: {baselineName: 'Appium_iOS_CheckWindow_with_region_scroll'},
+  features: ['sauce'],
   test: ({ driver, eyes, helpers, assert }) => {
     driver.click({ type: TYPE.ACCESSIBILITY_ID, selector: 'Scroll view with nested table' })
     eyes.open({ appName: 'Applitools Eyes SDK' })
@@ -2027,7 +2014,7 @@ test('appium iOS check window region with scroll and pageCoverage', {
 test('appium iOS check region with ignore region', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegionWithIgnoreRegion'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({driver, eyes, helpers, assert}) => {
     driver.click({type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2048,7 +2035,7 @@ test('appium iOS check region with ignore region', {
 test('appium iOS check region', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-ios-hello-world/1.2/eyes-ios-hello-world.zip'},
   config: {baselineName: 'Appium_iOS_CheckRegion'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({eyes}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: "type == 'XCUIElementTypeButton'"}})
@@ -2060,9 +2047,7 @@ test('adopted styleSheets on chrome', {
   page: 'AdoptedStyleSheets',
   vg: true,
   config: {
-    browsersInfo: [
-      {name: 'chrome', width: 640, height: 480},
-    ],
+    browsersInfo: [{name: 'chrome', width: 640, height: 480}],
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -2075,9 +2060,7 @@ test('adopted styleSheets on firefox', {
   page: 'AdoptedStyleSheets',
   vg: true,
   config: {
-    browsersInfo: [
-      {name: 'firefox', width: 640, height: 480},
-    ],
+    browsersInfo: [{name: 'firefox', width: 640, height: 480}],
   },
   test({eyes, assert}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
@@ -2189,7 +2172,7 @@ test('should waitBeforeCapture with breakpoints in open', {
     layoutBreakpoints: true,
     waitBeforeCapture: 2000,
     browsersInfo: [
-      { name: 'chrome', width: 1200, height: 800 },
+      {name: 'chrome', width: 1200, height: 800},
     ]
   },
   test({ driver, eyes }) {
@@ -2204,7 +2187,7 @@ test('should waitBeforeCapture with breakpoints in check', {
   vg: true,
   config: {
     browsersInfo: [
-      { name: 'chrome', width: 1200, height: 800 },
+      {name: 'chrome', width: 1200, height: 800},
     ]
   },
   test({ driver, eyes }) {
@@ -2271,7 +2254,7 @@ test('should send agentRunId', {
 
 test('appium iOS nav bar check region', {
   env: {device: 'iPhone XS', app: 'https://applitools.jfrog.io/artifactory/Examples/awesomeswift.zip'},
-  features: ['native-selectors'],
+  features: ['sauce'],
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({region: {type: TYPE.IOS_PREDICATE, selector: 'name == \"Awesome Swift\" AND type == \"XCUIElementTypeNavigationBar\"'}, isFully: false})
@@ -2280,11 +2263,12 @@ test('appium iOS nav bar check region', {
 })
 
 test('appium android landscape mode check window', {
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
+  features: ['sauce'],
   variants: {
     'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
     'on android 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
   },
-  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({isFully: false})
@@ -2293,11 +2277,12 @@ test('appium android landscape mode check window', {
 })
 
 test('appium android landscape mode check region', {
+  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
+  features: ['sauce'],
   variants: {
     'on android 7': {env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}},
     'on android 10': {env: {device: 'Pixel 3 XL', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'}}
   },
-  env: {device: 'Samsung Galaxy S8', app: 'https://applitools.jfrog.io/artifactory/Examples/eyes-android-hello-world.apk', orientation: 'landscape'},
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
     eyes.check({region: {type: TYPE.XPATH, selector: '//android.widget.CheckBox[1]'}, isFully: false})
@@ -2306,14 +2291,12 @@ test('appium android landscape mode check region', {
 })
 
 test('should work with beforeCaptureScreenshot hook', {
-page: 'HelloWorld',
-  variants: {
-  'with vg': {vg: true},
-  },
+  page: 'HelloWorld',
   config: {
-    browsersInfo: [
-      {name: 'chrome', width: 800, height: 600}
-    ]
+    browsersInfo: [{name: 'chrome', width: 800, height: 600}]
+  },
+  variants: {
+    'with vg': {vg: true},
   },
   test: ({driver, eyes, helpers, assert}) => {
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2430,11 +2413,9 @@ test('should override default value of fully', {
 })
 
 test('should capture webview when specified in check settings on ios', {
-  env: {
-    device: 'iPhone 12',
-    app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip'
-  },
+  env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/Examples/IOSTestApp/1.9/app/IOSTestApp.zip'},
   config: {forceFullPageScreenshot: false},
+  features: ['sauce'],
   test: ({driver, eyes}) => {
     driver.click({type: TYPE.ACCESSIBILITY_ID, selector: 'Web view'})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2449,11 +2430,9 @@ test('should capture webview when specified in check settings on ios', {
 })
 
 test('should capture webview when specified in check settings on android', {
-  env: {
-    device: 'Pixel 3a XL',
-    app: 'https://applitools.jfrog.io/artifactory/Examples/android/1.3/app-debug.apk',
-  },
+  env: {device: 'Pixel 3a XL', app: 'https://applitools.jfrog.io/artifactory/Examples/android/1.3/app-debug.apk'},
   config: {forceFullPageScreenshot: false},
+  features: ['sauce'],
   test: ({driver, eyes}) => {
     driver.click({type: TYPE.ID, selector: 'com.applitools.eyes.android:id/btn_web_view'})
     eyes.open({appName: 'Applitools Eyes SDK'})
@@ -2510,9 +2489,7 @@ test('should send ufg options', {
   page: 'AdjustDocumentHeight',
   vg: true,
   config: {
-    browsersInfo: [
-      {name: 'chrome', width: 640, height: 480},
-    ],
+    browsersInfo: [{name: 'chrome', width: 640, height: 480}],
   },
   test({eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
