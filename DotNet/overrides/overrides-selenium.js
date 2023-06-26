@@ -25,7 +25,6 @@ module.exports = {
     // REQUEST: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"manager":{"applitools-ref-id":"4e73260e-70b8-49aa-a5d2-369246ded3b3"},"throwErr":false}}
     // RESPONSE: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"result":{"results":[],"passed":0,"unresolved":0,"failed":0,"exceptions":0,"mismatches":0,"missing":0,"matches":0}}}
     'check window on mobile web android': { skip: true },
-    'check window on mobile web ios': { skipEmit: true },
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
     // TODO verify and enable
@@ -37,17 +36,17 @@ module.exports = {
     //"appium android landscape mode check window": {skip: true},
     //"appium android landscape mode check region": {skip: true},
     // Emitter failure
-   
+    
     "should override default value of fully with true": { skipEmit: true },
     "should override default value of fully with false": { skipEmit: true },
-
+    
     "should send codded regions with padding": { skipEmit: true },
     "should send codded regions with padding with vg": { skipEmit: true },
-
+    
     // sessionNotCreated exception
     "check window fully on page with horizontal scroll with css stitching": { skipEmit: true },
     "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: true },
-
+    
     // check image
     "check image file in png format": {skipEmit: true},
     "check image file in jpeg format": {skipEmit: true},
@@ -61,10 +60,16 @@ module.exports = {
 
     // server response has null properties
     'should send custom batch properties': {skip: true},
-
+    
     // still has visual diffs
     "check window fully on android chrome emulator on mobile page": {skipEmit: true},
     "check window fully on android chrome emulator on desktop page": {skipEmit: true},
     "check window fully on android chrome emulator on mobile page with horizontal scroll": {skipEmit: true},
     "should not fail if scroll root is stale on android": {skipEmit: true},
+    
+    // problems emitting
+    "check window on mobile web ios": { skipEmit: true },
+    "should extract text from regions": { skipEmit: true },
+    "should extract text from regions without a hint": { skipEmit: true },
+    "should extract text regions from image": { skipEmit: true },
 }
