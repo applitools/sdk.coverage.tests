@@ -7,6 +7,7 @@ module.exports = {
     "Galaxy S5": 'DeviceName.Galaxy_S5',
     "Pixel 3": 'DeviceName.Pixel_3',
     "Pixel 3 XL": 'DeviceName.Pixel_3_XL',
+    "Pixel 3a XL": 'DeviceName.Pixel_3a_XL',
     "Pixel 4": 'DeviceName.Pixel_4',
     "Pixel 4 XL": 'DeviceName.Pixel_4_XL',
     "iPad": 'DeviceName.iPad',
