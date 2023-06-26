@@ -1,7 +1,8 @@
-//const iosDeviceName = require('./iosDeviceName')
-//const deviceName = require('./deviceName')
-//const {capitalizeFirstLetter} = require('../util')
-const simpleGetter = (target, key) => `${target}.get${capitalizeFirstLetter(key)}()`;
+const iosDeviceName = require('./iosDeviceName')
+const deviceName = require('./deviceName')
+const { capitalizeFirstLetter } = require('../util')
+const simpleGetter = (target, key) => `${target}.Get${capitalizeFirstLetter(key)}()`;
+const propertyGetter = (target, key) => `${target}.${capitalizeFirstLetter(key)}`;
 const types = {
     "Map": {
         constructor: (value, generic) => {
@@ -9,8 +10,8 @@ const types = {
             const mapValue = generic[1]
             const keyType = types[mapKey.name]
             const valueType = types[mapValue.name]
-            return `new HashMap<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>()
-    {{ ${Object.keys(value).map(key => `put(${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)});`).join(' ')} }}`
+            return `new Dictionary<${keyType.name(mapKey)}, ${valueType.name(mapValue)}>
+    { ${Object.keys(value).map(key => `{${keyType.constructor(key, mapKey.generic)}, ${valueType.constructor(value[key], mapValue.generic)}}`).join(", ")} }`
         },
         get: (target, key) => `${target}["${key}"]`,
         isGeneric: true,
@@ -19,17 +20,24 @@ const types = {
             const genericKey = type.generic[0]
             const value = type.generic[1].name
             const genericValue = type.generic[1]
-            return `Dictionary<${types[key].name(genericKey)},${types[value].name(genericValue)}>`
+            let genVal;
+            if (value === 'List') {
+                genVal = types[value].name(genericValue);
+            } else {
+                genVal = 'object'
+            }
+            return `Dictionary<${types[key].name(genericKey)}, ${genVal}>`
         },
     },
     "List": {
         constructor: (value, generic) => {
             const param = generic[0]
             const paramType = types[param.name]
-            return `new ArrayList<${paramType.name(param)}>()
-            {{ ${value.map(region => `add(${paramType.constructor(region)});`).join(' ')} }}`
+            return `new List<${paramType.name(param)}>
+            { ${value.map(region => `${paramType.constructor(region)}`).join(", ")} }`
         },
-        name: (type) => `List<${type.generic[0].name}>`
+        name: (type) => `IList<${type.generic[0].name}>`,
+        get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : `${target}.${key}()`
     },
     "RectangleSize": {
         constructor: (value) => `new RectangleSize(${value.width}, ${value.height})`,
@@ -37,15 +45,16 @@ const types = {
         name: () => 'RectangleSize',
     },
     "TestInfo": {
-        get: simpleGetter,
+        get: propertyGetter,
         name: () => 'SessionResults',
     },
-    "TestResults": {
-        name: () => `TestResults`,
-        get: (target, key) => key.startsWith('is') ? `${target}.${key}()` : simpleGetter(target, key)
+    "JsonNode": {
+        get: (target, key) => `${target}[${Number.isInteger(Number(key)) ? key : `"${key}"`}]`,
+        name: () => 'JObject'
     },
     "Element": {
-        name: () => 'WebElement',
+        name: () => 'IElementHandle',
+        get: simpleGetter,
     },
     "Region": {
         name: () => 'Region',
@@ -54,72 +63,137 @@ const types = {
     "FloatingRegion": {
         constructor: (value) => {
             let region;
-            if(value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
+            if (value.region) region = `${value.region.left},${value.region.top}, ${value.region.width}, ${value.region.height}`
             else region = `${value.left}, ${value.top}, ${value.width}, ${value.height}`
-            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`}
+            return `new FloatingMatchSettings(${region}, ${value.maxUpOffset}, ${value.maxDownOffset}, ${value.maxLeftOffset}, ${value.maxRightOffset})`
+        }
     },
     "Array": {
-        get: (target, key) => `${target}[${key}]`,
+        get: (target, key) => Number.isInteger(Number(key)) ? `${target}[${key}]` : propertyGetter(target, key),
+        name: (arr) => `${arr.items.type}[]`,
     },
     "Boolean": {
         constructor: (value) => `${value}`,
-        name: () => `Boolean`
+        name: () => `bool`
     },
     "BooleanObject": {
-        constructor: (value) => `Boolean.${value.toString().toUpperCase()}`
+        constructor: (value) => `${value.toString().toLowerCase()}`
     },
     "String": {
         constructor: (value) => JSON.stringify(value),
-        name: () => `String`,
+        name: () => `string`,
     },
     "Number": {
         constructor: (value) => `${JSON.stringify(value)}L`,
-        name: () => `Number`,
+        name: () => `long`,
+    },
+    "Long": {
+        constructor: (value) => `(long)${JSON.stringify(value)}`,
+        name: () => `long`,
+    },
+    "int": {
+        constructor: (value) => `${JSON.stringify(value)}`,
+        name: () => `int`,
     },
     "Image": {
-        get: simpleGetter,
+        get: propertyGetter,
     },
     "ImageMatchSettings": {
-        get: simpleGetter,
+        get: propertyGetter,
     },
     "AppOutput": {
-        get: simpleGetter,
+        get: propertyGetter,
     },
-    "AccessibilitySettings":{
+    "AccessibilitySettings": {
         constructor: function (value) {
             return `new AccessibilitySettings(${types.AccessibilityLevel.constructor(value.level)}, ${types.AccessibilityGuidelinesVersion.constructor(value.guidelinesVersion || value.version)})`
-        } ,
-        get: (target, key) => (key === 'version') ? `${target}.getGuidelinesVersion()` : simpleGetter(target, key)
+        },
+        get: (target, key) => (key === 'version') ? `${target}.GuidelinesVersion` : propertyGetter(target, key)
     },
-    "AccessibilityRegion":{
+    "AccessibilityRegion": {
         constructor: (value) => `new AccessibilityRegionByRectangle(${value.left}, ${value.top}, ${value.width}, ${value.height}, AccessibilityRegionType.${capitalizeFirstLetter(value.type)})`
     },
-    "AccessibilityLevel":{
+    "AccessibilityLevel": {
         constructor: (value) => `AccessibilityLevel.${value}`
     },
-    "AccessibilityGuidelinesVersion":{
+    "AccessibilityGuidelinesVersion": {
         constructor: (value) => `AccessibilityGuidelinesVersion.${value}`
+    },
+    "Location": {
+        constructor: (value) => `new Location(${value.x}, ${value.y})`,
+        name: () => `Location`,
+        get: propertyGetter,
     },
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
-                if(render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
+                if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
                 else if (render.iosDeviceInfo) return `new IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
-                else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.PORTRAIT)`
+                else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.Portrait)`
             }).join(', ')
         },
     },
-    "PaddingBounds": {
-        constructor: (bounds) => {
-            switch (typeof bounds) {
-                case "object":
-                    return `new Padding(${bounds.left || 0}, ${bounds.top || 0}, ${bounds.right || 0}, ${bounds.bottom || 0})`
-                case "number":
-                    return `new Padding(${bounds}, ${bounds}, ${bounds}, ${bounds})`
-                default:
-                    throw new Error(`PaddingBounds object: ${bounds}, isn't correct. It should number for all paddings or object containing values directions`)
+    "TextRegion": {
+        get: propertyGetter
+    },
+    "BatchInfo": {
+        get: propertyGetter
+    },
+    "StartInfo": {
+        get: propertyGetter
+    },
+    "TestResultsSummary": {
+        name: () => `TestResultsSummary`,
+        get: simpleGetter
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: (target, key) => key.includes('get') ? `${target}.${key}` : propertyGetter(target, key)
+    },
+    "TestResults": {
+        name: () => `TestResults`,
+        get: (target, key) => {
+            if (key.startsWith('is')) {
+                return propertyGetter(target, key)
+            }
+            else if (key === 'status') {
+                return `${target}.Status.ToString()`
+            } else {
+                return propertyGetter(target, key)
             }
         }
     },
+    "rect": {
+        name: () => 'Rect',
+        get: (target, key) => `${target}["${key}"].Value<double>()`,
+    },
+    "PageCoverageInfo": {
+        get: propertyGetter
+    },
+    "BrowserInfo": {
+        name: () => `BrowserInfo`,
+        get: (target, key) => {
+            if (key === 'name'){
+                return `${target}.BrowserType.ToString().ToLower()`
+            }
+            return propertyGetter(target, key)
+        },
+    },
+    "StitchModes": {
+        constructor: (value)=>{
+            if (value === undefined) return null
+            return `StitchModes.${value}`
+        }
+    },
+    "ChromeEmulationInfo": {
+        name: () => "ChromeEmulationInfo",
+        get: (target, key) => {
+            if (key == "deviceName") {
+                return `${target}.DeviceName.ToString().Replace('_', ' ')`;
+            }
+            return propertyGetter(target, key);
+        }
+    }
+
 }
 module.exports = types
