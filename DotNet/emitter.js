@@ -163,6 +163,7 @@ module.exports = function (tracker, test) {
         else setUpBrowsers(test, addHook)
     }
 
+    if ("enablePatterns" in test.config) addHook('beforeEach', dot_net`runner.SetEnablePatterns(${test.config.enablePatterns});`)
     if ("removeDuplicateTests" in test.config) addHook('beforeEach', dot_net`runner.SetRemoveDuplicateTests(${test.config.removeDuplicateTests});`)
     if ("baselineEnvName" in test.config) addHook('beforeEach', dot_net`eyes.BaselineEnvName = ${test.config.baselineEnvName};`)
     if ("branchName" in test.config) addHook('beforeEach', dot_net`eyes.BranchName = ${test.config.branchName};`)
@@ -178,13 +179,18 @@ module.exports = function (tracker, test) {
             addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
         }
     }
-    if (("defaultMatchSettings" in test.config) && ("accessibilitySettings" in test.config.defaultMatchSettings)) {
-        let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
-        let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-        addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
-        var configuration = eyes.GetConfiguration();
-        configuration.SetAccessibilityValidation(settings);
-        eyes.SetConfiguration(configuration);`)
+    if ("defaultMatchSettings" in test.config) {
+        if ("accessibilitySettings" in test.config.defaultMatchSettings) {
+            let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
+            let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
+            addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
+            var configuration = eyes.GetConfiguration();
+            configuration.SetAccessibilityValidation(settings);
+            eyes.SetConfiguration(configuration);`)
+        }
+        if ("enablePatterns" in test.config.defaultMatchSettings) {
+            addHook('beforeEach', dot_net`SetEnablePatterns(${test.config.defaultMatchSettings.enablePatterns});`)
+        }
     }
     if ("browsersInfo" in test.config) {
         addHook('beforeEach', dot_net`var config = eyes.GetConfiguration();`)
@@ -630,8 +636,8 @@ function insert(value) {
 }
 
 function setUpMobileNative(test, addHook) {
-    addHook('beforeEach', dot_net`initDriver(${test.env.device}, ${test.env.app});`)
-    addHook('beforeEach', dot_net`initEyes(false, false);`)
+    addHook('beforeEach', dot_net`InitDriver(${test.env.device}, ${test.env.app});`)
+    addHook('beforeEach', dot_net`InitEyes(false, false);`)
 }
 
 function setUpWithEmulators(test, addHook) {
@@ -639,17 +645,17 @@ function setUpWithEmulators(test, addHook) {
         addHook('beforeEach', dot_net`SetUpDriver("Android Emulator", "8.0", "Android", ScreenOrientation.Portrait);`)
         switch (test.config.baselineName) {
             case 'Android Emulator 8.0 Portrait mobile fully':
-                addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Portrait);`)
+                addHook('beforeEach', dot_net`InitEyes("mobile", ScreenOrientation.Portrait);`)
                 break;
             case 'Android Emulator 8.0 Portrait scrolled_mobile fully':
-                addHook('beforeEach', dot_net`initEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
+                addHook('beforeEach', dot_net`InitEyes("scrolled_mobile", ScreenOrientation.Portrait);`)
                 break;
             case 'Android Emulator 8.0 Portrait desktop fully':
-                addHook('beforeEach', dot_net`initEyes("desktop", ScreenOrientation.Portrait);`)
+                addHook('beforeEach', dot_net`InitEyes("desktop", ScreenOrientation.Portrait);`)
                 break;
             default:
                 //throw Error(`Couldn't intrpret baselineName ${test.config.baselineName}. Code update is needed`)
-                addHook('beforeEach', dot_net`initEyes("mobile", ScreenOrientation.Landscape);`)
+                addHook('beforeEach', dot_net`InitEyes("mobile", ScreenOrientation.Landscape);`)
                 break;
         }
     } else throw Error(`Couldn't intrpret device ${test.env.device}. Code update is needed`)
@@ -684,7 +690,7 @@ function setUpBrowsers(test, addHook) {
                 throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
         }
     } else addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless}, executionGrid: ${executionGrid});`)
-    addHook('beforeEach', dot_net`initEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
+    addHook('beforeEach', dot_net`InitEyes(isVisualGrid: ${argumentCheck(test.vg, false)}, isCSSMode: ${css});`)
 }
 
 //module.exports = makeSpecEmitter
