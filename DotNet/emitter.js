@@ -114,8 +114,6 @@ module.exports = function (tracker, test) {
         }
     })
 
-    addSyntax('return', ({value}) => `return ${value}`)
-
     if (counter === 0) {
         printCommitHash(sdk_coverage_tests_repo_webURL, sdk_coverage_tests_repo_branch);
         counter++;
@@ -151,21 +149,10 @@ module.exports = function (tracker, test) {
     addHook('deps', `[Parallelizable]`)
     addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 
-    addSyntax('var', ({name, value, type}) => {
-        if ((type !== null) && (type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
-            return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
-        }
-        return `var ${name} = ${value}`
-    })
-    addSyntax('getter', ({
-                             target,
-                             key
-                         }) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
-    addSyntax('call', ({
-                           target,
-                           args
-                       }) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
-
+    addSyntax('var', variable)
+    addSyntax('getter', getter)
+    addSyntax('call', call)
+    addSyntax('return', returnSyntax)
 
     if (mobile) setUpMobileNative(test, addHook)
     else {
@@ -470,10 +457,10 @@ module.exports = function (tracker, test) {
         },
 
         close(throwEx) {
-            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`)
+            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`).type(TestResults)
         },
         abort() {
-            return addCommand(dot_net`eyes.Abort();`).type("TestResults")
+            return addCommand(dot_net`eyes.Abort();`).type(TestResults)
         },
         getViewportSize() {
             return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
