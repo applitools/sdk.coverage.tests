@@ -6,6 +6,6 @@ module.exports = {
     "accessibility id": (selector) => `MobileBy.AccessibilityId(${selector})`,
     "-android uiautomator": (selector) => `MobileBy.AndroidUIAutomator(${selector})`,
     "androidViewTag": (selector) => `MobileBy.AndroidViewTag(${selector})`,
-    "-ios predicate string": (selector) => `MobileBy.iOSNsPredicateString(${selector})`,
-    "-ios class chain": (selector) => `MobileBy.iOSClassChain(${selector})`,
+    "-ios predicate string": (selector) => `MobileBy.IosNSPredicate(${selector})`,
+    "-ios class chain": (selector) => `MobileBy.IosClassChain(${selector})`,
 }

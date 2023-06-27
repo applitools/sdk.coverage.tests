@@ -53,7 +53,7 @@ const types = {
         name: () => 'JObject'
     },
     "Element": {
-        name: () => 'IElementHandle',
+        name: () => 'IWebElement',
         get: simpleGetter,
     },
     "Region": {

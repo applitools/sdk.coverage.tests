@@ -147,13 +147,13 @@ function checkSettings(cs, native) {
         let string;
         switch (typeof region) {
             case 'string':
-                string = `${JSON.stringify(region)}`;
+                string = `By.CssSelector(${JSON.stringify(region)})`;
                 break;
             case "object":
                 if (region.region) {
                     string = regionParameter(region.region)
                     if (region.regionId) {
-                        string += `, "${region.regionId}"`
+                        string += `, regionId: "${region.regionId}"`
                     }
                     if (region.padding) {
                         switch(typeof region.padding) {
@@ -177,7 +177,7 @@ function checkSettings(cs, native) {
                         }
                     }
                 } else if (region.type) {
-                    string = native ? `Driver.Locator(${parseObject(region)})` : parseObject(region);
+                    string = parseObject(region);
                 } else {
                     string = parseObject({ value: region, type: 'Region' });
                 }

@@ -96,6 +96,7 @@ module.exports = function (tracker, test) {
     }
 
     let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
+    mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
     let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
     let openPerformed = false
@@ -125,6 +126,8 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Applitools.Utils.Geometry;`)
     addHook('deps', `using OpenQA.Selenium;`)
     addHook('deps', `using Applitools.Fluent;`)
+    addHook('deps', `using Applitools.Metadata;`)
+    addHook('deps', `using Newtonsoft.Json.Linq;`)
     if (mobile) {
         addHook('deps', `using Applitools.Appium;`)
         addHook('deps', `using Applitools.Appium.GenericUtils;`)
@@ -303,12 +306,14 @@ module.exports = function (tracker, test) {
                 case 'string':
                     if (element.includes('name=')) {
                         addCommand(dot_net`` + drv + `.FindElement(By.Name(${takeSelector(element)})).Click();`)
-                    } else addCommand(dot_net`` + drv + `.FindElement(By.CssSelector(\"${element}\")).Click();`)
+                    } else {
+                        addCommand(dot_net`` + drv + `.FindElement(By.CssSelector(\"${element}\")).Click();`)
+                    }
                     break;
                 case "object":
                     if (element.type === undefined) addCommand(dot_net`${element}.Click();`)
                     else {
-                        addCommand(dot_net`` + drv + `.FindElement(${selectors[element.type]}(\"${element.selector}\")).Click();`)
+                        addCommand(dot_net`` + drv + `.FindElement(${selectors[element.type](JSON.stringify(element.selector))}).Click();`)
                     }
                     break;
             }
@@ -466,7 +471,7 @@ module.exports = function (tracker, test) {
             return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
         },
         locate(visualLocator) {
-            return addCommand(dot_net`Eyes.Locate(new VisualLocatorSettings().Names(${visualLocator.locatorNames.join(', ')}));`).type('Map<String, List<Region>>')
+            return addCommand(dot_net`eyes.Locate(new VisualLocatorSettings().Names(${visualLocator.locatorNames.join(', ')}));`).type('Map<String, List<Region>>')
         },
     }
     

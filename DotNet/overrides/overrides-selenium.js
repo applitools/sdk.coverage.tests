@@ -10,9 +10,9 @@ module.exports = {
     'should handle check of stale element if selector is preserved': { skip: true }, // Not implemented yet
     'should handle check of stale element in frame if selector is preserved': { skip: true }, // Not implemented yet
     // They are testing a functionality that no longer exists for the SDK
-    'should return actual viewport size': { skip: true },
-    'should set viewport size': { skip: true },
-    'should set viewport size on edge legacy': { skip: true },
+    'should return actual viewport size': { skipEmit: true },
+    'should set viewport size': { skipEmit: true },
+    'should set viewport size on edge legacy': { skipEmit: true },
     // Chrome emulator have minor diffs with JS sdk
     'should not fail if scroll root is stale on android': { config: { branchName: 'universal-dotnet' } },
 
