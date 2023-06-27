@@ -50,7 +50,7 @@ const types = {
     },
     "JsonNode": {
         get: (target, key) => `${target}[${Number.isInteger(Number(key)) ? key : `"${key}"`}]`,
-        name: () => 'JObject'
+        name: () => 'JToken'
     },
     "Element": {
         name: () => 'IWebElement',

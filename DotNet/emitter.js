@@ -582,7 +582,7 @@ module.exports = function (tracker, test) {
         getDom(result, domId) {
             return addCommand(dot_net`GetDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
                 getNodesByAttribute: (dom, attr) => addCommand(dot_net`GetNodesByAttributes(${dom}, ${attr});`).type({
-                    type: 'List<JObject>',
+                    type: 'List<JToken>',
                     schema: { length: { rename: 'Count' } },
                     items: {
                         type: 'JsonNode', schema: {

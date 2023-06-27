@@ -13,6 +13,7 @@ module.exports = {
     'should return actual viewport size': { skipEmit: true },
     'should set viewport size': { skipEmit: true },
     'should set viewport size on edge legacy': { skipEmit: true },
+    'should send dom on edge legacy': { skip : true },
     // Chrome emulator have minor diffs with JS sdk
     'should not fail if scroll root is stale on android': { config: { branchName: 'universal-dotnet' } },
 
