@@ -307,21 +307,6 @@ function takeSelector(selector) {
 	return selector
 }
 
-function parseEnv(env) {
-    checkOptions(env, ENV_PROPERTIES)
-    let result = 'Driver = BuildDriver()'
-    if (env) {
-        if (env.browser) result += `.Browser(${serialize(env.browser)})`
-        if (env.device) result += `.Device(${serialize(env.device)})`
-        if (env.app) result += `.App(${serialize(env.app)})`
-        if (env.orientation) result += `.Orientation(${serialize(env.orientation)})`
-        if (env.hasOwnProperty('headless')) result += `.Headless(${serialize(env.headless)})`
-        if (env.hasOwnProperty('legacy')) result += `.Legacy(${serialize(env.legacy)})`
-        if (env.hasOwnProperty('executionGrid') && env.executionGrid !== undefined) result += `.ExecutionGrid(${serialize(env.executionGrid)})`
-    }
-    return result + '.Build();'
-}
-
 module.exports = {
     checkSettingsParser: checkSettings,
     dot_net: dot_net,
@@ -330,6 +315,5 @@ module.exports = {
     call: call,
     returnSyntax: returnSyntax,
     wrapSelector: wrapSelector,
-    parseEnv: parseEnv,
 	takeSelector: takeSelector,
 }

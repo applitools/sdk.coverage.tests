@@ -1,7 +1,7 @@
 'use strict'
 const types = require('./mapping/types')
-const { checkSettingsParser, dot_net, getter, variable, call, returnSyntax, wrapSelector, parseEnv, takeSelector} = require('./parser')
-const util = require('util')
+const { checkSettingsParser, dot_net, getter, variable, call, returnSyntax, wrapSelector, takeSelector} = require('./parser')
+const { capitalizeFirstLetter } = require('./util')
 const selectors = require('./mapping/selectors')
 const {execSync} = require('child_process')
 const sdk_coverage_tests_repo_webURL = "https://github.com/applitools/sdk.coverage.tests.git"
@@ -146,6 +146,7 @@ module.exports = function (tracker, test) {
     let baseClass = mobile ? 'TestSetupGeneratedAppium' : 'TestSetupGenerated'
     if (emulator) baseClass = 'TestSetupGeneratedMobileEmulation'
 
+    addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
     addHook('deps', `namespace ${namespace}`)
     addHook('deps', `{`)
     addHook('deps', `[TestFixture]`)
@@ -163,80 +164,55 @@ module.exports = function (tracker, test) {
         else setUpBrowsers(test, addHook)
     }
 
-    if ("enablePatterns" in test.config) addHook('beforeEach', dot_net`runner.SetEnablePatterns(${test.config.enablePatterns});`)
-    if ("removeDuplicateTests" in test.config) addHook('beforeEach', dot_net`runner.SetRemoveDuplicateTests(${test.config.removeDuplicateTests});`)
-    if ("baselineEnvName" in test.config) addHook('beforeEach', dot_net`eyes.BaselineEnvName = ${test.config.baselineEnvName};`)
-    if ("branchName" in test.config) addHook('beforeEach', dot_net`eyes.BranchName = ${test.config.branchName};`)
-    if ("parentBranchName" in test.config) addHook('beforeEach', dot_net`eyes.ParentBranchName = ${test.config.parentBranchName};`)
-    if ("hideScrollbars" in test.config) addHook('beforeEach', dot_net`eyes.HideScrollbars = ${test.config.hideScrollbars};`)
-    if ("isDisabled" in test.config) addHook('beforeEach', dot_net`eyes.IsDisabled = ${test.config.isDisabled};`)
-    if ("forceFullPageScreenshot" in test.config) addHook('beforeEach', dot_net`eyes.ForceFullPageScreenshot = ${test.config.forceFullPageScreenshot};`)
-    if ("batch" in test.config) {
-        if ("id" in test.config.batch) {
-            addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
-        }
-        if ("properties" in test.config.batch) {
-            addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
-        }
+    const specific = [
+        'baselineName', 
+        'browsersInfo', 
+        'appName', 
+        'defaultMatchSettings',
+        'layoutBreakpoints',
+        'batch',
+        'stitchMode',
+        'viewportSize', 
+        'removeDuplicateTests',
+        'waitBeforeCapture'
+    ];
+    Object.keys(test.config).filter(property => !specific.includes(property))
+    .forEach(property => addHook('beforeEach', dot_net`eyes.${insert(capitalizeFirstLetter(property))} = ${test.config[property]};`))
+    if (test.config.browsersInfo) {
+        //addHook('deps', 'using Applitools.VisualGrid;')
+        addHook('beforeEach', dot_net`SetBrowsersInfo(${{ value: test.config.browsersInfo, type: 'BrowsersInfo' }});`)
     }
-    if ("defaultMatchSettings" in test.config) {
-        if ("accessibilitySettings" in test.config.defaultMatchSettings) {
-            let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
-            let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-            addHook('beforeEach', dot_net`AccessibilitySettings settings = new AccessibilitySettings(AccessibilityLevel.` + level + `, AccessibilityGuidelinesVersion.` + version + `);
-            var configuration = eyes.GetConfiguration();
-            configuration.SetAccessibilityValidation(settings);
-            eyes.SetConfiguration(configuration);`)
-        }
-        if ("enablePatterns" in test.config.defaultMatchSettings) {
-            addHook('beforeEach', dot_net`SetEnablePatterns(${test.config.defaultMatchSettings.enablePatterns});`)
-        }
-    }
-    if ("browsersInfo" in test.config) {
-        addHook('beforeEach', dot_net`var config = eyes.GetConfiguration();`)
-        if ("name" in test.config.browsersInfo[0]) {
-            let browserType = 'BrowserType.CHROME'
-            switch (`${test.config.browsersInfo[0].name}`) {
-                case 'chrome':
-                    browserType = 'BrowserType.CHROME'
-                    break;
-                case 'firefox':
-                    browserType = 'BrowserType.FIREFOX'
-                    break;
-                default:
-                    throw Error(`Browser type ${test.config.browsersInfo[0].name} not implemented yet`)
-            }
-            addHook('beforeEach', dot_net`config.AddBrowsers(new DesktopBrowserInfo(${test.config.browsersInfo[0].width}, ${test.config.browsersInfo[0].height}, ` + browserType + `));`)
-        }
-        if ((test.config.browsersInfo[1]) && ("iosDeviceInfo" in test.config.browsersInfo[1])) {
-            //addHook('beforeEach', dot_net`config.AddBrowsers(new IosDeviceInfo((IosDeviceName)Enum.Parse(typeof(IosDeviceName), ${test.config.browsersInfo[1].iosDeviceInfo.deviceName}, true)));`)
-            let iosDeviceName = ''
-            if (`${test.config.browsersInfo[1].iosDeviceInfo.deviceName}` === 'iPad (7th generation)') iosDeviceName = 'IosDeviceName.iPad_7'
-            addHook('beforeEach', dot_net`config.AddBrowsers(new IosDeviceInfo(` + iosDeviceName + `));`)
-        }
-        if ((test.config.browsersInfo[2]) && ("chromeEmulationInfo" in test.config.browsersInfo[2])) {
-            let devName = ''
-            if (`${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}` === 'Pixel 4 XL') devName = 'DeviceName.Pixel_4_XL'
-            //addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo((DeviceName)Enum.Parse(typeof(DeviceName), ${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}, true), Applitools.VisualGrid.ScreenOrientation.Portrait));`)
-            addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo(` + devName + `));`)
-        }
-        if (test.config.layoutBreakpoints) {
-
-            if (typeof test.config.layoutBreakpoints == 'object' && !Array.isArray(test.config.layoutBreakpoints)) {
-                let breakpoints;
-                if (typeof test.config.layoutBreakpoints.breakpoints == 'object') { 
-                    breakpoints = test.config.layoutBreakpoints.breakpoints.join(', ')
-                }
-                else { 
-                    breakpoints = test.config.layoutBreakpoints.breakpoints 
-                }
     
-                addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
-            } else {
-                addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
+    if (test.config.defaultMatchSettings) {
+        const defaultMatchSettings = test.config.defaultMatchSettings
+        Object.keys(defaultMatchSettings)
+            .forEach(property => {
+                if (property === 'enablePatterns') addHook('beforeEach', `Set${capitalizeFirstLetter(property)}(${defaultMatchSettings[property]});`); 
+                else addHook('beforeEach',
+                dot_net`Set${insert(capitalizeFirstLetter(property))}(${{ value: defaultMatchSettings[property], ...ImageMatchSettings.schema[property] }});`)
+            })
+    }
+    if (test.config.removeDuplicateTests) {
+        addHook('beforeEach', dot_net`runner.SetRemoveDuplicateTests(${test.config.removeDuplicateTests});`)
+    }
+    if (test.config.waitBeforeCapture) {
+        addHook('beforeEach', dot_net`WaitBeforeCapture(${test.config.waitBeforeCapture});`)
+    }
+    if (test.config.layoutBreakpoints) {
+
+        if (typeof test.config.layoutBreakpoints == 'object' && !Array.isArray(test.config.layoutBreakpoints)) {
+            let breakpoints;
+            if (typeof test.config.layoutBreakpoints.breakpoints == 'object') { 
+                breakpoints = test.config.layoutBreakpoints.breakpoints.join(', ')
             }
+            else { 
+                breakpoints = test.config.layoutBreakpoints.breakpoints 
+            }
+
+            addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
+        } else {
+            addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
         }
-        addHook('beforeEach', dot_net`eyes.SetConfiguration(config);`);
     }
 
     addHook('afterEach', dot_net`webDriver?.Quit();`)
