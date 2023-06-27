@@ -1,11 +1,6 @@
 'use strict'
 const types = require('./mapping/types')
-const {checkSettingsParser} = require('./parser')
-const {regionParameterParser} = require('./parser')
-const {parseAssertActual} = require('./parser')
-const {expectParser} = require('./parser')
-const {variable} = require('./parser')
-const {takeSelector} = require('./parser')
+const { checkSettingsParser, dot_net, getter, variable, call, returnSyntax, wrapSelector, parseEnv, takeSelector} = require('./parser')
 const util = require('util')
 const selectors = require('./mapping/selectors')
 const {execSync} = require('child_process')
@@ -13,35 +8,36 @@ const sdk_coverage_tests_repo_webURL = "https://github.com/applitools/sdk.covera
 const sdk_coverage_tests_repo_branch = "master"
 let counter = 0
 
-function dot_net(chunks, ...values) {
-    const commands = []
-    let code = ''
-    values.forEach((value, index) => {
-        if (typeof value === 'function' && !value.isRef) {
-            code += chunks[index]
-            commands.push(code, value)
-            code = ''
-        } else {
-            code += chunks[index] + serialize(value)
-        }
-    })
-    code += chunks[chunks.length - 1]
-    commands.push(code)
-    return commands
+const ImageMatchSettings = {
+    type: "ImageMatchSettings",
+    schema: {
+        enablePatterns: "BooleanObject",
+        ignoreDisplacements: 'BooleanObject',
+        floating: { type: 'Array', items: 'FloatingRegion' },
+        accessibility: { type: 'Array', items: 'AccessibilityRegion' },
+        accessibilitySettings: {
+            type: 'AccessibilitySettings',
+            schema: { level: 'AccessibilityLevel', version: 'AccessibilityGuidelinesVersion' },
+        },
+        ignore: { type: 'Array', items: 'Region' },
+        strict: { type: 'Array', items: 'Region' },
+        content: { type: 'Array', items: 'Region' },
+        layout: { type: 'Array', items: 'Region' }
+    },
+}
+const Location = {
+    type: 'Location',
+    schema: {
+        x: 'Number',
+        y: 'Number'
+    }
 }
 
-function serialize(data) {
-    if (data && data.isRef) {
-        return data.ref()
-    } else if (Array.isArray(data)) {
-        return `[${data.map(serialize).join(', ')}]`
-    } else if (typeof data === 'object' && data !== null) {
-        const properties = Object.entries(data).reduce((data, [key, value]) => {
-            return value !== undefined ? data.concat(`${key}: ${serialize(value)}`) : data
-        }, [])
-        return `{${properties.join(', ')}}`
-    } else {
-        return JSON.stringify(data)
+const TestResults = {
+    type: "TestResults",
+    schema: {
+        isAborted: "Boolean",
+        status: "String",
     }
 }
 
@@ -66,7 +62,33 @@ function printCommitHash(webURL, branch) {
 }
 
 module.exports = function (tracker, test) {
-    const {addSyntax, addCommand, addHook, withScope, addType} = tracker
+    const { addSyntax, addCommand, addHook, addExpression } = tracker
+
+    function argumentCheck(actual, ifUndefined) {
+        return (typeof actual === 'undefined') ? ifUndefined : actual
+    }
+
+    function addType(obj, type, generic) {
+        return type ? { value: obj, type: type, generic: generic } : obj
+    }
+
+    function getTypeName(obj) {
+        return obj.type().name
+    }
+
+    function emptyValue() {
+        return {
+            isRef: true,
+            ref: () => ''
+        }
+    }
+
+    function insert(value) {
+        return {
+            isRef: true,
+            ref: () => value
+        }
+    }
 
     // EG for UFG
     if (test.vg && process.env.UFG_ON_EG) {
@@ -74,11 +96,15 @@ module.exports = function (tracker, test) {
     }
 
     let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
+    mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
     let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
     let openPerformed = false
     let confVisualGridOptionCreated = false
 
+    function assertMessage(param, addToEnd = true) {
+        return (typeof param === "undefined") ? emptyValue() : (addToEnd) ? insert(`, "${param}"`) : insert(`"${param}", `)
+    }
 
     addSyntax('cast', ({target, castType}) => `(${castType.name})target`)
     addType('JsonNode', {
@@ -88,8 +114,6 @@ module.exports = function (tracker, test) {
             length: {type: 'Number', rename: 'Count', getter: ({target, key}) => `${target}.${key}`}
         }
     })
-
-    addSyntax('return', ({value}) => `return ${value}`)
 
     if (counter === 0) {
         printCommitHash(sdk_coverage_tests_repo_webURL, sdk_coverage_tests_repo_branch);
@@ -102,6 +126,8 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Applitools.Utils.Geometry;`)
     addHook('deps', `using OpenQA.Selenium;`)
     addHook('deps', `using Applitools.Fluent;`)
+    addHook('deps', `using Applitools.Metadata;`)
+    addHook('deps', `using Newtonsoft.Json.Linq;`)
     if (mobile) {
         addHook('deps', `using Applitools.Appium;`)
         addHook('deps', `using Applitools.Appium.GenericUtils;`)
@@ -126,21 +152,10 @@ module.exports = function (tracker, test) {
     addHook('deps', `[Parallelizable]`)
     addHook('deps', `public class ${test.key}Class : ${baseClass}`)
 
-    addSyntax('var', ({name, value, type}) => {
-        if ((type !== null) && (type !== undefined) && (type.name === 'Map') && (type.generic[0].name === 'String') && (type.generic[1].name === 'Number')) {
-            return `Dictionary<string, object> ${name} = (Dictionary<string, object>)${value}`
-        }
-        return `var ${name} = ${value}`
-    })
-    addSyntax('getter', ({
-                             target,
-                             key
-                         }) => `${target}${key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `["${key}"]`}`)
-    addSyntax('call', ({
-                           target,
-                           args
-                       }) => args.length > 0 ? `${target}(${args.map(val => JSON.stringify(val)).join(", ")})` : `${target}`)
-
+    addSyntax('var', variable)
+    addSyntax('getter', getter)
+    addSyntax('call', call)
+    addSyntax('return', returnSyntax)
 
     if (mobile) setUpMobileNative(test, addHook)
     else {
@@ -199,11 +214,21 @@ module.exports = function (tracker, test) {
             //addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo((DeviceName)Enum.Parse(typeof(DeviceName), ${test.config.browsersInfo[2].chromeEmulationInfo.deviceName}, true), Applitools.VisualGrid.ScreenOrientation.Portrait));`)
             addHook('beforeEach', dot_net`config.AddBrowsers(new ChromeEmulationInfo(` + devName + `));`)
         }
-        if ("layoutBreakpoints" in test.config) {
-            //let level = `${test.config.defaultMatchSettings.accessibilitySettings.level}`
-            //let version = `${test.config.defaultMatchSettings.accessibilitySettings.guidelinesVersion}`
-            if (Array.isArray(test.config.layoutBreakpoints)) addHook('beforeEach', dot_net`config.SetLayoutBreakpoints(${test.config.layoutBreakpoints[0]}, ${test.config.layoutBreakpoints[1]});`);
-            else addHook('beforeEach', dot_net`config.SetLayoutBreakpoints(${test.config.layoutBreakpoints});`);
+        if (test.config.layoutBreakpoints) {
+
+            if (typeof test.config.layoutBreakpoints == 'object' && !Array.isArray(test.config.layoutBreakpoints)) {
+                let breakpoints;
+                if (typeof test.config.layoutBreakpoints.breakpoints == 'object') { 
+                    breakpoints = test.config.layoutBreakpoints.breakpoints.join(', ')
+                }
+                else { 
+                    breakpoints = test.config.layoutBreakpoints.breakpoints 
+                }
+    
+                addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
+            } else {
+                addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
+            }
         }
         addHook('beforeEach', dot_net`eyes.SetConfiguration(config);`);
     }
@@ -281,12 +306,14 @@ module.exports = function (tracker, test) {
                 case 'string':
                     if (element.includes('name=')) {
                         addCommand(dot_net`` + drv + `.FindElement(By.Name(${takeSelector(element)})).Click();`)
-                    } else addCommand(dot_net`` + drv + `.FindElement(By.CssSelector(\"${element}\")).Click();`)
+                    } else {
+                        addCommand(dot_net`` + drv + `.FindElement(By.CssSelector(\"${element}\")).Click();`)
+                    }
                     break;
                 case "object":
                     if (element.type === undefined) addCommand(dot_net`${element}.Click();`)
                     else {
-                        addCommand(dot_net`` + drv + `.FindElement(${selectors[element.type]}(\"${element.selector}\")).Click();`)
+                        addCommand(dot_net`` + drv + `.FindElement(${selectors[element.type](JSON.stringify(element.selector))}).Click();`)
                     }
                     break;
             }
@@ -354,8 +381,33 @@ module.exports = function (tracker, test) {
         },
         runner: {
             getAllTestResults(throwEx) {
-                return addCommand(dot_net`runner.GetAllTestResults(${throwEx});`)
-            },
+                return addCommand(dot_net`runner.GetAllTestResults(${throwEx});`).type('TestResultsSummary').methods({
+                    getAllResults: (target) => addCommand(dot_net`${target}.GetAllResults();`).type({
+                        type: 'Array',
+                        items: {
+                            type: 'TestResultContainer',
+                            schema: {
+                                testResults: TestResults,
+                                browserInfo: {
+                                    type: "BrowserInfo",
+                                    schema: {
+                                        name: "String",
+                                        height: "int",
+                                        width: "int",
+                                        chromeEmulationInfo: {
+                                            type: "ChromeEmulationInfo",
+                                            schema: {
+                                                deviceName: "String"
+                                            }
+                                        }
+                                    }
+                                },
+                                exception: "Exception"
+                            }
+                        }
+                    })
+                })
+            }
         },
         open({appName, viewportSize}) {
             let rectangle = !viewportSize ? '' : `, new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height})`
@@ -410,127 +462,146 @@ module.exports = function (tracker, test) {
         },
 
         close(throwEx) {
-            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`)
+            return addCommand(dot_net`eyes.Close(${argumentCheck(throwEx, true)});`).type(TestResults)
         },
         abort() {
-            return addCommand(dot_net`eyes.Abort();`).type("TestResults")
+            return addCommand(dot_net`eyes.Abort();`).type(TestResults)
         },
         getViewportSize() {
             return addCommand(dot_net`eyes.GetConfiguration().ViewportSize;`).type('RectangleSize')
         },
-        locate(visualLocatorSettings) {
-            return addCommand(dot_net`new Region(3, 19, 158, 38);`)
+        locate(visualLocator) {
+            return addCommand(dot_net`eyes.Locate(new VisualLocatorSettings().Names(${visualLocator.locatorNames.join(', ')}));`).type('Map<String, List<Region>>')
         },
     }
-
+    
     const assert = {
-        strictEqual(actual, expected, message) {
-            addCommand(dot_net`assert.strictEqual(${actual}, ${expected}, ${message})`)
-        },
-
         equal(actual, expected, message) {
-            let objectToString = Object.prototype.toString;
-            let expect = expected
             if (expected === null) {
-                addCommand(dot_net`Assert.IsNull(${actual});`)
-            } else {
-                if (expected.isRef) expect = expected.ref()
-                else {
-                    if (objectToString.call(expected) === "[object Function]") {
-                        expect = expected.ref()
-                    }
-                    if ((objectToString.call(expected) === "[object Object]") || (objectToString.call(expected) === "[object String]")) {
-                        expect = expectParser(expected)
-                    }
-                    // I am sorry to add this as it is, but I have not enough time to update whole method
-                    if (objectToString.call(expected) === "[object Array]") {
-                        // temporary solution
-                        expect = `new[] {${expected.map(region=> `new Region(${region.left}, ${region.top}, ${region.width}, ${region.height}, regionId: ${JSON.stringify(region.regionId)})`).join(", ")}}`
-                    }
-                }
-                let act
-                if (actual.isRef) {
-                    act = parseAssertActual(actual.ref())
+                addCommand(dot_net`Assert.Null(${actual}${assertMessage(message)});`)
+            } else if (expected.isRef) {
+                const typeCasting = actual.type().name === 'Number' ? insert(` (long) `) : emptyValue()
+                if (actual.type().name === 'Map') {
+                    addCommand(dot_net`GeneratedTestUtils.compareProcedure(${typeCasting}${actual}, ${expected}${assertMessage(message)}, null);`)
                 } else {
-                    act = `${actual}`
+                    addCommand(dot_net`Assert.AreEqual(${expected}, ${typeCasting}${actual}${assertMessage(message)});`)
                 }
-                let mess = message ? `"${message}"` : null
-                addCommand(dot_net`GeneratedTestUtils.compareProcedure(` + act + `, ` + expect + `, ` + mess + `);`)
+            } else {
+                const type = getTypeName(actual)
+                if (type === 'JsonNode') {
+                    addCommand(dot_net`Assert.AreEqual(${expected}, ${actual}.ToString()${assertMessage(message)});`)
+                } else if (type === 'Array') {
+                    addCommand(dot_net`Assert.AreEqual(${addType(expected[0], 'Region')}, ${actual[0]}${assertMessage(message)});`)
+                } else if (type !== 'Map') {
+                    addCommand(dot_net`Assert.AreEqual(${addType(expected, type)}, ${actual}${assertMessage(message)});`)
+                } else {
+                    addCommand(dot_net`GeneratedTestUtils.compareProcedure(${actual},\n        ${addType(expected, type, actual.type().generic)}${assertMessage(message)});`)
+                }
             }
         },
-
-        instanceOf(object, className, message) {
-            let classNm = `${className}`
-            let mess = message ? `"${message}"` : null
-            let obj = object.ref()
-            addCommand(dot_net` Assert.IsInstanceOf<` + className + `>(` + obj + `, ` + mess + `);`)
+        notEqual(actual, expected, message) {
+            addCommand(dot_net`Assert.AreNotEqual(${expected}${assertMessage(message)}, ${actual});`)
+        },
+        instanceOf(object, typeName) {
+            addCommand(dot_net`Assert.IsInstanceOf<${insert(types[typeName].name())}>(${object});`)
         },
         throws(func, check) {
-            let command
-            let funct = `${func}`.replace(/;/g, "")
-            if (check) {
-                command = dot_net`Assert.That(() => {${func}}, Throws.InstanceOf<${insert(check())}>().Or.InstanceOf<EyesException>().With.InnerException.With.InstanceOf<${insert(check())}>());`
-            } else {
-                command = dot_net`Assert.That(() => {${func};}, Throws.Exception);`
-            }
+            let command = dot_net`Assert.Catch<Exception>(()=>{${func}});`
             addCommand(command)
         },
+        ok(arg, message) {
+            addCommand(dot_net`Assert.NotNull(${arg}${assertMessage(message)});`)
+        },
+        contains(args, expectedToHave) {
+            addCommand(dot_net`StringAssert.Contains(${expectedToHave}, (${args});`)
+        }
     }
 
     const helpers = {
         getTestInfo(result) {
-            const appOutputSchema = {
-                image: {
-                    type: 'Image',
-                    schema: {hasDom: 'Boolean'},
-                },
-                imageMatchSettings: {
-                    type: 'ImageMatchSettings',
-                    schema: {
-                        ignoreDisplacements: 'Boolean',
-                        ignore: {type: 'Array', items: 'Region'},
-                        layout: {type: 'Array', items: 'Region'},
-                        strict: {type: 'Array', items: 'Region'},
-                        content: {type: 'Array', items: 'Region'},
-                        floating: {type: 'Array', items: 'FloatingRegion'},
-                        accessibility: {type: 'Array', items: 'AccessibilityRegion'},
-                        accessibilitySettings: {
-                            type: 'AccessibilitySettings',
-                            schema: {level: 'String', version: 'String'},
-                        },
-                    },
-                },
-            }
-            return addCommand(dot_net`TestUtils.GetSessionResults(eyes.ApiKey, ${result});`).type({
-                // type: 'TestInfo',
-                // schema: {
-                // 	actualAppOutput: {
-                // 		type: 'Array',
-                // 		items: { type: 'AppOutput', schema: appOutputSchema },
-                // 	},
-                // },
-                type: 'String',
+            return addCommand(dot_net`GetTestInfo(${result});`).type({
+                type: 'TestInfo',
                 schema: {
                     actualAppOutput: {
-                        type: 'String',
-                        items: {type: 'AppOutput', schema: appOutputSchema},
+                        type: 'Array',
+                        items: {
+                            type: 'AppOutput',
+                            schema: {
+                                image: {
+                                    type: 'Image',
+                                    schema: {
+                                        hasDom: 'Boolean',
+                                        location: Location
+                                    },
+                                },
+                                imageMatchSettings: ImageMatchSettings,
+                                knownVariantId: {
+                                    type: 'String'
+                                },
+                                pageCoverageInfo: {
+                                    type: 'PageCoverageInfo',
+                                    schema: {
+                                        pageId: 'String',
+                                        width: 'Long',
+                                        height: 'Long',
+                                        imagePositionInPage: {
+                                            rename: 'location',
+                                            ...Location
+                                        }
+                                    }
+                                }
+                            }
+                        },
                     },
+                    startInfo: {
+                        type: 'StartInfo',
+                        schema: {
+                            batchInfo: {
+                                type: 'BatchInfo',
+                                schema: {
+                                    properties: {
+                                        type: 'List<Map<String, String>>',
+                                        schema: {
+                                            length: { rename: 'Count' }
+                                        },
+                                        items: {
+                                            type: 'Map<String, String>',
+                                            items: {
+                                                type: 'String'
+                                            }
+                                        }
+                                    },
+                                }
+                            },
+                            agentRunId: 'String'
+                        }
+                    }
                 },
             })
         },
         getDom(result, domId) {
-            let id = parseAssertActual(domId.ref())
-            return addCommand(dot_net`getDom(${result}, ` + id + `);`).type({type: 'JsonNode'}).methods({
-                getNodesByAttribute: (dom, name) => addCommand(dot_net`getNodesByAttribute(${dom}, ${name});`).type({type: 'JsonNode'})
+            return addCommand(dot_net`GetDom(${result},${domId});`).type({ type: 'JsonNode', recursive: true }).methods({
+                getNodesByAttribute: (dom, attr) => addCommand(dot_net`GetNodesByAttributes(${dom}, ${attr});`).type({
+                    type: 'List<JObject>',
+                    schema: { length: { rename: 'Count' } },
+                    items: {
+                        type: 'JsonNode', schema: {
+                            rect: {
+                                type: 'rect',
+                                schema: {
+                                    top: 'Number',
+                                    left: 'Number'
+                                }
+                            }
+                        }, recursive: true
+                    }
+                })
             })
         },
         math: {
             round(number) {
-                if (number.isRef)
-                    return addCommand(dot_net`(int)Math.Round(` + castPolynomTerms("decimal", number.ref()) + `);`)
-                else
-                    return addCommand(dot_net`(int)Math.Round((decimal)${number});`)
-            },
+                return addExpression(dot_net`Math.Round(${number})`)
+            }
         }
     }
 
