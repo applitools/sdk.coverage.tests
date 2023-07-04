@@ -231,7 +231,7 @@ function serialize(value) {
     if (value && value.isRef) {
         stringified = value.ref();
     } else if (value === null) {
-        throw Error(`Null shouldn't be passed to the c# code. \n ${value}`);
+        stringified = 'null'
     } else if (typeof value === 'object') {
         stringified = parseObject(value);
     } else if (typeof value === 'function') {

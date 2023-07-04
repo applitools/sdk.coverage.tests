@@ -25,11 +25,11 @@ module.exports = {
     // RESPONSE: {"name":"EyesManager.openEyes","key":"6dba109a-d023-44ba-9466-83af1ff3a912","payload":{"error":{"message":"unknown command: Cannot call non W3C standard command while in W3C mode","stack":"#0 0x56477aac9199 <unknown>\n"}}}
     // REQUEST: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"manager":{"applitools-ref-id":"4e73260e-70b8-49aa-a5d2-369246ded3b3"},"throwErr":false}}
     // RESPONSE: {"name":"EyesManager.closeManager","key":"36cd5684-44c2-4b96-a217-803d1efc7981","payload":{"result":{"results":[],"passed":0,"unresolved":0,"failed":0,"exceptions":0,"mismatches":0,"missing":0,"matches":0}}}
-    'check window on mobile web android': { skip: true },
+    'check window on mobile web android': { skip: false },
     'appium iOS check fully window with scroll and pageCoverage': { skipEmit: true },
     'appium iOS check window region with scroll and pageCoverage': { skipEmit: true },
     // TODO verify and enable
-    'should send agentRunId': { skipEmit: true },
+    'should send agentRunId': { skipEmit: false },
     "appium iOS nav bar check regio": { skipEmit: true },
     "Should return exception in TestResultsSummary": { skipEmit: true },
     // TODO Failed and needs to be re-checked.
@@ -38,15 +38,15 @@ module.exports = {
     //"appium android landscape mode check region": {skip: true},
     // Emitter failure
     
-    "should override default value of fully with true": { skipEmit: true },
-    "should override default value of fully with false": { skipEmit: true },
+    "should override default value of fully with true": { skipEmit: false },
+    "should override default value of fully with false": { skipEmit: false },
     
-    "should send codded regions with padding": { skipEmit: true },
-    "should send codded regions with padding with vg": { skipEmit: true },
+    "should send codded regions with padding": { skipEmit: false },
+    "should send codded regions with padding with vg": { skipEmit: false },
     
     // sessionNotCreated exception
-    "check window fully on page with horizontal scroll with css stitching": { skipEmit: true },
-    "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: true },
+    "check window fully on page with horizontal scroll with css stitching": { skipEmit: false },
+    "check window fully on page with horizontal scroll with scroll stitching": { skipEmit: false },
     
     // check image
     "check image file in png format": {skipEmit: true},
@@ -60,7 +60,7 @@ module.exports = {
     "should send dom when check image": {skipEmit: true},
 
     // server response has null properties
-    'should send custom batch properties': {skip: true},
+    'should send custom batch properties': {skip: false},
     
     // still has visual diffs
     "check window fully on android chrome emulator on mobile page": {skipEmit: true},

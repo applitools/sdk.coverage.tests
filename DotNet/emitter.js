@@ -642,8 +642,9 @@ function setUpBrowsers(test, addHook) {
     let legacy = ("env" in test) && ("legacy" in test.env) && (test.env.legacy === true) ? true : false
     let css = ("stitchMode" in test.config) && (test.config.stitchMode.toUpperCase().localeCompare('SCROLL')) ? true : false // localeCompare returns 0 when the strings are equal
     let executionGrid = ("executionGrid" in test) && test.executionGrid
+    let device = ("env" in test && "device" in test.env) ? test.env.device : null;
     if (("env" in test) && ("browser" in test.env)) {
-        switch (test.env.browser) {
+            switch (test.env.browser) {
             case 'ie-11':
                 addHook('beforeEach', dot_net`SetUpDriver(browserType.IE);`)
                 break;
@@ -660,7 +661,7 @@ function setUpBrowsers(test, addHook) {
                 addHook('beforeEach', dot_net`SetUpDriver(browserType.Safari12, legacy: ${legacy});`)
                 break;
             case 'chrome':
-                addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless}, executionGrid: ${executionGrid});`)
+                addHook('beforeEach', dot_net`SetUpDriver(browserType.Chrome, headless: ${headless}, executionGrid: ${executionGrid}, device: ${device});`)
                 break;
             default:
                 throw Error(`Couldn't intrpret browser type ${test.env.browser}. Code update is needed`)
