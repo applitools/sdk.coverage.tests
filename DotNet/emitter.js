@@ -95,7 +95,10 @@ module.exports = function (tracker, test) {
         test.executionGrid = true;
     }
 
-    let mobile = ("features" in test) && (test.features[0] === 'native-selectors') ? true : false
+    // if (test.features && test.features.includes('image')){
+    //     return
+    // }
+    let mobile = (test.features && test.features.includes('native-selectors')) ? true : false
     mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
     let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
@@ -212,6 +215,14 @@ module.exports = function (tracker, test) {
             addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${breakpoints}).Reload(${test.config.layoutBreakpoints.reload}));`)
         } else {
             addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
+        }
+    }
+    if ("batch" in test.config) {
+        if ("id" in test.config.batch) {
+            addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
+        }
+        if ("properties" in test.config.batch) {
+            addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
         }
     }
 
