@@ -3,6 +3,20 @@ const deviceName = require('./deviceName')
 const { capitalizeFirstLetter } = require('../util')
 const simpleGetter = (target, key) => `${target}.Get${capitalizeFirstLetter(key)}()`;
 const propertyGetter = (target, key) => `${target}.${capitalizeFirstLetter(key)}`;
+const stringifyShadowSelector = (value) => {
+    var str = '';
+    while (value && value.shadow) {
+        if (value.selector){
+            str += `.Shadow("${value.selector}")`
+        }
+        if (typeof value.shadow === 'string') {
+            str += `.Shadow("${value.shadow}")`
+        } 
+        value = value.shadow
+    }
+    return str;
+};
+
 const types = {
     "Map": {
         constructor: (value, generic) => {
@@ -58,7 +72,15 @@ const types = {
     },
     "Region": {
         name: () => 'Region',
-        constructor: (value) => `new Region(${value.left}, ${value.top}, ${value.width}, ${value.height})`,
+        constructor: (value) => {
+            if (value.selector && value.shadow) {
+                return `TargetPath` + stringifyShadowSelector(value)
+            }
+            if (value.selector){
+                return `By.CssSelector(${value.selector})`
+            }
+            return `new Region(${value.left}, ${value.top}, ${value.width}, ${value.height})`
+        }
     },
     "FloatingRegion": {
         constructor: (value) => {
