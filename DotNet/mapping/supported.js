@@ -11,9 +11,9 @@ const CHECK_SETTINGS_OPTIONS = [
     'ignoreDisplacements',
     'sendDom',
     'matchLevel',
-    "name",
+    'name',
     'layoutBreakpoints',
-    "isFully",
+    'isFully',
     'visualGridOptions',
     'variationGroupId',
     'hooks',
@@ -21,8 +21,9 @@ const CHECK_SETTINGS_OPTIONS = [
     'pageId',
     'waitBeforeCapture',
     'lazyLoad',
-    "webview",
-    'enablePatterns'
+    'webview',
+    'enablePatterns',
+    'image'
 ]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'
