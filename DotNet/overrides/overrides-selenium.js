@@ -39,5 +39,6 @@ module.exports = {
     "should extract text regions from image": { skipEmit: true },
     
     // problems emitting (wrong code)
-    'check region by element within shadow dom': { skip: true }
+    'check region by element within shadow dom': { skip: true },
+    'check region by element within shadow dom with vg': { skip: true }
 }
