@@ -12,6 +12,9 @@ module.exports = {
     // Chrome emulator have minor diffs with JS sdk
     'should not fail if scroll root is stale on android': { config: { branchName: 'universal-dotnet' } },
 
+    // WebDriver support removed
+    'check window after manual scroll on safari 11': { skip: true },
+
     //
     // com.applitools.eyes.EyesException: unknown command: Cannot call non W3C standard command while in W3C mode
     // INFO: Detected dialect: W3C
@@ -29,9 +32,12 @@ module.exports = {
     "check window fully on android chrome emulator on mobile page with horizontal scroll": {skipEmit: true},
     "should not fail if scroll root is stale on android": {skipEmit: true},
     
-    // problems emitting
+    // problems emitting (uncompilable code)
     "check window on mobile web ios": { skipEmit: true },
     "should extract text from regions": { skipEmit: true },
     "should extract text from regions without a hint": { skipEmit: true },
     "should extract text regions from image": { skipEmit: true },
+    
+    // problems emitting (wrong code)
+    'check region by element within shadow dom': { skip: true }
 }
