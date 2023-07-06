@@ -95,13 +95,11 @@ module.exports = function (tracker, test) {
         test.executionGrid = true;
     }
 
-    // if (test.features && test.features.includes('image')){
-    //     return
-    // }
-    let mobile = (test.features && test.features.includes('native-selectors')) ? true : false
+    let image = test.features && test.features.includes('image');
+    let mobile = (test.features && test.features.includes('native-selectors'))
     mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
-    let emulator = ((("env" in test) && ("device" in test.env)) && !("features" in test))
-    let otherBrowser = ("env" in test) && ("browser" in test.env) && (test.env.browser !== 'chrome') ? true : false
+    let emulator = test.env && test.env.device && !test.features
+    let otherBrowser = test.env && test.env.browser && test.env.browser !== 'chrome'
     let openPerformed = false
     let confVisualGridOptionCreated = false
 
@@ -127,29 +125,33 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Applitools.Tests.Utils;`)
     addHook('deps', `using Applitools.Generated.Utils;`)
     addHook('deps', `using Applitools.Utils.Geometry;`)
-    addHook('deps', `using OpenQA.Selenium;`)
     addHook('deps', `using Applitools.Fluent;`)
     addHook('deps', `using Applitools.Metadata;`)
     addHook('deps', `using Newtonsoft.Json.Linq;`)
     if (mobile) {
         addHook('deps', `using Applitools.Appium;`)
         addHook('deps', `using Applitools.Appium.GenericUtils;`)
+        addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Appium;`)
-    } else {
+        addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
+    } else if (!image) {
         addHook('deps', `using Applitools.Selenium;`)
+        addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Interactions;`)
         addHook('deps', `using OpenQA.Selenium.Remote;`)
         addHook('deps', `using System.Collections.Generic;`)
-        addHook('deps', `using System;`)
-        addHook('deps', `using System.Linq;`)
+        addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
+    } else if (image) {
+        addHook('deps', `using Applitools.Images;`)
     }
+    addHook('deps', `using System;`)
+    addHook('deps', `using System.Linq;`)
     if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
     let namespace = mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
     let baseClass = mobile ? 'TestSetupGeneratedAppium' : 'TestSetupGenerated'
     if (emulator) baseClass = 'TestSetupGeneratedMobileEmulation'
 
-    addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
     addHook('deps', `namespace ${namespace}`)
     addHook('deps', `{`)
     addHook('deps', `[TestFixture]`)
