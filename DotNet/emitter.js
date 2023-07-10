@@ -125,6 +125,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `using Applitools.Tests.Utils;`)
     addHook('deps', `using Applitools.Generated.Utils;`)
     addHook('deps', `using Applitools.Utils.Geometry;`)
+    addHook('deps', `using Applitools.Commands;`)
     addHook('deps', `using Applitools.Fluent;`)
     addHook('deps', `using Applitools.Metadata;`)
     addHook('deps', `using Newtonsoft.Json.Linq;`)
@@ -270,6 +271,9 @@ module.exports = function (tracker, test) {
         findElement(selector) {
             let drv = "driver"
             if (openPerformed) drv = "webDriver"
+            if (typeof selector === "object" && selector.type && selector.type === "css") {
+                selector = selector.selector;
+            }
             if (selector.includes('name=')) return addCommand(dot_net`` + drv + `.FindElement(By.Name(` + takeSelector(selector) + `));`)
             else return addCommand(
                 dot_net`` + drv + `.FindElement(By.CssSelector("${selector.toString().replace(/\"/g, '')}"));`,
@@ -468,6 +472,61 @@ module.exports = function (tracker, test) {
         locate(visualLocator) {
             return addCommand(dot_net`eyes.Locate(new VisualLocatorSettings().Names(${visualLocator.locatorNames.join(', ')}));`).type('Map<String, List<Region>>')
         },
+        extractText(ocrRegions) {
+            const commands = []
+            commands.push(dot_net`eyes.ExtractText(`)
+            for (const index in ocrRegions) {
+                commands.push(dot_net`new Applitools.Selenium.OcrRegion(`)
+                const region = ocrRegions[index]
+                if (typeof (region.target) === "string") {
+                    commands.push(dot_net`By.CssSelector(${region.target}))`)
+                } else if (typeof (region.target) === "object") {
+                    commands.push(dot_net`new Region(${region.target.left || region.target.x}, ${region.target.top || region.target.y}, ${region.target.width}, ${region.target.height}))`)
+                } else {
+                    commands.push(dot_net`${region.target})`)
+                }
+
+                if (region.hint) {
+                    commands.push(dot_net`.Hint(${region.hint})`)
+                }
+                if (region.minMatch) {
+                    commands.push(dot_net`.MinMatch(${region.minMatch})`)
+                }
+                if (region.language) {
+                    commands.push(dot_net`.Language(${region.language})`)
+                }
+                commands.push(dot_net`, `)
+            }
+            commands.pop()
+            commands.push(dot_net`);`)
+            return addCommand([commands.join('')]).type({
+                type: 'List<string>',
+                items: {
+                    type: 'String'
+                }
+            });
+        },
+        extractTextRegions({ patterns, ignoreCase, firstOnly, language }) {
+            const commands = []
+            commands.push(dot_net`eyes.ExtractTextRegions(new TextRegionSettings(${insert(patterns.map(JSON.stringify).join(', '))})`)
+            if (ignoreCase) commands.push(dot_net`.SetIgnoreCase(${ignoreCase})`)
+            if (firstOnly) commands.push(dot_net`.SetFirstOnly(${firstOnly})`)
+            if (language) commands.push(dot_net`.SetLanguage(${language})`)
+            commands.push(dot_net`);`)
+            return addCommand([commands.join('')]).type({
+                type: 'Map<String, List<TextRegion>>',
+                items: {
+                    type: 'List<TextRegion>',
+                    schema: {
+                        length: { rename: 'Count' }
+                    },
+                    items: {
+                        type: 'TextRegion',
+                        schema: { text: { type: 'String' } }
+                    }
+                }
+            })
+        }
     }
     
     const assert = {

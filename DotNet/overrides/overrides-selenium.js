@@ -14,9 +14,6 @@ module.exports = {
 
     // problems emitting (emitter throws error)
     "check window on mobile web ios": { skipEmit: true },
-    "should extract text from regions": { skipEmit: true },
-    "should extract text from regions without a hint": { skipEmit: true },
-    "should extract text regions from image": { skipEmit: true },
     
     // emits wrong code
     'check region by element within shadow dom': { skip: true },
