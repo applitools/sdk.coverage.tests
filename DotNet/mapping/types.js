@@ -70,6 +70,10 @@ const types = {
         name: () => 'IWebElement',
         get: simpleGetter,
     },
+    "SearchContext": {
+        name: () => 'ISearchContext',
+        get: simpleGetter
+    },
     "Region": {
         name: () => 'Region',
         constructor: (value) => {

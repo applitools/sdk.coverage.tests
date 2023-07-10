@@ -268,9 +268,12 @@ module.exports = function (tracker, test) {
         switchToParentFrame() {
             addCommand(dot_net`webDriver.SwitchTo().ParentFrame();`)
         },
-        findElement(selector) {
-            let drv = "driver"
-            if (openPerformed) drv = "webDriver"
+        findElement(selector, searchContext) {
+            let drv = searchContext || "driver"
+            if (openPerformed) drv = searchContext || "webDriver"
+            if (typeof drv === "function"){
+                drv = dot_net`${drv}`
+            }
             if (typeof selector === "object" && selector.type && selector.type === "css") {
                 selector = selector.selector;
             }
@@ -660,27 +663,6 @@ module.exports = function (tracker, test) {
     }
 
     return {driver, eyes, assert, helpers}
-}
-
-function castPolynomTerms(castTo, polinom, index = 0) {
-    let castPolynom = ""
-    let terms = polinom.split("+")
-    terms.forEach(term => {
-        castPolynom = castPolynom + "(" + castTo + ")" + term.trimStart() + " + "
-    })
-    return castPolynom.substr(0, castPolynom.length - 3)
-}
-
-function getVal(val) {
-    let nameAndValue = val.toString().split("\"")
-    return nameAndValue[1]
-}
-
-function insert(value) {
-    return {
-        isRef: true,
-        ref: () => value
-    }
 }
 
 function setUpMobileNative(test, addHook) {

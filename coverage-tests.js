@@ -873,9 +873,9 @@ test('check region by element within shadow dom', {
   test({driver, eyes}) {
     eyes.open({appName: 'Applitools Eyes SDK', viewportSize})
     const shadowRootHost = driver.findElement('#has-shadow-root')
-    const shadowRoot = driver.executeScript('return arguments[0].shadowRoot', shadowRootHost)
+    const shadowRoot = driver.executeScript('return arguments[0].shadowRoot', shadowRootHost).type('SearchContext')
     const nestedShadowRootHost = driver.findElement('#has-shadow-root-nested > div', shadowRoot)
-    const nestedShadowRoot = driver.executeScript('return arguments[0].shadowRoot', nestedShadowRootHost)
+    const nestedShadowRoot = driver.executeScript('return arguments[0].shadowRoot', nestedShadowRootHost).type('SearchContext')
     const element1 = driver.findElement('h1', shadowRoot)
     const element2 = driver.findElement('div', nestedShadowRoot)
     eyes.check({region: element1})
