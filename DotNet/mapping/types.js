@@ -70,8 +70,8 @@ const types = {
         name: () => 'IWebElement',
         get: simpleGetter,
     },
-    "SearchContext": {
-        name: () => 'ISearchContext',
+    "ShadowRoot": {
+        name: () => 'ShadowRoot',
         get: simpleGetter
     },
     "Region": {
