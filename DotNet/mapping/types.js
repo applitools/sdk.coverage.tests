@@ -70,6 +70,10 @@ const types = {
         name: () => 'IWebElement',
         get: simpleGetter,
     },
+    "ShadowRoot": {
+        name: () => 'ShadowRoot',
+        get: simpleGetter
+    },
     "Region": {
         name: () => 'Region',
         constructor: (value) => {

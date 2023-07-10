@@ -13,9 +13,5 @@ module.exports = {
     'check window after manual scroll on safari 11': { skip: true },
 
     // problems emitting (emitter throws error)
-    "check window on mobile web ios": { skipEmit: true },
-    
-    // emits wrong code
-    'check region by element within shadow dom': { skip: true },
-    'check region by element within shadow dom with vg': { skip: true }
+    "check window on mobile web ios": { skipEmit: true }
 }
