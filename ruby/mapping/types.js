@@ -1,4 +1,5 @@
 const {has} = require("../util")
+const {fromCamelCaseToSnakeCase} = require("../../util")
 const types = {
     "RectangleSize": {
         constructor: (value) => `Applitools::RectangleSize.new(${value.width}, ${value.height})`
@@ -34,7 +35,22 @@ const types = {
         }
     },
     "TestResults": {
-        class: () => `Applitools::TestResults`
+        class: () => `Applitools::TestResults`,
+        get: (target, key) => `${target}.${fromCamelCaseToSnakeCase(key)}`
+    },
+    "TestResultContainer": {
+        name: () => `TestResultContainer`,
+        get: (target, key) => `${target}.${fromCamelCaseToSnakeCase(key)}`
+    },
+
+    "BrowserInfo": {
+        name: () => `BrowserInfo`,
+        get: (target, key) => `${target}.${fromCamelCaseToSnakeCase(key)}`
+    },
+
+    "ChromeEmulationInfo": {
+        name: () => "ChromeEmulationInfo",
+        get: (target, key) => `${target}.${fromCamelCaseToSnakeCase(key)}`
     }
 }
 

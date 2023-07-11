@@ -277,6 +277,8 @@ function getter({target, key, type}) {
     let get;
     if (type && type.name === 'Array') {
         get = key === 'length' ? `.${key}` : `[${key}]`
+    } else if (type && types[type.name] && types[type.name].get) {
+        return types[type.name].get(target, key)
     } else {
         get = key.startsWith('get') ? `.${key.slice(3).toLowerCase()}` : `[${serialize(key)}]`
     }

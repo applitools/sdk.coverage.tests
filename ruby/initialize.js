@@ -2,6 +2,17 @@
 const {checkSettingsParser, ruby, driverBuild, construct, ref, variable, getter, call, returnSyntax, getClassName, prepareTestConfig} = require('./parser')
 const {wrapSelector} = require('./util')
 
+const TestResults = {
+    type: "TestResults",
+    rename: 'test_results',
+    schema: {
+        isAborted: {
+            rename: 'aborted?'
+        },
+        status: "String",
+    }
+}
+
 
 module.exports = function (tracker, test) {
     const {addSyntax, addCommand, addHook, addExpression} = tracker
@@ -124,6 +135,7 @@ module.exports = function (tracker, test) {
                         items: {
                             type: 'TestResultContainer',
                             schema: {
+                                testResults: TestResults,
                                 browserInfo: {
                                     type: "BrowserInfo",
                                     schema: {
@@ -212,7 +224,7 @@ module.exports = function (tracker, test) {
                                 timeout: ${matchTimeout})`)
         },
         close(throwEx = true) {
-            return addCommand(ruby`@eyes.close(${throwEx})`)
+            return addCommand(ruby`@eyes.close(${throwEx})`).type(TestResults)
         },
         abort() {
             return addCommand(ruby`@eyes.abort`)
