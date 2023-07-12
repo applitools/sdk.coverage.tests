@@ -1,6 +1,6 @@
 'use strict'
 const types = require('./mapping/types')
-const { checkSettingsParser, dot_net, getter, variable, call, returnSyntax, wrapSelector, takeSelector} = require('./parser')
+const { checkSettingsParser, dot_net, getter, variable, call, returnSyntax, wrapSelector, takeSelector, parseObject} = require('./parser')
 const { capitalizeFirstLetter } = require('./util')
 const selectors = require('./mapping/selectors')
 const {execSync} = require('child_process')
@@ -95,7 +95,7 @@ module.exports = function (tracker, test) {
         test.executionGrid = true;
     }
 
-    let image = test.features && test.features.includes('image');
+    let isImage = test.features && test.features.includes('image');
     let mobile = (test.features && test.features.includes('native-selectors'))
     mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = test.env && test.env.device && !test.features
@@ -135,14 +135,14 @@ module.exports = function (tracker, test) {
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Appium;`)
         addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
-    } else if (!image) {
+    } else if (!isImage) {
         addHook('deps', `using Applitools.Selenium;`)
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Interactions;`)
         addHook('deps', `using OpenQA.Selenium.Remote;`)
         addHook('deps', `using System.Collections.Generic;`)
         addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
-    } else if (image) {
+    } else if (isImage) {
         addHook('deps', `using Applitools.Images;`)
     }
     addHook('deps', `using System;`)
@@ -432,27 +432,35 @@ module.exports = function (tracker, test) {
             if (test.api !== 'classic') {
                 return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
             } else if (checkSettings.region) {
-                if (checkSettings.frames && checkSettings.frames.length > 0) {
-                    const [frameReference] = checkSettings.frames
-                    let Tag = !checkSettings.name ? `""` : `${checkSettings.name}`
-                    let MatchTimeout = !checkSettings.timeout ? `` : `, ${checkSettings.timeout}`
-                    return addCommand(dot_net`eyes.CheckRegionInFrame(` +
-                        takeSelector(frameReference) +
-                        `, By.CssSelector("${checkSettings.region}"),` + Tag + `, ${checkSettings.isFully}` + MatchTimeout +
-                        `);`)
+                if (checkSettings.image){
+                    return addCommand(dot_net`eyes.CheckRegion(${checkSettings.image}, ` +
+                    `${parseObject({ value: checkSettings.region, type: 'Region' })}` +
+                    `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''});`)
+                } else {
+                    if (checkSettings.frames && checkSettings.frames.length > 0) {
+                        const [frameReference] = checkSettings.frames
+                        let Tag = !checkSettings.name ? `""` : `${checkSettings.name}`
+                        let MatchTimeout = !checkSettings.timeout ? `` : `, ${checkSettings.timeout}`
+                        return addCommand(dot_net`eyes.CheckRegionInFrame(` +
+                            takeSelector(frameReference) +
+                            `, By.CssSelector("${checkSettings.region}"),` + Tag + `, ${checkSettings.isFully}` + MatchTimeout +
+                            `);`)
+                    }
+                    let args = `By.CssSelector(\"${checkSettings.region}\")` +
+                        `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''}` +
+                        `${checkSettings.timeout ? `, matchTimeout: ${checkSettings.timeout}` : ''}`
+                    return addCommand(dot_net`eyes.CheckRegion(By.CssSelector(${checkSettings.region})` +
+                        `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''}` +
+                        `${checkSettings.timeout ? `, matchTimeout: ${checkSettings.timeout}` : ''});`)   
                 }
-                let args = `By.CssSelector(\"${checkSettings.region}\")` +
-                    `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''}` +
-                    `${checkSettings.timeout ? `, matchTimeout: ${checkSettings.timeout}` : ''}`
-                return addCommand(dot_net`eyes.CheckRegion(By.CssSelector(${checkSettings.region})` +
-                    `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''}` +
-                    `${checkSettings.timeout ? `, matchTimeout: ${checkSettings.timeout}` : ''});`)
             } else if (checkSettings.frames && checkSettings.frames.length > 0) {
                 let frameSelector = (checkSettings.frames.isRef) ? checkSettings.frames.ref() : takeSelector(checkSettings.frames)
                 let args = frameSelector + //arr.reduce((acc, val) => acc + `${takeSelector(val)}`, '')//`"${frames(checkSettings.frames)}"` + //getVal(frameReference)
                     `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''}` +
                     `${checkSettings.timeout ? `, timeout: ${checkSettings.timeout}` : ''}`
                 return addCommand(`eyes.CheckFrame(${args});`)
+            } else if (isImage) {
+                return addCommand(dot_net`eyes.Check(Target.Image(${checkSettings.image}));`)
             } else {
                 let MatchTimeout = !checkSettings.timeout ? `` : `match_timeout:${checkSettings.timeout}`
                 let Tag = !checkSettings.name ? `` : `tag:"${checkSettings.name}"`
