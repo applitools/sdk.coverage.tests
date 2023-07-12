@@ -23,7 +23,8 @@ const CHECK_SETTINGS_OPTIONS = [
     'lazyLoad',
     'webview',
     'enablePatterns',
-    'image'
+    'image',
+    'dom'
 ]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'

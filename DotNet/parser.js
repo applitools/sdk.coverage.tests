@@ -14,16 +14,21 @@ function checkSettings(cs, native) {
     }
     let element = ''
     let options = ''
-    if (cs.frames === undefined && cs.region === undefined) element = '.Window()'
-    else {
-        if (cs.frames) {
-            if (cs.scrollRootElement) {
-                element += `.Window().ScrollRootElement(${printSelector(cs.scrollRootElement)})`
-            }
-            element += frames(cs.frames)
+    if (cs.frames === undefined && cs.region === undefined && cs.image === undefined) element = '.Window()'
+    else if (cs.image) {
+        if (cs.image instanceof String) element = `.File(${JSON.stringify(cs.image)})`
+        else if (typeof cs.image === "string") {
+            if (cs.image.startsWith('https://')) element = `.Url(${JSON.stringify(cs.image)})`
+            else element = `.ImageBase64(${JSON.stringify(cs.image)})`
         }
-        if (cs.region) element += region(cs.region)
+    } else if (cs.frames) {
+        if (cs.scrollRootElement) {
+            element += `.Window().ScrollRootElement(${printSelector(cs.scrollRootElement)})`
+        }
+        element += frames(cs.frames)
     }
+
+    if (cs.region) element += region(cs.region)
     if (cs.enablePatterns) options += `.EnablePatterns(${cs.enablePatterns})`
     if (cs.webview) options += webview(cs.webview);
     if (cs.floatingRegions) options += floatingRegions(cs.floatingRegions);
@@ -316,4 +321,5 @@ module.exports = {
     returnSyntax: returnSyntax,
     wrapSelector: wrapSelector,
 	takeSelector: takeSelector,
+    parseObject: parseObject,
 }
