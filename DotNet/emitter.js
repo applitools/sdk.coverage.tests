@@ -149,7 +149,7 @@ module.exports = function (tracker, test) {
     addHook('deps', `using System.Linq;`)
     if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
-    let namespace = mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
+    let namespace = isImage ? 'Applitools.Generated.Images.Tests' : mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
     let baseClass = mobile ? 'TestSetupGeneratedAppium' : 'TestSetupGenerated'
     if (emulator) baseClass = 'TestSetupGeneratedMobileEmulation'
 
@@ -164,10 +164,14 @@ module.exports = function (tracker, test) {
     addSyntax('call', call)
     addSyntax('return', returnSyntax)
 
-    if (mobile) setUpMobileNative(test, addHook)
-    else {
-        if (emulator) setUpWithEmulators(test, addHook)
-        else setUpBrowsers(test, addHook)
+    if (!isImage) {
+        if (mobile) setUpMobileNative(test, addHook)
+        else {
+            if (emulator) setUpWithEmulators(test, addHook)
+            else setUpBrowsers(test, addHook)
+        }
+    } else {
+        addHook('beforeEach', 'InitEyes();')
     }
 
     const specific = [
@@ -229,8 +233,10 @@ module.exports = function (tracker, test) {
         }
     }
 
-    addHook('afterEach', dot_net`webDriver?.Quit();`)
-    addHook('afterEach', dot_net`driver?.Quit();`)
+    if (!isImage){
+        addHook('afterEach', dot_net`webDriver?.Quit();`)
+        addHook('afterEach', dot_net`driver?.Quit();`)
+    }
     addHook('afterEach', dot_net`eyes?.AbortIfNotClosed();`)
     addHook('afterEach', dot_net`runner?.GetAllTestResults(false);`)
 
@@ -415,7 +421,12 @@ module.exports = function (tracker, test) {
             let rectangle = !viewportSize ? '' : `, new RectangleSize(width:${viewportSize.width}, height:${viewportSize.height})`
             let appNm = (appName) ? appName : test.config.appName
             openPerformed = true
-            addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
+            if (isImage) {
+                addCommand(dot_net`eyes.Open(${appNm}, ${test.config.baselineName}` + rectangle + ');')
+
+            } else {
+                addCommand(dot_net`webDriver = eyes.Open(driver, ${appNm}, ${test.config.baselineName}` + rectangle + ');')
+            }
         },
         check(checkSettings = {}) {
             if (checkSettings !== undefined && checkSettings.visualGridOptions) {
@@ -432,8 +443,8 @@ module.exports = function (tracker, test) {
             if (test.api !== 'classic') {
                 return addCommand(`eyes.Check(${checkSettingsParser(checkSettings, mobile)});`)
             } else if (checkSettings.region) {
-                if (checkSettings.image){
-                    return addCommand(dot_net`eyes.CheckRegion(${checkSettings.image}, ` +
+                if (checkSettings.image) {
+                    return addCommand(dot_net`eyes.CheckRegionInFile(${checkSettings.image}, ` +
                     `${parseObject({ value: checkSettings.region, type: 'Region' })}` +
                     `${checkSettings.name ? `, tag: ${checkSettings.name}` : ''});`)
                 } else {
@@ -460,7 +471,7 @@ module.exports = function (tracker, test) {
                     `${checkSettings.timeout ? `, timeout: ${checkSettings.timeout}` : ''}`
                 return addCommand(`eyes.CheckFrame(${args});`)
             } else if (isImage) {
-                return addCommand(dot_net`eyes.Check(Target.Image(${checkSettings.image}));`)
+                return addCommand(dot_net`eyes.CheckImageFile(${checkSettings.image});`)
             } else {
                 let MatchTimeout = !checkSettings.timeout ? `` : `match_timeout:${checkSettings.timeout}`
                 let Tag = !checkSettings.name ? `` : `tag:"${checkSettings.name}"`

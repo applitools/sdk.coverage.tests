@@ -16,8 +16,11 @@ function checkSettings(cs, native) {
     let options = ''
     if (cs.frames === undefined && cs.region === undefined && cs.image === undefined) element = '.Window()'
     else if (cs.image) {
-        if (cs.image instanceof String) element = `.Image(${JSON.stringify(cs.image)})`
-        else if (typeof cs.image === "string") element = `.Url(${JSON.stringify(cs.image)})`
+        if (cs.image instanceof String) element = `.File(${JSON.stringify(cs.image)})`
+        else if (typeof cs.image === "string") {
+            if (cs.image.startsWith('https://')) element = `.Url(${JSON.stringify(cs.image)})`
+            else element = `.ImageBase64(${JSON.stringify(cs.image)})`
+        }
     } else if (cs.frames) {
         if (cs.scrollRootElement) {
             element += `.Window().ScrollRootElement(${printSelector(cs.scrollRootElement)})`
