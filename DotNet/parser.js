@@ -16,8 +16,9 @@ function checkSettings(cs, native) {
     let options = ''
     if (cs.frames === undefined && cs.region === undefined && cs.image === undefined) element = '.Window()'
     else if (cs.image) {
-        if (cs.image instanceof String) element = `.File(${JSON.stringify(cs.image)})`
-        else if (typeof cs.image === "string") {
+        if (typeof cs.image === "object" && cs.image.constructor.name === "String"){
+            element = `.File(${JSON.stringify(cs.image)})`
+        } else if (typeof cs.image === "string") {
             if (cs.image.startsWith('https://')) element = `.Url(${JSON.stringify(cs.image)})`
             else element = `.ImageBase64(${JSON.stringify(cs.image)})`
         }
