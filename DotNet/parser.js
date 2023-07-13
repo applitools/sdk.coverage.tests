@@ -5,6 +5,9 @@ const { capitalizeFirstLetter } = require('./util')
 const { checkOptions, isEmpty } = require("../util")
 const { CHECK_SETTINGS_HOOKS, CHECK_SETTINGS_OPTIONS, ENV_PROPERTIES } = require('./mapping/supported')
 
+function isBase64(value) {
+    return /^\"[A-Za-z0-9+/]*={0,2}\"$/.test(value)
+}
 
 function checkSettings(cs, native) {
     checkOptions(cs, CHECK_SETTINGS_OPTIONS)
@@ -16,11 +19,13 @@ function checkSettings(cs, native) {
     let options = ''
     if (cs.frames === undefined && cs.region === undefined && cs.image === undefined) element = '.Window()'
     else if (cs.image) {
-        if (typeof cs.image === "object" && cs.image.constructor.name === "String"){
-            element = `.File(${JSON.stringify(cs.image)})`
-        } else if (typeof cs.image === "string") {
-            if (cs.image.startsWith('https://')) element = `.Url(${JSON.stringify(cs.image)})`
-            else element = `.ImageBase64(${JSON.stringify(cs.image)})`
+        var imgStr = JSON.stringify(cs.image);
+        if (imgStr.startsWith('"https://')){
+            element = `.Url(${imgStr})`
+        } else if (isBase64(imgStr)){
+            element = `.ImageBase64(${imgStr})`
+        } else {
+            element = `.File(${imgStr})`
         }
     } else if (cs.frames) {
         if (cs.scrollRootElement) {
