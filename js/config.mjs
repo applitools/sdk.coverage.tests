@@ -1,15 +1,12 @@
-export default {
-  output: './test/generic',
-  ext: '.spec.js',
-  emitter: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/emitter.js',
-  overrides: [
-    'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/overrides.js',
-    'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/js-overrides.js',
-    ...(process.env.APPLITOOLS_TEST_REMOTE === 'eg' ? ['https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/eg.overrides.js'] : []),
-  ],
-  template:
-    'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/template.hbs',
+export const config = {
+  output: './test/generic/{{test-key}}.spec.js',
   tests: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/coverage-tests.js',
+  emitter: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/emitter.mjs',
+  overrides: [
+    'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/overrides.mjs',
+    'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/js-overrides.mjs',
+  ],
+  template: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/js/template.hbs',
   fixtures: 'https://raw.githubusercontent.com/applitools/sdk.coverage.tests/universal-sdk/fixtures/fixtures.zip',
   format: {
     parser: 'babel',
