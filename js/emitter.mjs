@@ -45,13 +45,13 @@ export function emitter(tracker, test) {
   })
 
   addType('Record', {
-    toJSON: (target, generic) => js`Object.entries(${useRef({deref: target})}).reduce((json, [key, value]) => {
-      return Object.assign(json, {[${useRef({deref: 'key', type: generic[0]})}]: ${useRef({deref: 'value', type: generic[1]}).as('JSON')}})
+    toJSON: (target, generic) => js`Object.entries(${useRef(target)}).reduce((json, [key, value]) => {
+      return Object.assign(json, {[${useRef('key', generic[0])}]: ${useRef('value', generic[1]).as('JSON')}})
     }, {})`
   })
   addType('Array', {
-    toJSON: (target, generic) => js`${useRef({deref: target})}.map((item) => {
-      return ${useRef({deref: 'item', type: generic[0]}).as('JSON')}
+    toJSON: (target, generic) => js`${useRef(target)}.map((item) => {
+      return ${useRef('item', generic[0]).as('JSON')}
     })`
   })
   addType('Region', {
@@ -78,7 +78,7 @@ export function emitter(tracker, test) {
         try {
           ;[driver, destroyDriver] = await spec.build(${{
             ...env,
-            url: useRef({deref: process.env.APPLITOOLS_TEST_REMOTE === 'ec' && env.browser === 'chrome' && !env.device ? js`await sdk.Eyes.getExecutionCloudUrl()` : undefined}),
+            url: useRef(process.env.APPLITOOLS_TEST_REMOTE === 'ec' && env.browser === 'chrome' && !env.device ? js`await sdk.Eyes.getExecutionCloudUrl()` : undefined),
           }})
         } catch (err) {
           if (attempt++ > 7) throw err
@@ -88,7 +88,7 @@ export function emitter(tracker, test) {
     `, {group: 'beforeEach'})
   }
   addCommand(js`
-    eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})
+    eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef('driver')}})
   `, {group: 'beforeEach'})
 
   addCommand(js`
