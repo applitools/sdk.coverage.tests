@@ -31,7 +31,7 @@ function serialize(data) {
 }
 
 export function emitter(tracker, test) {
-  const {useRef, addSyntax, addCommand, addExpression, addHook, addType, withScope} = tracker
+  const {useRef, addSyntax, addCommand, addExpression, addType, withScope} = tracker
 
   addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
   addSyntax('getter', ({target, key}) => `${target}['${key}']`)
@@ -58,26 +58,21 @@ export function emitter(tracker, test) {
     toJSON: (target) => `{left: ${target}.x, top: ${target}.y, width: ${target}.width, height: ${target}.height}`
   })
 
-  addHook('deps', `const path = require('path')`)
-  addHook('deps', `const assert = require('assert')`)
-  addHook('deps', `const {getTestInfo, getTestDom} = require('@applitools/test-utils')`)
-
-  
-  if (process.env.SETUP_EYES) addHook('deps', `const setupEyes = require('${process.env.SETUP_EYES}')`)
-  else addHook('deps', `const setupEyes = require('@applitools/test-utils/src/setup-eyes')`)
-  
+  addCommand(`const path = require('path')`, {group: 'deps'})
+  addCommand(`const assert = require('assert')`, {group: 'deps'})
+  addCommand(`const {getTestInfo, getTestDom} = require('@applitools/test-utils')`, {group: 'deps'})
+  addCommand(`const setupEyes = require('${process.env.SETUP_EYES || '@applitools/test-utils/src/setup-eyes'}')`, {group: 'deps'})
   if (!process.env.NO_DRIVER) {
-    if (process.env.SPEC_DRIVER) addHook('deps', `const spec = require('${process.env.SPEC_DRIVER}')`)
-    else addHook('deps', `const spec = require(path.resolve('./dist/spec-driver'))`)
+    if (process.env.SPEC_DRIVER) addCommand(`const spec = require('${process.env.SPEC_DRIVER}')`, {group: 'deps'})
+    else addCommand(`const spec = require(path.resolve('./dist/spec-driver'))`, {group: 'deps'})
   }
+  if (!process.env.NO_SDK) addCommand(`const sdk = require(process.cwd())`, {group: 'deps'})
 
-  if (!process.env.NO_SDK) addHook('deps', `const sdk = require(process.cwd())`)
-
-  addHook('vars', `let driver, transformedDriver, destroyDriver, eyes`)
+  addCommand(`let driver, transformedDriver, destroyDriver, eyes`, {group: 'vars'})
 
   if (!process.env.NO_DRIVER) {
     const env = test.env || {browser: 'chrome'}
-    addHook('beforeEach', js`
+    addCommand(js`
       let attempt = 0
       while (!driver) {
         try {
@@ -90,20 +85,19 @@ export function emitter(tracker, test) {
         }
       }
       transformedDriver = spec.transformDriver ? spec.transformDriver(driver) : driver
-    `)
+    `, {group: 'beforeEach'})
   }
-  
-  addHook('beforeEach', js`
+  addCommand(js`
     eyes = setupEyes(${{vg: test.vg, displayName: test.name, ...test.config, driver: useRef({deref: 'driver'})}})
-  `)
+  `, {group: 'beforeEach'})
 
-  addHook('afterEach', js`
+  addCommand(js`
     try {
       if (eyes) await eyes.abort()
     } finally {
       if (destroyDriver) await destroyDriver(driver)
     }
-  `)
+  `, {group: 'afterEach'})
 
   const driver = {
     constructor: {
