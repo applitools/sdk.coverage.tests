@@ -1,27 +1,27 @@
-// {{name}}
-{{#each output.hooks.deps as |dep|}}
+// {{test.name}}
+{{#each commands.deps as |dep|}}
 {{dep}}
 {{/each}}
 
-describe{{#if skip}}.skip{{/if}}('Coverage Tests - {{key}}', () => {
-  {{#each output.hooks.vars as |var|}}
+describe{{#if test.skip}}.skip{{/if}}('Coverage Tests - {{test.key}}', () => {
+  {{#each commands.vars as |var|}}
   {{var}}
   {{/each}}
 
   beforeEach(async () => {
-    {{#each output.hooks.beforeEach as |command|}}
+    {{#each commands.beforeEach as |command|}}
     {{command}}
     {{/each}}
   })
 
   afterEach(async () => {
-    {{#each output.hooks.afterEach as |command|}}
+    {{#each commands.afterEach as |command|}}
     {{command}}
     {{/each}}
   })
 
-  it('{{name}}{{#tags tags}}@{{this}}{{/tags}}', async () => {
-    {{#each output.commands as |command|}}
+  it('{{test.name}}{{#tags test.tags}}@{{this}}{{/tags}}', async () => {
+    {{#each commands.default as |command|}}
     {{command}}
     {{/each}}
   })
