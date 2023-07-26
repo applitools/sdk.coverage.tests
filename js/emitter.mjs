@@ -30,7 +30,7 @@ function serialize(data) {
   }
 }
 
-export function spec(tracker, test) {
+export function emitter(tracker, test) {
   const {useRef, addSyntax, addCommand, addExpression, addHook, addType, withScope} = tracker
 
   addSyntax('var', ({constant, name, value}) => `${constant ? 'const' : 'let'} ${name} = ${value}`)
