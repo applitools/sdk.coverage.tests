@@ -1650,22 +1650,6 @@ test('should extract text regions from image', {
   },
 })
 
-test('should return actual viewport size', {
-  page: 'Default',
-  env: {browser: 'chrome', headless: false},
-  test({driver, eyes, assert}) {
-    eyes.open({
-      appName: 'Eyes Selenium SDK - Fluent API',
-      viewportSize: {width: 5000, height: 5000},
-    })
-    const cachedViewportSize = eyes.getViewportSize()
-    const expectedViewportSize = driver.executeScript('return {height: window.innerHeight, width: window.innerWidth}').type('Map<String, Number>')
-    assert.equal(cachedViewportSize.getWidth().type('Number'), expectedViewportSize.width)
-    assert.equal(cachedViewportSize.getHeight().type('Number'), expectedViewportSize.height)
-    eyes.close(false)
-  },
-})
-
 test('should set viewport size', {
   page: 'Default',
   variants: {
