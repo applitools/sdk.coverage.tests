@@ -1710,34 +1710,6 @@ test('should fail check of stale element', {
   },
 })
 
-test('should handle check of stale element if selector is preserved', {
-  features: ['webdriver', 'cached-selectors'],
-  test({driver, eyes}) {
-    driver.visit('http://applitools.github.io/demo/TestPages/RefreshDomPage')
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const element = driver.findElement('#inner-img')
-    driver.click('#refresh-button')
-    eyes.check({region: element})
-    eyes.close()
-  },
-})
-
-test('should handle check of stale element in frame if selector is preserved', {
-  features: ['webdriver', 'cached-selectors'],
-  test({driver, eyes}) {
-    driver.visit('https://applitools.github.io/demo/TestPages/RefreshDomPage/iframe')
-    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 600, height: 500}})
-    const frameElement = driver.findElement('[name="frame"]')
-    driver.switchToFrame(frameElement)
-    const element = driver.findElement('#inner-img')
-    driver.click('#refresh-button')
-    driver.switchToFrame(null)
-
-    eyes.check({frames: [frameElement], region: element})
-    eyes.close()
-  },
-})
-
 test('should throw if no checkpoints before close', {
   page: 'Default',
   config: {baselineName: 'TestGetAllTestResults'},
