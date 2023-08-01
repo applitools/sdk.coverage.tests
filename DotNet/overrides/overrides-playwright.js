@@ -1,8 +1,7 @@
 module.exports = {
     
-    // not available in chrome > 96(will be avalable on slenium v4)
-    // 'check region by selector within shadow dom with vg': { skipEmit: true },
-    // "check region by element within shadow dom with vg": { skipEmit: true },
+    // written with Selenium in mind, execution of Javascript is unneeded and impossible to use for getting the shadowRoot.
+    "check region by element within shadow dom with vg": { skipEmit: true },
 
     // Feature not present
     'should handle check of stale element if selector is preserved': { skipEmit: true },
