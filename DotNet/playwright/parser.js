@@ -30,7 +30,7 @@ function checkSettings(cs, native) {
     if (cs.accessibilityRegions) options += accessibilityRegions(cs.accessibilityRegions);
     if (cs.ignoreRegions) {options += typeRegions('Ignore', cs.ignoreRegions);}
     if (cs.strictRegions) options += typeRegions('Strict', cs.strictRegions);
-    if (cs.contentRegions) options += typeRegions('Content', cs.contentRegions);
+    if (cs.contentRegions) options += typeRegions('IgnoreColors', cs.contentRegions);
     if (cs.layoutRegions) options += typeRegions('Layout', cs.layoutRegions);
     if (cs.scrollRootElement && !cs.frames) options += `.ScrollRootElement(${printSelector(cs.scrollRootElement)})`;
     if (cs.ignoreDisplacements !== undefined) options += `.IgnoreDisplacements(${cs.ignoreDisplacements})`;
