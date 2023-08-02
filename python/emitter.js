@@ -231,10 +231,10 @@ def execution_grid():
                 return addCommand(python`driver.get(${url})`)
             }
         },
-        executeScript(script, ...args) {
-            if (args.length > 0) {
-                if (test.playwright) return addCommand(python`page.evaluate("function(arguments) {" + ${script} + "}", [${args[0]}.element_handle()])`)
-                else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
+        executeScript(script, arg) {
+            if (arg) {
+                if (test.playwright) return addCommand(python`page.evaluate("function(arguments) {" + ${script} + "}", [${arg}.element_handle()])`)
+                else return addCommand(python`driver.execute_script(${script}, ${arg})`)
             }
             if (test.playwright) return addCommand(python`page.evaluate("function() {" + ${script} + "}")`)
             else return addCommand(python`driver.execute_script(${script})`)
@@ -257,7 +257,7 @@ def execution_grid():
                 return addCommand(python`driver.switch_to.parent_frame()`)
             }
         },
-        findElement(selector) {
+        findElement(selector, shadowRoot) {
             if (test.playwright) {
                 switch (typeof selector) {
                     case "string":
@@ -266,11 +266,12 @@ def execution_grid():
                         return addCommand(`page.locator('${selector["selector"]}')`)
                 }
             } else {
+                let driver = shadowRoot ? python`${shadowRoot}` : "driver"
                 if (selector.type) {
                     let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
-                    return addCommand("driver" + command)
+                    return addCommand(driver + command)
                 }
-                return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
+                return addCommand(driver + `.find_element(` + parseSelectorByType(selector) + `)`)
             }
         },
         findElements(selector) {
