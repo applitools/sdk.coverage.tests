@@ -274,21 +274,6 @@ def execution_grid():
                 return addCommand(driver + `.find_element(` + parseSelectorByType(selector) + `)`)
             }
         },
-        findElements(selector) {
-            if (test.playwright) {
-                return addCommand(python`assert False, "findElements not implemented"`)
-            } else {
-                return addCommand(python`driver.find_elements_by_css_selector(${selector})`)
-            }
-        },
-        getWindowLocation() {
-            // return addCommand(ruby`await specs.getWindowLocation(driver)`)
-            // TODO: implement if needed
-        },
-        setWindowLocation(location) {
-            // addCommand(ruby`await specs.setWindowLocation(driver, ${location})`)
-            // TODO: implement if needed
-        },
         getWindowSize() {
             return addCommand(python`driver.get_window_size()`)
         },
