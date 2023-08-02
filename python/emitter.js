@@ -232,12 +232,14 @@ def execution_grid():
             }
         },
         executeScript(script, arg) {
-            if (arg) {
-                if (test.playwright) return addCommand(python`page.evaluate("function(arguments) {" + ${script} + "}", [${arg}.element_handle()])`)
-                else return addCommand(python`driver.execute_script(${script}, ${arg})`)
+            if (test.playwright) {
+                let optional_arg = arg ? python`, [${arg}]` : "";
+                return addCommand(`page.evaluate_handle("""function(arguments) {${script}}"""${optional_arg})`)
             }
-            if (test.playwright) return addCommand(python`page.evaluate("function() {" + ${script} + "}")`)
-            else return addCommand(python`driver.execute_script(${script})`)
+            else {
+                let optional_arg = arg ? python`, ${arg}` : "";
+                return addCommand(python`driver.execute_script(${script}` + optional_arg + `)`)
+            }
         },
         sleep(ms) {
             console.log('Sleep was used Need to Implement')
@@ -259,11 +261,13 @@ def execution_grid():
         },
         findElement(selector, shadowRoot) {
             if (test.playwright) {
-                switch (typeof selector) {
-                    case "string":
-                        return addCommand(`page.locator('${selector}')`)
-                    case "object":
-                        return addCommand(`page.locator('${selector["selector"]}')`)
+                if (typeof(selector) == "object") {
+                    selector = selector["selector"]
+                }
+                if (shadowRoot) {
+                    return addCommand(python`${shadowRoot}.query_selector(${selector})`)
+                } else {
+                    return addCommand(python`page.locator(${selector}).element_handle()`)
                 }
             } else {
                 let driver = shadowRoot ? python`${shadowRoot}` : "driver"
