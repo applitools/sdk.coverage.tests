@@ -233,8 +233,9 @@ def execution_grid():
         },
         executeScript(script, arg) {
             if (test.playwright) {
-                let optional_arg = arg ? python`, [${arg}]` : "";
-                return addCommand(`page.evaluate_handle("""function(arguments) {${script}}"""${optional_arg})`)
+                let call = arg ? `page.evaluate_handle("""function(arguments) {`: `page.evaluate("""function() {`
+                let optional_arg = arg ? python`}""", [${arg}])` : `}""")`;
+                return addCommand(call + script + optional_arg)
             }
             else {
                 let optional_arg = arg ? python`, ${arg}` : "";
