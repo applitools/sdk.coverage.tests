@@ -231,13 +231,16 @@ def execution_grid():
                 return addCommand(python`driver.get(${url})`)
             }
         },
-        executeScript(script, ...args) {
-            if (args.length > 0) {
-                if (test.playwright) return addCommand(python`page.evaluate("function(arguments) {" + ${script} + "}", [${args[0]}.element_handle()])`)
-                else return addCommand(python`driver.execute_script(${script}, ${args[0]})`)
+        executeScript(script, arg) {
+            if (test.playwright) {
+                let call = arg ? `page.evaluate_handle("""function(arguments) {`: `page.evaluate("""function() {`
+                let optional_arg = arg ? python`}""", [${arg}])` : `}""")`;
+                return addCommand(call + script + optional_arg)
             }
-            if (test.playwright) return addCommand(python`page.evaluate("function() {" + ${script} + "}")`)
-            else return addCommand(python`driver.execute_script(${script})`)
+            else {
+                let optional_arg = arg ? python`, ${arg}` : "";
+                return addCommand(python`driver.execute_script(${script}` + optional_arg + `)`)
+            }
         },
         sleep(ms) {
             console.log('Sleep was used Need to Implement')
@@ -257,36 +260,24 @@ def execution_grid():
                 return addCommand(python`driver.switch_to.parent_frame()`)
             }
         },
-        findElement(selector) {
+        findElement(selector, shadowRoot) {
             if (test.playwright) {
-                switch (typeof selector) {
-                    case "string":
-                        return addCommand(`page.locator('${selector}')`)
-                    case "object":
-                        return addCommand(`page.locator('${selector["selector"]}')`)
+                if (typeof(selector) == "object") {
+                    selector = selector["selector"]
+                }
+                if (shadowRoot) {
+                    return addCommand(python`${shadowRoot}.query_selector(${selector})`)
+                } else {
+                    return addCommand(python`page.locator(${selector}).element_handle()`)
                 }
             } else {
+                let driver = shadowRoot ? python`${shadowRoot}` : "driver"
                 if (selector.type) {
                     let command = `.${find_commands[selector.type](python`${selector.selector}`)}`
-                    return addCommand("driver" + command)
+                    return addCommand(driver + command)
                 }
-                return addCommand(`driver.find_element(` + parseSelectorByType(selector) + `)`)
+                return addCommand(driver + `.find_element(` + parseSelectorByType(selector) + `)`)
             }
-        },
-        findElements(selector) {
-            if (test.playwright) {
-                return addCommand(python`assert False, "findElements not implemented"`)
-            } else {
-                return addCommand(python`driver.find_elements_by_css_selector(${selector})`)
-            }
-        },
-        getWindowLocation() {
-            // return addCommand(ruby`await specs.getWindowLocation(driver)`)
-            // TODO: implement if needed
-        },
-        setWindowLocation(location) {
-            // addCommand(ruby`await specs.setWindowLocation(driver, ${location})`)
-            // TODO: implement if needed
         },
         getWindowSize() {
             return addCommand(python`driver.get_window_size()`)
