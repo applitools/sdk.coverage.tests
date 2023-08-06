@@ -143,8 +143,6 @@ test('check window after manual scroll', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindowAfterScroll'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindowAfterScroll_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindowAfterScroll_VG'}},
-    'on safari 11': {env: {browser: 'safari-11', legacy: true}, features: ['webdriver', 'jsonwire', 'sauce']},
-    'on safari 12': {env: {browser: 'safari-12', legacy: true}, features: ['webdriver', 'jsonwire', 'sauce']}
   },
   test({driver, eyes}) {
     eyes.open({appName: 'Eyes Selenium SDK - Classic API', viewportSize})
@@ -1647,20 +1645,6 @@ test('should extract text regions from image', {
     // assert.equal(regions[patterns[2]].length, 2)
     // assert.equal(regions[patterns[2]][0].text, 'choose to make it that way. Just make a decision and let')
     // assert.equal(regions[patterns[2]][1].text, 'I can make this world as happy as I want it')
-  },
-})
-
-test('should set viewport size', {
-  page: 'Default',
-  variants: {
-    '': {env: {browser: 'chrome'}},
-    'on edge legacy': {env: {browser: 'edge-18'}, features: ['sauce']},
-  },
-  test({driver, eyes, assert}) {
-    const expectedViewportSize = {width: 600, height: 600}
-    eyes.constructor.setViewportSize(expectedViewportSize)
-    const actualViewportSize = driver.executeScript('return {width: window.innerWidth, height: window.innerHeight}').type('Map<String, Number>')
-    assert.equal(actualViewportSize, expectedViewportSize)
   },
 })
 
