@@ -854,6 +854,7 @@ test('check regions by coordinates in overflowed frame', {
 
 test('check region by selector within shadow dom', {
   page: 'ShadowDOM',
+  features: ['shadow-dom'],
   variants: {
     'with vg': {vg: true},
   },
@@ -867,6 +868,7 @@ test('check region by selector within shadow dom', {
 
 test('check region by element within shadow dom', {
   page: 'ShadowDOM',
+  features: ['shadow-dom'],
   variants: {
     'with vg': {vg: true},
   },
