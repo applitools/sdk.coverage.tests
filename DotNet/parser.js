@@ -70,7 +70,7 @@ function checkSettings(cs, native) {
     }
     if (cs.pageId) { options += `.PageId("${cs.pageId}")`; }
     if (cs.lazyLoad) { options += lazyLoad(cs.lazyLoad); }
-
+    if (cs.useSystemScreenshot === true) { options +=  `.UseSystemScreenshot()`; }
     return dot_net + element + options;
 
     // check settings

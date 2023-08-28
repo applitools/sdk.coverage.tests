@@ -24,7 +24,8 @@ const CHECK_SETTINGS_OPTIONS = [
     'webview',
     'enablePatterns',
     'image',
-    'dom'
+    'dom',
+    'useSystemScreenshot'
 ]
 const CHECK_SETTINGS_HOOKS = [
     'beforeCaptureScreenshot'

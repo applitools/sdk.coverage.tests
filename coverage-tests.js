@@ -2458,4 +2458,27 @@ test('should send ufg options', {
   }
 })
 
+test('appium check window with nml', {
+  variants: {
+    'on android': {env: {device: 'Pixel 3a XL', app: 'storage:filename=simpleapp-appAndroidX-debug.apk',}, features: ['sauce', 'setmobilecaps']},
+    'on ios': {env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/ufg-mobile/UFGTestApp.app.zip'}, features: ['sauce', 'setmobilecaps']},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Appium SDK - Classic API'})
+    eyes.check({isFully: false})
+    eyes.close()
+  },
+})
+
+test('appium check window with nml use system screenshot', {
+  variants: {
+    'on android': {env: {device: 'Pixel 3a XL', app: 'storage:filename=simpleapp-appAndroidX-debug.apk',}, features: ['sauce', 'setmobilecaps']},
+    'on ios': {env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/ufg-mobile/UFGTestApp.app.zip'}, features: ['sauce', 'setmobilecaps']},
+  },
+  test({eyes}) {
+    eyes.open({appName: 'Eyes Appium SDK - Classic API'})
+    eyes.check({isFully: false, useSystemScreenshot: true})
+    eyes.close()
+  },
+})
 // #endregion
