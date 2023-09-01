@@ -1190,7 +1190,7 @@ test('should send codded regions with region id', {
     'with vg': {vg: true},
   },
   test({assert, helpers, driver, eyes}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
+    eyes.open({appName: 'Applitools Eyes SDK', viewportSize: {width: 800, height: 600}})
     
     const element = driver.findElement('.region.two:nth-child(2)')
     const regions = [
