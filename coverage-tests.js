@@ -1548,7 +1548,7 @@ test('should send enablePatterns when specified in check settings', {
 })
 
 test('should send custom batch properties', {
-  page: 'Default',
+  features: ['image'],
   config: {
     batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom_prop', value: 'custom value'}]}
   },
@@ -1559,6 +1559,20 @@ test('should send custom batch properties', {
     const info = helpers.getTestInfo(result);
     assert.equal(info.startInfo.batchInfo.properties.length, 1)
     assert.equal(info.startInfo.batchInfo.properties[0], {name: 'custom_prop', value: 'custom value'})
+  },
+})
+
+test('should send batch sequence name', {
+  features: ['image'],
+  config: {
+    batch: {id: `batch_${Date.now()}`, sequenceName: 'custom sequence name'}
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Batch Sequence Name', viewportSize});
+    // python default behaviour is to throw an error if there are no checks was performed, so changed to not throwing an exception to be able to check custom batch props
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(info.startInfo.batchInfo.sequenceName, 'custom sequence name')
   },
 })
 

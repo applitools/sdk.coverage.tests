@@ -140,13 +140,13 @@ module.exports = function (tracker, test) {
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Interactions;`)
         addHook('deps', `using OpenQA.Selenium.Remote;`)
-        addHook('deps', `using System.Collections.Generic;`)
         addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
     } else if (isImage) {
         addHook('deps', `using Applitools.Images;`)
     }
     addHook('deps', `using System;`)
     addHook('deps', `using System.Linq;`)
+    addHook('deps', `using System.Collections.Generic;`)
     if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
     let namespace = isImage ? 'Applitools.Generated.Images.Tests' : mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
@@ -230,6 +230,9 @@ module.exports = function (tracker, test) {
         }
         if ("properties" in test.config.batch) {
             addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
+        }
+        if (test.config.batch.sequenceName) {
+            addHook('beforeEach', dot_net`eyes.Batch.SequenceName = ${test.config.batch.sequenceName};`)
         }
     }
 
@@ -647,6 +650,7 @@ module.exports = function (tracker, test) {
                                             }
                                         }
                                     },
+                                    sequenceName: 'String'
                                 }
                             },
                             agentRunId: 'String'
