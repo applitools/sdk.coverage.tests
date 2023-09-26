@@ -2460,8 +2460,8 @@ test('should send ufg options', {
 
 test('appium check window with nml', {
   variants: {
-    'on android': {env: {device: 'Pixel 3a XL', app: 'https://applitools.jfrog.io/artifactory/Examples/simpleapp-appAndroidX-debug.apk.zip',}, features: ['sauce', 'setmobilecaps']},
-    'on ios': {env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/ufg-mobile/UFGTestApp.app.zip'}, features: ['sauce', 'setmobilecaps']},
+    'on android': {env: {device: 'Pixel 3a XL', app: 'https://applitools.jfrog.io/artifactory/Examples/SimpleApp26Sep.apk',}, features: ['sauce', 'setmobilecaps']},
+    'on ios': {env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/ufg-mobile/UFGTestApp_x86.app.zip'}, features: ['sauce', 'setmobilecaps']},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Appium SDK - Classic API'})
@@ -2472,8 +2472,8 @@ test('appium check window with nml', {
 
 test('appium check window with nml use system screenshot', {
   variants: {
-    'on android': {env: {device: 'Pixel 3a XL', app: 'https://applitools.jfrog.io/artifactory/Examples/simpleapp-appAndroidX-debug.apk.zip',}, features: ['sauce', 'setmobilecaps']},
-    'on ios': {env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/ufg-mobile/UFGTestApp.app.zip'}, features: ['sauce', 'setmobilecaps']},
+    'on android': {env: {device: 'Pixel 3a XL', app: 'https://applitools.jfrog.io/artifactory/Examples/SimpleApp26Sep.apk',}, features: ['sauce', 'setmobilecaps']},
+    'on ios': {env: {device: 'iPhone 12', app: 'https://applitools.jfrog.io/artifactory/ufg-mobile/UFGTestApp_x86.app.zip'}, features: ['sauce', 'setmobilecaps']},
   },
   test({eyes}) {
     eyes.open({appName: 'Eyes Appium SDK - Classic API'})
