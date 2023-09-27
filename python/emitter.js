@@ -208,6 +208,11 @@ def execution_grid():
     `)
     }
 
+    for (const val of test.features || []) {
+        const feature = val.replace('-', '_')
+        addHook('beforeEach', `@pytest.mark.${feature}`)
+    }
+
     const driver = {
         constructor: {
             isStaleElementError(error) {
