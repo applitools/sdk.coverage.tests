@@ -99,7 +99,7 @@ module.exports = function (tracker, test) {
     let mobile = (test.features && test.features.includes('native-selectors'))
     mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = test.env && test.env.device && !test.features
-    let nml = test.features && test.features.includes('setmobilecaps')
+    let nml = test.env && test.env.nml === true
     let otherBrowser = test.env && test.env.browser && test.env.browser !== 'chrome'
     let openPerformed = false
     let confVisualGridOptionCreated = false
@@ -685,7 +685,7 @@ module.exports = function (tracker, test) {
 }
 
 function setUpMobileNative(test, addHook) {
-    addHook('beforeEach', dot_net`InitDriver(${test.env.device}, ${test.env.app}, ${test.features && test.features.includes('setmobilecaps')});`)
+    addHook('beforeEach', dot_net`InitDriver(${test.env.device}, ${test.env.app}, ${test.env.nml === true});`)
     addHook('beforeEach', dot_net`InitEyes(false, false);`)
 }
 
