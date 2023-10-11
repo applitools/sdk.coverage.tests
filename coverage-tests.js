@@ -96,6 +96,26 @@ test('check window', {
     'with css stitching': {config: {stitchMode: 'CSS', baselineName: 'TestCheckWindow'}},
     'with scroll stitching': {config: {stitchMode: 'Scroll', baselineName: 'TestCheckWindow_Scroll'}},
     'with vg': {vg: true, config: {baselineName: 'TestCheckWindow_VG'}},
+    'with vg all browsers': {vg: true, config: {
+      browsersInfo: [
+        {name: 'chrome', width: 1000, height: 800},
+        {name: 'chrome-one-version-back', width: 1000, height: 800},
+        {name: 'chrome-two-versions-back', width: 1000, height: 800},
+        {name: 'firefox', width: 1000, height: 800},
+        {name: 'firefox-one-version-back', width: 1000, height: 800},
+        {name: 'firefox-two-versions-back', width: 1000, height: 800},
+        {name: 'safari', width: 1000, height: 800},
+        {name: 'safari-one-version-back', width: 1000, height: 800},
+        {name: 'safari-two-versions-back', width: 1000, height: 800},
+        {name: 'safari-earlyaccess', width: 1000, height: 800},
+        {name: 'ie10', width: 1000, height: 800},
+        {name: 'ie11', width: 1000, height: 800},
+        {name: 'edgelegacy', width: 1000, height: 800},
+        {name: 'edgechromium', width: 1000, height: 800},
+        {name: 'edgechromium-one-version-back', width: 1000, height: 800},
+        {name: 'edgechromium-two-versions-back', width: 1000, height: 800},
+      ]
+    }},
     'on mobile web android': {page: 'HelloWorld', env: {device: 'Pixel 3a XL', browser: 'chrome',}, features: ['sauce']},
     'on mobile web ios': {page: 'HelloWorld', env: {device: 'iPhone XS', browser: 'safari'}, features: ['sauce']},
   },
@@ -104,36 +124,6 @@ test('check window', {
     eyes.check({isFully: false})
     eyes.close()
   },
-})
-
-test('check window with vg on all browsers', {
-  page: 'Default',
-  vg: true,
-  config: {
-    browsersInfo: [
-      {name: 'chrome', width: 1000, height: 800},
-      {name: 'chrome-one-version-back', width: 1000, height: 800},
-      {name: 'chrome-two-versions-back', width: 1000, height: 800},
-      {name: 'firefox', width: 1000, height: 800},
-      {name: 'firefox-one-version-back', width: 1000, height: 800},
-      {name: 'firefox-two-versions-back', width: 1000, height: 800},
-      {name: 'safari', width: 1000, height: 800},
-      {name: 'safari-one-version-back', width: 1000, height: 800},
-      {name: 'safari-two-versions-back', width: 1000, height: 800},
-      {name: 'safari-earlyaccess', width: 1000, height: 800},
-      {name: 'ie10', width: 1000, height: 800},
-      {name: 'ie11', width: 1000, height: 800},
-      {name: 'edgelegacy', width: 1000, height: 800},
-      {name: 'edgechromium', width: 1000, height: 800},
-      {name: 'edgechromium-one-version-back', width: 1000, height: 800},
-      {name: 'edgechromium-two-versions-back', width: 1000, height: 800},
-    ],
-  },
-  test({eyes}) {
-    eyes.open({appName: 'Applitools Eyes SDK'})
-    eyes.check()
-    eyes.close()
-  }
 })
 
 test('check window fully', {
