@@ -169,6 +169,11 @@ module.exports = function (tracker, test) {
             addHook('beforeEach', python`def app():`)
             addHook('beforeEach', python`    return ${test.env.app}\n`)
         }
+        if(test.env.nml) {
+            addHook('beforeEach', python`@pytest.fixture(scope="function")`)
+            addHook('beforeEach', python`def nml():`)
+            addHook('beforeEach', python`    return ${test.env.nml}\n`)
+        }
         if(test.env.browser) {
             addHook('beforeEach', python`@pytest.fixture(scope="function")`)
             addHook('beforeEach', python`def browser_name():`)
