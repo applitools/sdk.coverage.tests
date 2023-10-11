@@ -1570,7 +1570,7 @@ test('should send custom session properties', {
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Session Properties', viewportSize});
-    // python default behaviour is to throw an error if there are no checks was performed, so changed to not throwing an exception to be able to check custom batch props
+    // python default behaviour is to throw an error if there are no checks was performed, so changed to not throwing an exception to be able to check custom session props
     const result = eyes.close(false);
     const info = helpers.getTestInfo(result);
     assert.equal(info.startInfo.properties.length, 1)
