@@ -1548,9 +1548,9 @@ test('should send enablePatterns when specified in check settings', {
 })
 
 test('should send custom batch properties', {
-  features: ['image'],
+  features: ['non-visual'],
   config: {
-    batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom_prop', value: 'custom value'}]}
+    batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom batch prop', value: 'custom batch value'}]}
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
@@ -1558,12 +1558,28 @@ test('should send custom batch properties', {
     const result = eyes.close(false);
     const info = helpers.getTestInfo(result);
     assert.equal(info.startInfo.batchInfo.properties.length, 1)
-    assert.equal(info.startInfo.batchInfo.properties[0], {name: 'custom_prop', value: 'custom value'})
+    assert.equal(info.startInfo.batchInfo.properties[0], {name: 'custom batch prop', value: 'custom batch value'})
+  },
+})
+
+test('should send custom session properties', {
+  features: ['non-visual'],
+  config: {
+    batch: {id: `batch_${Date.now()}`},
+    properties: [{name: 'custom session prop', value: 'custom session value'}]
+  },
+  test({eyes, assert, helpers}) {
+    eyes.open({appName: 'Eyes Selenium SDK - Custom Session Properties', viewportSize});
+    // python default behaviour is to throw an error if there are no checks was performed, so changed to not throwing an exception to be able to check custom batch props
+    const result = eyes.close(false);
+    const info = helpers.getTestInfo(result);
+    assert.equal(info.startInfo.properties.length, 1)
+    assert.equal(info.startInfo.properties[0], {name: 'custom session prop', value: 'custom session value'})
   },
 })
 
 test('should send batch sequence name', {
-  features: ['image'],
+  features: ['non-visual'],
   config: {
     batch: {id: `batch_${Date.now()}`, sequenceName: 'custom sequence name'}
   },

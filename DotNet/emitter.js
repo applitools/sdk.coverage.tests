@@ -96,6 +96,7 @@ module.exports = function (tracker, test) {
     }
 
     let isImage = test.features && test.features.includes('image');
+    let isNonVisual = test.features && test.features.includes('non-visual');
     let mobile = (test.features && test.features.includes('native-selectors'))
     mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = test.env && test.env.device && !test.features
@@ -135,7 +136,7 @@ module.exports = function (tracker, test) {
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Appium;`)
         addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
-    } else if (!isImage) {
+    } else if (!isImage && !isNonVisual) {
         addHook('deps', `using Applitools.Selenium;`)
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Interactions;`)
@@ -180,6 +181,7 @@ module.exports = function (tracker, test) {
         'appName', 
         'defaultMatchSettings',
         'layoutBreakpoints',
+        'properties',
         'batch',
         'stitchMode',
         'viewportSize', 
@@ -224,6 +226,11 @@ module.exports = function (tracker, test) {
             addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
         }
     }
+    if (test.config.properties) {
+        test.config.properties.forEach(p=>{
+            addHook('beforeEach', dot_net`eyes.AddProperty(${p.name}, ${p.value});`)
+        });
+    }
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
             addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
@@ -236,7 +243,7 @@ module.exports = function (tracker, test) {
         }
     }
 
-    if (!isImage){
+    if (!isImage && !isNonVisual){
         addHook('afterEach', dot_net`webDriver?.Quit();`)
         addHook('afterEach', dot_net`driver?.Quit();`)
     }
@@ -652,6 +659,18 @@ module.exports = function (tracker, test) {
                                     },
                                     sequenceName: 'String'
                                 }
+                            },
+                            properties: {
+                                type: 'List<Map<String, String>>',
+                                    schema: {
+                                        length: { rename: 'Count' }
+                                    },
+                                    items: {
+                                        type: 'Map<String, String>',
+                                        items: {
+                                            type: 'String'
+                                        }
+                                    }
                             },
                             agentRunId: 'String'
                         }
