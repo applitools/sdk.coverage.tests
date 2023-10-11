@@ -46,6 +46,7 @@ function checkSettings(image, dom, cs) {
     if (cs.isFully !== undefined) options += `.fully(${capitalizeFirstLetter(cs.isFully)})`
     if (cs.waitBeforeCapture) options += `.wait_before_capture(${cs.waitBeforeCapture})`
     if (cs.lazyLoad !== undefined) options += lazyLoad(cs.lazyLoad)
+    if ("useSystemScreenshot" in cs) { options +=  python`.use_system_screenshot(${cs.useSystemScreenshot})`; }
     return name + target + element + options
 }
 
