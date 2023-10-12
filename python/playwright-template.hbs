@@ -11,7 +11,8 @@
 {{#each output.hooks.beforeEach as |command|}}
 {{command}}
 {{/each}}
-{{#if skip}}@pytest.mark.skip("generated"){{/if~}}
+{{#if skip}}@pytest.mark.skip("generated")
+{{/if~}}
 def test_{{key}}(page, eyes, configuration, helpers):
     {{#each output.commands as |command|}}
     {{command}}
