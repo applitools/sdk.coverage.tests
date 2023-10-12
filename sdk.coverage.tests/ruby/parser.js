@@ -2,7 +2,7 @@
 const types = require('./mapping/types')
 const selectors = require('./mapping/selectors')
 const {isSelector, pascalToSnakeCase,} = require('./util')
-const {checkOptions, fromCamelCaseToSnakeCase} = require('../util')
+const {checkOptions, fromCamelCaseToSnakeCase} = require('../../util')
 const {CHECK_SETTINGS_OPTIONS} = require('./mapping/supported')
 
 function checkSettings(cs, driver, native) {

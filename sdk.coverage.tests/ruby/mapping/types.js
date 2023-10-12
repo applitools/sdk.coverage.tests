@@ -1,5 +1,5 @@
 const {has} = require("../util")
-const {fromCamelCaseToSnakeCase} = require("../../util")
+const {fromCamelCaseToSnakeCase} = require("../../../util")
 const types = {
     "RectangleSize": {
         constructor: (value) => `Applitools::RectangleSize.new(${value.width}, ${value.height})`
