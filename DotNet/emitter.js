@@ -96,6 +96,7 @@ module.exports = function (tracker, test) {
     }
 
     let isImage = test.features && test.features.includes('image');
+    let isNonVisual = test.features && test.features.includes('non-visual');
     let mobile = (test.features && test.features.includes('native-selectors'))
     mobile = mobile || test.name.includes("webview") || test.name.startsWith("appium");
     let emulator = test.env && test.env.device && !test.features
@@ -136,18 +137,18 @@ module.exports = function (tracker, test) {
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Appium;`)
         addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
-    } else if (!isImage) {
+    } else if (!isImage && !isNonVisual) {
         addHook('deps', `using Applitools.Selenium;`)
         addHook('deps', `using OpenQA.Selenium;`)
         addHook('deps', `using OpenQA.Selenium.Interactions;`)
         addHook('deps', `using OpenQA.Selenium.Remote;`)
-        addHook('deps', `using System.Collections.Generic;`)
         addHook('deps', `using ScreenOrientation = Applitools.VisualGrid.ScreenOrientation;`)
     } else if (isImage) {
         addHook('deps', `using Applitools.Images;`)
     }
     addHook('deps', `using System;`)
     addHook('deps', `using System.Linq;`)
+    addHook('deps', `using System.Collections.Generic;`)
     if ("browsersInfo" in test.config) addHook('deps', `using Applitools.VisualGrid;`)
 
     let namespace = isImage ? 'Applitools.Generated.Images.Tests' : mobile ? 'Applitools.Generated.Appium.Tests' : 'Applitools.Generated.Selenium.Tests'
@@ -181,6 +182,7 @@ module.exports = function (tracker, test) {
         'appName', 
         'defaultMatchSettings',
         'layoutBreakpoints',
+        'properties',
         'batch',
         'stitchMode',
         'viewportSize', 
@@ -225,6 +227,11 @@ module.exports = function (tracker, test) {
             addHook('beforeEach', `SetLayoutBreakpoints(new LayoutBreakpointsOptions().Breakpoints(${test.config.layoutBreakpoints}));`)
         }
     }
+    if (test.config.properties) {
+        test.config.properties.forEach(p=>{
+            addHook('beforeEach', dot_net`eyes.AddProperty(${p.name}, ${p.value});`)
+        });
+    }
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
             addHook('beforeEach', dot_net`eyes.Batch.Id = ${test.config.batch.id};`)
@@ -232,9 +239,12 @@ module.exports = function (tracker, test) {
         if ("properties" in test.config.batch) {
             addHook('beforeEach', dot_net`eyes.Batch.AddProperty(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value});`)
         }
+        if (test.config.batch.sequenceName) {
+            addHook('beforeEach', dot_net`eyes.Batch.SequenceName = ${test.config.batch.sequenceName};`)
+        }
     }
 
-    if (!isImage){
+    if (!isImage && !isNonVisual){
         addHook('afterEach', dot_net`webDriver?.Quit();`)
         addHook('afterEach', dot_net`driver?.Quit();`)
     }
@@ -647,7 +657,20 @@ module.exports = function (tracker, test) {
                                             }
                                         }
                                     },
+                                    sequenceName: 'String'
                                 }
+                            },
+                            properties: {
+                                type: 'List<Map<String, String>>',
+                                    schema: {
+                                        length: { rename: 'Count' }
+                                    },
+                                    items: {
+                                        type: 'Map<String, String>',
+                                        items: {
+                                            type: 'String'
+                                        }
+                                    }
                             },
                             agentRunId: 'String'
                         }
