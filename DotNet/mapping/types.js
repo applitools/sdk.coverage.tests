@@ -16,6 +16,17 @@ const stringifyShadowSelector = (value) => {
     }
     return str;
 };
+const getBrowserEnumName = (name)=>{
+    name = name.toUpperCase();
+    if (name == "EDGELEGACY") return "EDGE_LEGACY";
+    if (name == "EDGECHROMIUM") return "EDGE_CHROMIUM";
+    if (name == "EDGECHROMIUM-ONE-VERSION-BACK") return "EDGE_CHROMIUM_ONE_VERSION_BACK";
+    if (name == "EDGECHROMIUM-TWO-VERSIONS-BACK") return "EDGE_CHROMIUM_TWO_VERSIONS_BACK";
+    if (name == "IE10") return "IE_10"
+    if (name == "IE11") return "IE_11"
+    if (name == "SAFARI-EARLYACCESS") return "SAFARI_EARLY_ACCESS"
+    return name.replaceAll('-','_')
+}
 
 const types = {
     "Map": {
@@ -153,10 +164,10 @@ const types = {
     "BrowsersInfo": {
         constructor: (value) => {
             return value.map(render => {
-                if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${render.name.toUpperCase()})`
+                if (render.name) return `new DesktopBrowserInfo(${render.width}, ${render.height}, BrowserType.${getBrowserEnumName(render.name)})`
                 else if (render.iosDeviceInfo) return `new IosDeviceInfo(${iosDeviceName[render.iosDeviceInfo.deviceName]})`
                 else if (render.chromeEmulationInfo) return `new ChromeEmulationInfo(${deviceName[render.chromeEmulationInfo.deviceName]}, ScreenOrientation.Portrait)`
-            }).join(', ')
+            }).join(',\n        ')
         },
     },
     "TextRegion": {
