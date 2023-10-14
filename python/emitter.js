@@ -156,6 +156,9 @@ module.exports = function (tracker, test) {
         if ("properties" in test.config.batch) {
             addHook('beforeEach', python`    conf.batch.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
         }
+        if (test.config.batch.sequenceName) {
+             addHook('beforeEach', python`    conf.batch.sequence_name = ${test.config.batch.sequenceName}`)
+        }
     }
 
 
