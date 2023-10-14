@@ -143,6 +143,11 @@ module.exports = function (tracker, test) {
         let args = test.config.layoutBreakpoints
         addHook('beforeEach', `    conf.set_layout_breakpoints(${layoutBreakpointsArgs(args)})`)
     }
+    if (test.config.properties) {
+         test.config.properties.forEach(p=>{
+             addHook('beforeEach', python`    conf.add_property(${p.name}, ${p.value})`)
+         });
+     }
     if ("batch" in test.config) {
         if ("id" in test.config.batch) {
             addHook('deps', 'from datetime import datetime')
@@ -150,6 +155,9 @@ module.exports = function (tracker, test) {
         }
         if ("properties" in test.config.batch) {
             addHook('beforeEach', python`    conf.batch.add_property(${test.config.batch.properties[0].name}, ${test.config.batch.properties[0].value})`)
+        }
+        if (test.config.batch.sequenceName) {
+             addHook('beforeEach', python`    conf.batch.sequence_name = ${test.config.batch.sequenceName}`)
         }
     }
 
