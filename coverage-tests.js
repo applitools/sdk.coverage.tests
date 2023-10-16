@@ -1573,7 +1573,7 @@ test('should send enablePatterns when specified in check settings', {
 test('should send custom batch properties', {
   features: ['non-visual'],
   config: {
-    batch: {id: `batch_${Date.now()}`, properties: [{name: 'custom batch prop', value: 'custom batch value'}]}
+    batch: {id: `test_batch_props_${Date.now()}`, properties: [{name: 'custom batch prop', value: 'custom batch value'}]}
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Custom Batch Properties', viewportSize});
@@ -1588,7 +1588,7 @@ test('should send custom batch properties', {
 test('should send custom session properties', {
   features: ['non-visual'],
   config: {
-    batch: {id: `batch_${Date.now()}`},
+    batch: {id: `test_batch_session_props_${Date.now()}`},
     properties: [{name: 'custom session prop', value: 'custom session value'}]
   },
   test({eyes, assert, helpers}) {
@@ -1604,7 +1604,7 @@ test('should send custom session properties', {
 test('should send batch sequence name', {
   features: ['non-visual'],
   config: {
-    batch: {id: `batch_${Date.now()}`, sequenceName: 'custom sequence name'}
+    batch: {id: `test_batch_sequence_name_${Date.now()}`, sequenceName: 'custom sequence name'}
   },
   test({eyes, assert, helpers}) {
     eyes.open({appName: 'Eyes Selenium SDK - Batch Sequence Name', viewportSize});
