@@ -1611,7 +1611,7 @@ test('should send batch sequence name', {
     // python default behaviour is to throw an error if there are no checks was performed, so changed to not throwing an exception to be able to check custom batch props
     const result = eyes.close(false);
     const info = helpers.getTestInfo(result);
-    assert.equal(info.startInfo.batchInfo.sequenceName, 'custom sequence name')
+    assert.equal(info.startInfo.batchInfo.batchSequenceName, 'custom sequence name')
   },
 })
 
