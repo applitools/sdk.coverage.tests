@@ -64,7 +64,10 @@ module.exports = function (tracker, test) {
         } else {
             addHook("deps", `from selenium.webdriver.common.by import By`)
             if (mobile) {
-                addHook("deps", `from appium.webdriver.common.mobileby import MobileBy`)
+                addHook("deps", "try:")
+                addHook("deps", "    from appium.webdriver.common.appiumby import AppiumBy")
+                addHook("deps", "except ImportError:")
+                addHook("deps", "    from appium.webdriver.common.mobileby import MobileBy as AppiumBy")
             }
         }
     }
